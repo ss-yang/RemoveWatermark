@@ -25,6 +25,14 @@ private slots:
 
     void on_SaveImageListView_doubleClicked(const QModelIndex &index);
 
+    void on_LoadImagePathLineEdit_returnPressed();
+
+    void on_SaveImagePathLineEdit_returnPressed();
+
+    void on_LoadImagePathButton_clicked();
+
+    void on_SaveImagePathButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemModel *markedImageModel;
