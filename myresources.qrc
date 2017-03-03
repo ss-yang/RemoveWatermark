@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/myIcons">
+        <file>icon/exit.png</file>
+        <file>icon/open.png</file>
+        <file>icon/save.png</file>
+        <file>icon/eraser.png</file>
+        <file>icon/freeSelect.png</file>
+        <file>icon/getColor.png</file>
+        <file>icon/glasses.png</file>
+        <file>icon/hand.png</file>
+        <file>icon/pencil.png</file>
+        <file>icon/rece.png</file>
+        <file>icon/back.png</file>
+        <file>icon/forward.png</file>
+        <file>icon/config.png</file>
+        <file>icon/color.png</file>
+        <file>icon/logo.png</file>
+        <file>icon/up.png</file>
+    </qresource>
+</RCC>
