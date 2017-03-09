@@ -154,10 +154,30 @@
       <item>
        <layout class="QGridLayout" name="ImageOperateLayout">
         <item row="1" column="1">
-         <widget class="QGraphicsView" name="CurrentImageGraphicsView"/>
+         <widget class="QGraphicsView" name="CurrentImageGraphicsView">
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+         </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QGraphicsView" name="OriImageGraphicsView"/>
+         <widget class="QGraphicsView" name="OriImageGraphicsView">
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+         </widget>
         </item>
         <item row="0" column="1">
          <widget class="QLabel" name="CurrentImageLabel">
@@ -466,7 +486,7 @@
      <normaloff>:/myIcons/icon/open.png</normaloff>:/myIcons/icon/open.png</iconset>
    </property>
    <property name="text">
-    <string>批量导入</string>
+    <string>打开</string>
    </property>
    <property name="toolTip">
     <string>打开图片文件夹</string>

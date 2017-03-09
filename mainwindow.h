@@ -37,6 +37,8 @@ private:
     Ui::MainWindow *ui;
     QFileSystemModel *markedImageModel;
     QFileSystemModel *unMarkedImageModel;
+    QImage *oriImage;
+    QImage *currentImage;
 };
 
 #endif // MAINWINDOW_H
