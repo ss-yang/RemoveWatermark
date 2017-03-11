@@ -5,6 +5,9 @@
 #include <QtCore>
 #include <QtGui>
 #include <QFileSystemModel>
+#include <mygraphicsview.h>
+#include <QMouseEvent>
+#include <QString>
 
 namespace Ui {
 class MainWindow;
@@ -33,12 +36,28 @@ private slots:
 
     void on_SaveImagePathButton_clicked();
 
+    void updatePixelLocationLabel(QString location);
+
+    void on_pencil_triggered();
+
+    void on_Hand_triggered();
+
+    void on_Eraser_triggered();
+
+    void on_Glasses_triggered();
+
+    void on_SelectColor_triggered();
+
+    void on_RectSelect_triggered();
+
+    void on_FreeSelect_triggered();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemModel *markedImageModel;
     QFileSystemModel *unMarkedImageModel;
-    QImage *oriImage;
-    QImage *currentImage;
+    QPixmap oriPixmap;
+    QPixmap currentPixmap;
 };
 
 #endif // MAINWINDOW_H

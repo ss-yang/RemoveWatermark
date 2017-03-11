@@ -14,6 +14,8 @@
 #include <QPixmap>
 #include <QFileSystemModel>
 #include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+
 
 using namespace std;
 using namespace cv;
@@ -39,8 +41,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->oriImage = new QImage();
-    this->currentImage = new QImage();
+    //当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
+
     /**
      * 初始化图片列表
      */
@@ -72,8 +76,6 @@ MainWindow::~MainWindow()
     delete ui;
     delete markedImageModel;
     delete unMarkedImageModel;
-    delete oriImage;
-    delete currentImage;
 }
 
 /**
@@ -103,15 +105,21 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         curLoadImageDirPath = path;
         ui->LoadImageListView->setRootIndex(markedImageModel->setRootPath(path));
         ui->LoadImagePathLineEdit->setText(path);
-    }else if(!oriImage->load(path) || !currentImage->load(path)){//是图片则读取图片显示
+    }else if(!oriPixmap.load(path) || !currentPixmap.load(path)){//是图片则读取图片显示
         QMessageBox::warning(this,"提示","打开图像失败！");
     }else {
+        QString width,height;
+        //更新状态栏图片大小信息
+        ui->ImageSizeLabel->setText(width.setNum(oriPixmap.width()) + " × " + height.setNum(oriPixmap.height()) + " 像素");
+        //视图栏显示图片
         QGraphicsScene *oriScence = new QGraphicsScene;
-        oriScence->addPixmap(QPixmap::fromImage(*oriImage));
+        QGraphicsPixmapItem *oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
+        oriScence->addItem(oriPixmapItem);
         ui->OriImageGraphicsView->setScene(oriScence);
         ui->OriImageGraphicsView->show();
         QGraphicsScene *currentScence = new QGraphicsScene;
-        currentScence->addPixmap(QPixmap::fromImage(*currentImage));
+        QGraphicsPixmapItem *currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
+        currentScence->addItem(currentPixmapItem);
         ui->CurrentImageGraphicsView->setScene(currentScence);
         ui->CurrentImageGraphicsView->show();
     }
@@ -192,4 +200,84 @@ void MainWindow::on_SaveImagePathButton_clicked()
     curSaveImageDirPath = path;
     ui->SaveImageListView->setRootIndex(unMarkedImageModel->setRootPath(path));
     ui->SaveImagePathLineEdit->setText(path);
+}
+
+/**
+ * @brief updatePixelLocationLabel
+ * @param event
+ * 当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
+ */
+void MainWindow::updatePixelLocationLabel(QString location)
+{
+    ui->PixelLocationLabel->setText(location);
+}
+
+/**
+ * @brief MainWindow::on_pencil_triggered
+ * 铅笔工具
+ */
+void MainWindow::on_pencil_triggered()
+{
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::Pencil);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::Pencil);
+}
+
+/**
+ * @brief MainWindow::on_Eraser_triggered
+ * 橡皮工具
+ */
+void MainWindow::on_Eraser_triggered()
+{
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::Eraser);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::Eraser);
+}
+
+/**
+ * @brief MainWindow::on_Glasses_triggered
+ * 放大镜工具
+ */
+void MainWindow::on_Glasses_triggered()
+{
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::Glasses);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::Glasses);
+}
+
+/**
+ * @brief MainWindow::on_Hand_triggered
+ * 抓手工具
+ */
+void MainWindow::on_Hand_triggered()
+{
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::Hand);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::Hand);
+}
+
+/**
+ * @brief MainWindow::on_SelectColor_triggered
+ * 取色器工具
+ */
+void MainWindow::on_SelectColor_triggered()
+{
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::SelectColor);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::SelectColor);
+}
+
+/**
+ * @brief MainWindow::on_RectSelect_triggered
+ * 矩形选择工具
+ */
+void MainWindow::on_RectSelect_triggered()
+{
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::RectSelect);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::RectSelect);
+}
+
+/**
+ * @brief MainWindow::on_FreeSelect_triggered
+ * 自由选择工具
+ */
+void MainWindow::on_FreeSelect_triggered()
+{
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::FreeSelect);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::FreeSelect);
 }
