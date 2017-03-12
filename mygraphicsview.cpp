@@ -20,18 +20,6 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event)
     if(scence == NULL){
         return;
     }
-    //检测当前所使用的工具类型，然后动态改变鼠标样式
-    switch(this->currentActionName)
-    {
-        case MyGraphicsView::ActionName::Pencil:{setCursor(Qt::CrossCursor);break;}
-        case MyGraphicsView::ActionName::Eraser:{setCursor(Qt::CrossCursor);break;}
-        case MyGraphicsView::ActionName::SelectColor:{setCursor(Qt::CrossCursor);break;}
-        case MyGraphicsView::ActionName::Glasses:{setCursor(Qt::CrossCursor);break;}
-        case MyGraphicsView::ActionName::Hand:{setCursor(Qt::OpenHandCursor);break;}
-        case MyGraphicsView::ActionName::RectSelect:{setCursor(Qt::CrossCursor);break;}
-        case MyGraphicsView::ActionName::FreeSelect:{setCursor(Qt::CrossCursor);break;}
-    default:{setCursor(Qt::CrossCursor);break;}//将鼠标样式设为十字形
-    }
     //获得鼠标移动时，当前所指图片中的像素位置
     QList<QGraphicsItem *>  items = scence->items();
     QGraphicsItem *pixmapItem = items.at(0);
@@ -41,7 +29,20 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event)
     QString location;
     if(point.x() >= 0 && point.x() <= width && point.y() >= 0 && point.y() <= height) {
         location = QString::number(point.x()) + " , " + QString::number(point.y()) + " 像素";
+        //检测当前所使用的工具类型，然后动态改变鼠标样式
+        switch(this->currentActionName)
+        {
+            case MyGraphicsView::ActionName::Pencil:{setCursor(Qt::CrossCursor);break;}
+            case MyGraphicsView::ActionName::Eraser:{setCursor(Qt::CrossCursor);break;}
+            case MyGraphicsView::ActionName::SelectColor:{setCursor(Qt::CrossCursor);break;}
+            case MyGraphicsView::ActionName::Glasses:{setCursor(Qt::CrossCursor);break;}
+            case MyGraphicsView::ActionName::Hand:{setCursor(Qt::OpenHandCursor);break;}
+            case MyGraphicsView::ActionName::RectSelect:{setCursor(Qt::CrossCursor);break;}
+            case MyGraphicsView::ActionName::FreeSelect:{setCursor(Qt::CrossCursor);break;}
+        default:{setCursor(Qt::CrossCursor);break;}//将鼠标样式设为十字形
+        }
     }else {
+        setCursor(Qt::ArrowCursor);//鼠标移出图片范围时恢复默认样式
         location = "";
     }
     emit mouseMovetriggerSignal(location);

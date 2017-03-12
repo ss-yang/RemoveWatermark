@@ -181,6 +181,10 @@ void MainWindow::on_SaveImagePathLineEdit_returnPressed()
 void MainWindow::on_LoadImagePathButton_clicked()
 {
     int first = curLoadImageDirPath.lastIndexOf ("/"); //从后面查找"/"位置
+    if(first < 0)
+    {
+        first = curLoadImageDirPath.lastIndexOf ("\\"); //从后面查找"\"位置
+    }
     QString path = curLoadImageDirPath.left(first);//获得上一级路径
     if(first < 0) {path = "";}
     curLoadImageDirPath = path;
@@ -195,6 +199,10 @@ void MainWindow::on_LoadImagePathButton_clicked()
 void MainWindow::on_SaveImagePathButton_clicked()
 {
     int first = curSaveImageDirPath.lastIndexOf ("/"); //从后面查找"/"位置
+    if(first < 0)
+    {
+        first = curSaveImageDirPath.lastIndexOf ("\\"); //从后面查找"\"位置
+    }
     QString path = curSaveImageDirPath.left(first+1);//获得上一级路径
     if(first < 0) {path = "";}
     curSaveImageDirPath = path;
