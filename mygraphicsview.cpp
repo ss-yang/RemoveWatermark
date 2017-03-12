@@ -4,10 +4,14 @@
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QPointF>
+#include <QScrollBar>
 #include <QDebug>
 
 MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
-{}
+{
+    this->horizontalScrollBar()->setCursor(Qt::ArrowCursor);
+    this->verticalScrollBar()->setCursor(Qt::ArrowCursor);
+}
 
 /**
  * @brief MyGraphicsView::mouseMoveEvent

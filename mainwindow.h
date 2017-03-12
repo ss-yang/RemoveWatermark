@@ -36,7 +36,7 @@ private slots:
 
     void on_SaveImagePathButton_clicked();
 
-    void updatePixelLocationLabel(QString location);
+    void updatePixelLocationLabel(QString location);//当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
 
     void on_pencil_triggered();
 
@@ -51,6 +51,11 @@ private slots:
     void on_RectSelect_triggered();
 
     void on_FreeSelect_triggered();
+
+    void OriHor2CurHorScrollBar(int);//当点击原始视图水平滚动条移动时，同步操作视图水平滚动条的位置
+    void OriVer2CurVerScrollBar(int);//当点击原始视图垂直滚动条移动时，同步操作视图垂直滚动条的位置
+    void CurHor2OriHorScrollBar(int);//当点击操作视图水平滚动条移动时，同步原始视图水平滚动条的位置
+    void CurVer2OriVerScrollBar(int);//当点击操作视图垂直滚动条移动时，同步原始视图垂直滚动条的位置
 
 private:
     Ui::MainWindow *ui;

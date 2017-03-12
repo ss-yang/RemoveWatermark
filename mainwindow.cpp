@@ -15,6 +15,7 @@
 #include <QFileSystemModel>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
+#include <QScrollBar>
 
 
 using namespace std;
@@ -44,6 +45,11 @@ MainWindow::MainWindow(QWidget *parent) :
     //当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
     QObject::connect(ui->OriImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
     QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
+    //当视图滚动条移动时，同步视图滚动条的位置
+    QObject::connect(ui->OriImageGraphicsView->horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(OriHor2CurHorScrollBar(int)));
+    QObject::connect(ui->OriImageGraphicsView->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(OriVer2CurVerScrollBar(int)));
+    QObject::connect(ui->CurrentImageGraphicsView->horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(CurHor2OriHorScrollBar(int)));
+    QObject::connect(ui->CurrentImageGraphicsView->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(CurVer2OriVerScrollBar(int)));
 
     /**
      * 初始化图片列表
@@ -218,6 +224,42 @@ void MainWindow::on_SaveImagePathButton_clicked()
 void MainWindow::updatePixelLocationLabel(QString location)
 {
     ui->PixelLocationLabel->setText(location);
+}
+
+/**
+ * @brief MainWindow::OriHor2CurHorScrollBar
+ * 当点击原始视图水平滚动条移动时，同步操作视图水平滚动条的位置
+ */
+void MainWindow::OriHor2CurHorScrollBar(int value)
+{
+    ui->CurrentImageGraphicsView->horizontalScrollBar()->setValue(value);
+}
+
+/**
+ * @brief MainWindow::OriVer2CurVerScrollBar
+ * 当点击原始视图垂直滚动条移动时，同步操作视图垂直滚动条的位置
+ */
+void MainWindow::OriVer2CurVerScrollBar(int value)
+{
+    ui->CurrentImageGraphicsView->verticalScrollBar()->setValue(value);
+}
+
+/**
+ * @brief MainWindow::CurHor2OriHorScrollBar
+ * 当点击操作视图水平滚动条移动时，同步原始视图水平滚动条的位置
+ */
+void MainWindow::CurHor2OriHorScrollBar(int value)
+{
+    ui->OriImageGraphicsView->horizontalScrollBar()->setValue(value);
+}
+
+/**
+ * @brief MainWindow::CurVer2OriVerScrollBar
+ * 当点击操作视图垂直滚动条移动时，同步原始视图垂直滚动条的位置
+ */
+void MainWindow::CurVer2OriVerScrollBar(int value)
+{
+    ui->OriImageGraphicsView->verticalScrollBar()->setValue(value);
 }
 
 /**
