@@ -12,6 +12,8 @@
 #include <QFileDialog>
 #include <QImage>
 #include <QPixmap>
+#include <QPoint>
+#include <QPointF>
 #include <QFileSystemModel>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -82,6 +84,10 @@ MainWindow::~MainWindow()
     delete ui;
     delete markedImageModel;
     delete unMarkedImageModel;
+    delete oriScence;
+    delete oriPixmapItem;
+    delete currentScence;
+    delete currentPixmapItem;
 }
 
 /**
@@ -118,13 +124,13 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         //更新状态栏图片大小信息
         ui->ImageSizeLabel->setText(width.setNum(oriPixmap.width()) + " × " + height.setNum(oriPixmap.height()) + " 像素");
         //视图栏显示图片
-        QGraphicsScene *oriScence = new QGraphicsScene;
-        QGraphicsPixmapItem *oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
+        oriScence = new QGraphicsScene;
+        oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
         oriScence->addItem(oriPixmapItem);
         ui->OriImageGraphicsView->setScene(oriScence);
         ui->OriImageGraphicsView->show();
-        QGraphicsScene *currentScence = new QGraphicsScene;
-        QGraphicsPixmapItem *currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
+        currentScence = new QGraphicsScene;
+        currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
         currentScence->addItem(currentPixmapItem);
         ui->CurrentImageGraphicsView->setScene(currentScence);
         ui->CurrentImageGraphicsView->show();

@@ -6,6 +6,8 @@
 #include <QtGui>
 #include <QFileSystemModel>
 #include <mygraphicsview.h>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
 #include <QMouseEvent>
 #include <QString>
 
@@ -63,6 +65,10 @@ private:
     QFileSystemModel *unMarkedImageModel;
     QPixmap oriPixmap;
     QPixmap currentPixmap;
+    QGraphicsScene *oriScence;
+    QGraphicsPixmapItem *oriPixmapItem;
+    QGraphicsScene *currentScence;
+    QGraphicsPixmapItem *currentPixmapItem;
 };
 
 #endif // MAINWINDOW_H
