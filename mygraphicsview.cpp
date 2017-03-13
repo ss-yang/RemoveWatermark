@@ -6,6 +6,7 @@
 #include <QPointF>
 #include <QScrollBar>
 #include <QDebug>
+#include <QTransform>
 
 MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
 {
@@ -25,9 +26,10 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event)
         return;
     }
     //获得鼠标移动时，当前所指图片中的像素位置
-    QList<QGraphicsItem *>  items = scence->items();
-    QGraphicsItem *pixmapItem = items.at(0);
-    QPointF point = pixmapItem->mapFromScene(mapToScene(event->pos()));
+    QTransform transform;
+    transform.rotate(+0.0);
+    QGraphicsItem *pixmapItem = scence->itemAt(0, 0,transform);;
+    QPointF point = pixmapItem->mapFromScene(this->mapToScene(event->pos()));
     int width = scence->width();
     int height = scence->height();
     QString location;
