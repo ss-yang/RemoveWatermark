@@ -10,6 +10,8 @@
 #include <QGraphicsScene>
 #include <QMouseEvent>
 #include <QString>
+#include <QColor>
+#include <QPalette>
 
 namespace Ui {
 class MainWindow;
@@ -71,6 +73,10 @@ private:
     QGraphicsPixmapItem *oriPixmapItem;
     QGraphicsScene *currentScence;
     QGraphicsPixmapItem *currentPixmapItem;
+
+    QColor foreColor;//前景色
+    QColor backColor;//背景色
+    QPalette palette;//调色板
 
     inline void resetAction();//重置工具栏按钮的选中状态
 };

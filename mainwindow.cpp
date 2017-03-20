@@ -18,6 +18,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QScrollBar>
+#include <QPalette>
+#include <QColor>
 
 
 using namespace std;
@@ -77,6 +79,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->SaveImageListView->setModel(unMarkedImageModel);
     ui->SaveImageListView->setRootIndex(unMarkedImageModel->setRootPath(curSaveImageDirPath));
     ui->SaveImagePathLineEdit->setText(curSaveImageDirPath);
+
+    /**
+     * 初始化前景色和背景色
+     */
+    foreColor = QColor(0,0,0);//黑色
+    backColor = QColor(255,255,255);//白色
+    palette.setColor(QPalette::Background, foreColor);
+    ui->ForeColorLabel->setPalette(palette);
+    palette.setColor(QPalette::Background, backColor);
+    ui->BackColorLabel->setPalette(palette);
 }
 
 MainWindow::~MainWindow()
