@@ -61,34 +61,35 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
                 setCursor(Qt::ClosedHandCursor);
                 if (!(event->buttons() & Qt::LeftButton)){break;}//当左键没有按住时拖动则跳过
                //if ((point - startPoint).manhattanLength() < QApplication::startDragDistance()){break;}//移开一段距离后再进行拖动，但会有延迟感所以注释
-                int Ex = point.x() - this->startPoint.x(); int Ey = point.y() - this->startPoint.y();
+                int Ex = point.x() - this->startPoint.x();//鼠标移动到鼠标点击处的横轴距离
+                int Ey = point.y() - this->startPoint.y();//鼠标移动到鼠标点击处的纵轴距离
                 int length;
-                length = this->startPointHorValue + Ex;
+                length = this->startPointHorValue - Ex;
                 if(Ex >= 0) {
-                    if(length > this->horizontalScrollBar()->maximum()){
-                        this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->maximum());
-                    }else{
+                    if(length > this->horizontalScrollBar()->minimum()){
                         this->horizontalScrollBar()->setValue(length);
+                    }else{
+                        this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->minimum());
                     }
                 }else{
-                    if(length < this->horizontalScrollBar()->minimum()) {
-                        this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->minimum());
-                    }else {
+                    if(length < this->horizontalScrollBar()->maximum()) {
                         this->horizontalScrollBar()->setValue(length);
+                    }else {
+                        this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->maximum());
                     }
                 }
-                length = this->startPointVerValue + Ey;
+                length = this->startPointVerValue - Ey;
                 if(Ey >= 0) {
-                    if(length > this->verticalScrollBar()->maximum()){
-                        this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
-                    }else{
+                    if(length > this->verticalScrollBar()->minimum()){
                         this->verticalScrollBar()->setValue(length);
+                    }else{
+                        this->verticalScrollBar()->setValue(this->verticalScrollBar()->minimum());
                     }
                 }else{
-                    if(length < this->verticalScrollBar()->minimum()) {
-                        this->verticalScrollBar()->setValue(this->verticalScrollBar()->minimum());
-                    }else {
+                    if(length < this->verticalScrollBar()->maximum()) {
                         this->verticalScrollBar()->setValue(length);
+                    }else {
+                        this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
                     }
                 }
                 break;
