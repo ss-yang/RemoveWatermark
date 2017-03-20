@@ -227,7 +227,7 @@ void MainWindow::on_SaveImagePathButton_clicked()
     {
         first = curSaveImageDirPath.lastIndexOf ("\\"); //从后面查找"\"位置
     }
-    QString path = curSaveImageDirPath.left(first+1);//获得上一级路径
+    QString path = curSaveImageDirPath.left(first);//获得上一级路径
     if(first < 0) {path = "";}
     curSaveImageDirPath = path;
     ui->SaveImageListView->setRootIndex(unMarkedImageModel->setRootPath(path));
