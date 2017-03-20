@@ -40,7 +40,7 @@ private slots:
 
     void updatePixelLocationLabel(QString location);//当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
 
-    void on_pencil_triggered();
+    void on_Pencil_triggered();
 
     void on_Hand_triggered();
 
@@ -59,6 +59,8 @@ private slots:
     void CurHor2OriHorScrollBar(int);//当点击操作视图水平滚动条移动时，同步原始视图水平滚动条的位置
     void CurVer2OriVerScrollBar(int);//当点击操作视图垂直滚动条移动时，同步原始视图垂直滚动条的位置
 
+    void on_GetColor_triggered();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemModel *markedImageModel;
@@ -69,6 +71,8 @@ private:
     QGraphicsPixmapItem *oriPixmapItem;
     QGraphicsScene *currentScence;
     QGraphicsPixmapItem *currentPixmapItem;
+
+    inline void resetAction();//重置工具栏按钮的选中状态
 };
 
 #endif // MAINWINDOW_H
