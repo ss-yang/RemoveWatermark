@@ -272,10 +272,13 @@ void MainWindow::CurVer2OriVerScrollBar(int value)
  * @brief MainWindow::on_pencil_triggered
  * 铅笔工具
  */
-void MainWindow::on_pencil_triggered()
+void MainWindow::on_Pencil_triggered()
 {
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::Pencil);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::Pencil);
+    resetAction();
+    ui->Pencil->setChecked(true);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Pencil);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::Pencil);
+
 }
 
 /**
@@ -284,8 +287,10 @@ void MainWindow::on_pencil_triggered()
  */
 void MainWindow::on_Eraser_triggered()
 {
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::Eraser);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::Eraser);
+    resetAction();
+    ui->Eraser->setChecked(true);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Eraser);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::Eraser);
 }
 
 /**
@@ -294,8 +299,10 @@ void MainWindow::on_Eraser_triggered()
  */
 void MainWindow::on_Glasses_triggered()
 {
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::Glasses);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::Glasses);
+    resetAction();
+    ui->Glasses->setChecked(true);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Glasses);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::Glasses);
 }
 
 /**
@@ -304,8 +311,10 @@ void MainWindow::on_Glasses_triggered()
  */
 void MainWindow::on_Hand_triggered()
 {
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::Hand);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::Hand);
+    resetAction();
+    ui->Hand->setChecked(true);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::OpenHand);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::OpenHand);
 }
 
 /**
@@ -314,8 +323,10 @@ void MainWindow::on_Hand_triggered()
  */
 void MainWindow::on_SelectColor_triggered()
 {
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::SelectColor);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::SelectColor);
+    resetAction();
+    ui->SelectColor->setChecked(true);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::SelectColor);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::SelectColor);
 }
 
 /**
@@ -324,8 +335,10 @@ void MainWindow::on_SelectColor_triggered()
  */
 void MainWindow::on_RectSelect_triggered()
 {
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::RectSelect);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::RectSelect);
+    resetAction();
+    ui->RectSelect->setChecked(true);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::RectSelect);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::RectSelect);
 }
 
 /**
@@ -334,6 +347,33 @@ void MainWindow::on_RectSelect_triggered()
  */
 void MainWindow::on_FreeSelect_triggered()
 {
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::ActionName::FreeSelect);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::ActionName::FreeSelect);
+    resetAction();
+    ui->FreeSelect->setChecked(true);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::FreeSelect);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::FreeSelect);
 }
+
+/**
+ * @brief MainWindow::on_GetColor_triggered
+ * 编辑颜色工具
+ */
+void MainWindow::on_GetColor_triggered()
+{
+    resetAction();
+}
+
+/**
+ * @brief MainWindow::resetAction
+ * 重置QAction的选中状态
+ */
+inline void MainWindow::resetAction() {
+    ui->Pencil->setChecked(false);
+    ui->Eraser->setChecked(false);
+    ui->SelectColor->setChecked(false);
+    ui->Glasses->setChecked(false);
+    ui->Hand->setChecked(false);
+    ui->RectSelect->setChecked(false);
+    ui->FreeSelect->setChecked(false);
+}
+
+

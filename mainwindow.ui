@@ -387,7 +387,7 @@
     <property name="title">
      <string>工具(&amp;T)</string>
     </property>
-    <addaction name="pencil"/>
+    <addaction name="Pencil"/>
     <addaction name="Eraser"/>
     <addaction name="SelectColor"/>
     <addaction name="Glasses"/>
@@ -443,7 +443,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="pencil"/>
+   <addaction name="Pencil"/>
    <addaction name="Eraser"/>
    <addaction name="Glasses"/>
    <addaction name="Hand"/>
@@ -538,7 +538,13 @@
     <string>Ctrl+E</string>
    </property>
   </action>
-  <action name="pencil">
+  <action name="Pencil">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/pencil.png</normaloff>:/myIcons/icon/pencil.png</iconset>
@@ -551,6 +557,9 @@
    </property>
   </action>
   <action name="Eraser">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/eraser.png</normaloff>:/myIcons/icon/eraser.png</iconset>
@@ -563,6 +572,9 @@
    </property>
   </action>
   <action name="SelectColor">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/getColor.png</normaloff>:/myIcons/icon/getColor.png</iconset>
@@ -575,6 +587,9 @@
    </property>
   </action>
   <action name="Glasses">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/glasses.png</normaloff>:/myIcons/icon/glasses.png</iconset>
@@ -587,6 +602,9 @@
    </property>
   </action>
   <action name="Hand">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/hand.png</normaloff>:/myIcons/icon/hand.png</iconset>
@@ -599,6 +617,9 @@
    </property>
   </action>
   <action name="RectSelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/rece.png</normaloff>:/myIcons/icon/rece.png</iconset>
@@ -611,6 +632,12 @@
    </property>
   </action>
   <action name="FreeSelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/freeSelect.png</normaloff>:/myIcons/icon/freeSelect.png</iconset>
