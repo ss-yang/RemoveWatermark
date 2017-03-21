@@ -11,7 +11,7 @@ class MyGraphicsView : public QGraphicsView
      Q_OBJECT
 
 public:
-    enum ActionName{Pencil, Eraser, Glasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default};
+    enum ActionName{Pencil, Eraser, bigGlasses, smallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default};
 
     MyGraphicsView(QWidget *parent);
 

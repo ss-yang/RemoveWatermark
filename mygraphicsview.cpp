@@ -45,7 +45,11 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
                 setCursor(Qt::CrossCursor);
                 break;
             }
-            case Glasses:{
+            case bigGlasses:{
+                setCursor(Qt::CrossCursor);
+                break;
+            }
+            case smallGlasses:{
                 setCursor(Qt::CrossCursor);
                 break;
             }
