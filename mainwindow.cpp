@@ -59,6 +59,17 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->ForeColorLabel,SIGNAL(changeColor()),this,SLOT(changeForeColor()));
     QObject::connect(ui->BackColorLabel,SIGNAL(changeColor()),this,SLOT(changeBackColor()));
 
+    //放大镜工具时，点击图像按预定倍数放大放大
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomUpPressed(QMouseEvent *)),ui->CurrentImageGraphicsView,SLOT(zoomUp(QMouseEvent *)));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomUpPressed(QMouseEvent *)),ui->OriImageGraphicsView,SLOT(zoomUp(QMouseEvent *)));
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomUpPressed(QMouseEvent *)),ui->OriImageGraphicsView,SLOT(zoomUp(QMouseEvent *)));
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomUpPressed(QMouseEvent *)),ui->CurrentImageGraphicsView,SLOT(zoomUp(QMouseEvent *)));
+
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomDownPressed(QMouseEvent *)),ui->CurrentImageGraphicsView,SLOT(zoomDown(QMouseEvent *)));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomDownPressed(QMouseEvent *)),ui->OriImageGraphicsView,SLOT(zoomDown(QMouseEvent *)));
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomDownPressed(QMouseEvent *)),ui->OriImageGraphicsView,SLOT(zoomDown(QMouseEvent *)));
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomDownPressed(QMouseEvent *)),ui->CurrentImageGraphicsView,SLOT(zoomDown(QMouseEvent *)));
+
     /**
      * 初始化图片列表
      */

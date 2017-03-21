@@ -13,6 +13,11 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
 {
     this->horizontalScrollBar()->setCursor(Qt::ArrowCursor);
     this->verticalScrollBar()->setCursor(Qt::ArrowCursor);
+    this->isZoomUp=true;//放大镜工具默认放大
+    this->zoomUpRate=1.5;//默认的放大倍率，预计从设置中更改
+    this->zoomDownRate=0.75;//缩小倍率
+
+
 }
 
 /**
@@ -146,6 +151,16 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
     }else {
         return;
     }
+
+    //点击放大
+    if(this->currentActionName==Glasses){
+        if(isZoomUp){
+            emit zoomUpPressed(event);
+        }else{
+            emit zoomDownPressed(event);
+        }
+    }
+
 }
 
 /**
@@ -179,6 +194,30 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
     }
 }
 
+
+/**
+ * @brief MyGraphicsView::keyPressEvent
+ * @param event
+ * 监听键盘按键按下
+ */
+void MyGraphicsView::keyPressEvent(QKeyEvent *event){
+    if(event->key()==Qt::Key_Alt){
+        isZoomUp=false;
+    }
+}
+
+/**
+ * @brief MyGraphicsView::keyReleaseEvent
+ * @param event
+ * 监听键盘按键松开
+ */
+void MyGraphicsView::keyReleaseEvent(QKeyEvent *event){
+    if(event->key()==Qt::Key_Alt){
+        isZoomUp=true;
+    }
+}
+
+
 /**
  * @brief MyGraphicsView::setActionName
  * @param actionName
@@ -187,4 +226,18 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
 void MyGraphicsView::setActionName(ActionName actionName)
 {
     this->currentActionName = actionName;
+}
+
+/**
+ * @brief MyGraphicsView::zoomUp
+ */
+void MyGraphicsView::zoomUp(QMouseEvent *event){
+
+    this->centerOn(this->mapToScene(event->pos()));
+    scale(zoomUpRate,zoomUpRate);
+}
+
+void MyGraphicsView::zoomDown(QMouseEvent *event){
+    this->centerOn(this->mapToScene(event->pos()));
+    scale(zoomDownRate,zoomDownRate);
 }
