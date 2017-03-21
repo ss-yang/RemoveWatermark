@@ -20,6 +20,7 @@
 #include <QScrollBar>
 #include <QPalette>
 #include <QColor>
+#include <QColorDialog>
 
 
 using namespace std;
@@ -54,6 +55,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->OriImageGraphicsView->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(OriVer2CurVerScrollBar(int)));
     QObject::connect(ui->CurrentImageGraphicsView->horizontalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(CurHor2OriHorScrollBar(int)));
     QObject::connect(ui->CurrentImageGraphicsView->verticalScrollBar(),SIGNAL(valueChanged(int)),this,SLOT(CurVer2OriVerScrollBar(int)));
+    //设置前景色和背景色
+    QObject::connect(ui->ForeColorLabel,SIGNAL(changeColor()),this,SLOT(changeForeColor()));
+    QObject::connect(ui->BackColorLabel,SIGNAL(changeColor()),this,SLOT(changeBackColor()));
 
     /**
      * 初始化图片列表
@@ -83,11 +87,11 @@ MainWindow::MainWindow(QWidget *parent) :
     /**
      * 初始化前景色和背景色
      */
-    foreColor = QColor(0,0,0);//黑色
-    backColor = QColor(255,255,255);//白色
-    palette.setColor(QPalette::Background, foreColor);
+    palette = ui->ForeColorLabel->palette();
+    palette.setColor(QPalette::Background, QColor(0,0,0));//黑色
     ui->ForeColorLabel->setPalette(palette);
-    palette.setColor(QPalette::Background, backColor);
+    palette = ui->BackColorLabel->palette();
+    palette.setColor(QPalette::Background, QColor(255,255,255));//白色
     ui->BackColorLabel->setPalette(palette);
 }
 
@@ -330,18 +334,6 @@ void MainWindow::on_Hand_triggered()
 }
 
 /**
- * @brief MainWindow::on_SelectColor_triggered
- * 取色器工具
- */
-void MainWindow::on_SelectColor_triggered()
-{
-    resetAction();
-    ui->SelectColor->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::SelectColor);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::SelectColor);
-}
-
-/**
  * @brief MainWindow::on_RectSelect_triggered
  * 矩形选择工具
  */
@@ -372,6 +364,10 @@ void MainWindow::on_FreeSelect_triggered()
 void MainWindow::on_GetColor_triggered()
 {
     resetAction();
+    QColor color = QColorDialog::getColor(Qt::white,this,"设置前景色");
+    palette = ui->ForeColorLabel->palette();
+    palette.setColor(QPalette::Background, color);
+    ui->ForeColorLabel->setPalette(palette);
 }
 
 /**
@@ -381,11 +377,33 @@ void MainWindow::on_GetColor_triggered()
 inline void MainWindow::resetAction() {
     ui->Pencil->setChecked(false);
     ui->Eraser->setChecked(false);
-    ui->SelectColor->setChecked(false);
     ui->Glasses->setChecked(false);
     ui->Hand->setChecked(false);
     ui->RectSelect->setChecked(false);
     ui->FreeSelect->setChecked(false);
 }
 
+/**
+ * @brief MainWindow::changeForeColor
+ * 改变前景色
+ */
+void MainWindow::changeForeColor()
+{
+    QColor color = QColorDialog::getColor(Qt::white,this,"设置前景色");
+    palette = ui->ForeColorLabel->palette();
+    palette.setColor(QPalette::Background, color);
+    ui->ForeColorLabel->setPalette(palette);
+}
+
+/**
+ * @brief MainWindow::changeBackColor
+ * 改变背景色
+ */
+void MainWindow::changeBackColor()
+{
+    QColor color = QColorDialog::getColor(Qt::white,this,"设置背景色");
+    palette = ui->BackColorLabel->palette();
+    palette.setColor(QPalette::Background, color);
+    ui->BackColorLabel->setPalette(palette);
+}
 

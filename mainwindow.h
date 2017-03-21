@@ -1,11 +1,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <mygraphicsview.h>
+#include <mylabel.h>
+
 #include <QMainWindow>
 #include <QtCore>
 #include <QtGui>
 #include <QFileSystemModel>
-#include <mygraphicsview.h>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QMouseEvent>
@@ -50,8 +52,6 @@ private slots:
 
     void on_Glasses_triggered();
 
-    void on_SelectColor_triggered();
-
     void on_RectSelect_triggered();
 
     void on_FreeSelect_triggered();
@@ -62,6 +62,9 @@ private slots:
     void CurVer2OriVerScrollBar(int);//当点击操作视图垂直滚动条移动时，同步原始视图垂直滚动条的位置
 
     void on_GetColor_triggered();
+
+    void changeForeColor();//改变前景色
+    void changeBackColor();//改变背景色
 
 private:
     Ui::MainWindow *ui;
@@ -74,8 +77,6 @@ private:
     QGraphicsScene *currentScence;
     QGraphicsPixmapItem *currentPixmapItem;
 
-    QColor foreColor;//前景色
-    QColor backColor;//背景色
     QPalette palette;//调色板
 
     inline void resetAction();//重置工具栏按钮的选中状态

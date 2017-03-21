@@ -25,10 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    mygraphicsview.cpp
+    mygraphicsview.cpp \
+    mylabel.cpp
 
 HEADERS  += mainwindow.h \
-    mygraphicsview.h
+    mygraphicsview.h \
+    mylabel.h
 
 FORMS    += mainwindow.ui
 

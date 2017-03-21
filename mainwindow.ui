@@ -194,7 +194,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="ForeColorLabel">
+           <widget class="MyLabel" name="ForeColorLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -235,7 +235,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="BackColorLabel">
+           <widget class="MyLabel" name="BackColorLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -488,7 +488,6 @@
     </property>
     <addaction name="Pencil"/>
     <addaction name="Eraser"/>
-    <addaction name="SelectColor"/>
     <addaction name="Glasses"/>
     <addaction name="Hand"/>
     <addaction name="separator"/>
@@ -576,7 +575,6 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="SelectColor"/>
    <addaction name="GetColor"/>
   </widget>
   <action name="Open">
@@ -668,21 +666,6 @@
    </property>
    <property name="shortcut">
     <string>E</string>
-   </property>
-  </action>
-  <action name="SelectColor">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/getColor.png</normaloff>:/myIcons/icon/getColor.png</iconset>
-   </property>
-   <property name="text">
-    <string>取色器</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+G</string>
    </property>
   </action>
   <action name="Glasses">
@@ -788,6 +771,11 @@
    <class>MyGraphicsView</class>
    <extends>QGraphicsView</extends>
    <header location="global">mygraphicsview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MyLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">mylabel.h</header>
   </customwidget>
  </customwidgets>
  <resources>
