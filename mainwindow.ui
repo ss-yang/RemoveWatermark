@@ -469,7 +469,7 @@
      </font>
     </property>
     <property name="title">
-     <string>文件(&amp;F)</string>
+     <string>文件</string>
     </property>
     <property name="toolTipsVisible">
      <bool>false</bool>
@@ -484,7 +484,7 @@
    </widget>
    <widget class="QMenu" name="ToolMenu">
     <property name="title">
-     <string>工具(&amp;T)</string>
+     <string>工具</string>
     </property>
     <addaction name="Pencil"/>
     <addaction name="Eraser"/>
@@ -680,7 +680,7 @@
     <string>放大镜</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+[</string>
+    <string>G</string>
    </property>
   </action>
   <action name="Hand">

@@ -58,17 +58,21 @@ MainWindow::MainWindow(QWidget *parent) :
     //设置前景色和背景色
     QObject::connect(ui->ForeColorLabel,SIGNAL(changeColor()),this,SLOT(changeForeColor()));
     QObject::connect(ui->BackColorLabel,SIGNAL(changeColor()),this,SLOT(changeBackColor()));
-
     //放大镜工具时，点击图像按预定倍数放大放大
-    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomUpPressed(QMouseEvent *)),ui->CurrentImageGraphicsView,SLOT(zoomUp(QMouseEvent *)));
-    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomUpPressed(QMouseEvent *)),ui->OriImageGraphicsView,SLOT(zoomUp(QMouseEvent *)));
-    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomUpPressed(QMouseEvent *)),ui->OriImageGraphicsView,SLOT(zoomUp(QMouseEvent *)));
-    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomUpPressed(QMouseEvent *)),ui->CurrentImageGraphicsView,SLOT(zoomUp(QMouseEvent *)));
-
-    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomDownPressed(QMouseEvent *)),ui->CurrentImageGraphicsView,SLOT(zoomDown(QMouseEvent *)));
-    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomDownPressed(QMouseEvent *)),ui->OriImageGraphicsView,SLOT(zoomDown(QMouseEvent *)));
-    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomDownPressed(QMouseEvent *)),ui->OriImageGraphicsView,SLOT(zoomDown(QMouseEvent *)));
-    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomDownPressed(QMouseEvent *)),ui->CurrentImageGraphicsView,SLOT(zoomDown(QMouseEvent *)));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomUpPressed()),ui->CurrentImageGraphicsView,SLOT(zoomUp()));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomUpPressed()),ui->OriImageGraphicsView,SLOT(zoomUp()));
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomUpPressed()),ui->OriImageGraphicsView,SLOT(zoomUp()));
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomUpPressed()),ui->CurrentImageGraphicsView,SLOT(zoomUp()));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomDownPressed()),ui->CurrentImageGraphicsView,SLOT(zoomDown()));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(zoomDownPressed()),ui->OriImageGraphicsView,SLOT(zoomDown()));
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomDownPressed()),ui->OriImageGraphicsView,SLOT(zoomDown()));
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(zoomDownPressed()),ui->CurrentImageGraphicsView,SLOT(zoomDown()));
+    //同步改变两侧当前的actionName
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(actionNameChanged(ActionName)),ui->CurrentImageGraphicsView,SLOT(setActionName(ActionName)));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(actionNameChanged(ActionName)),ui->OriImageGraphicsView,SLOT(setActionName(ActionName)));
+    //同步改变两侧放大镜的状态
+    QObject::connect(ui->OriImageGraphicsView,SIGNAL(glassesChanged(bool)),ui->CurrentImageGraphicsView,SLOT(setGlasses(bool)));
+    QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(glassesChanged(bool)),ui->OriImageGraphicsView,SLOT(setGlasses(bool)));
 
     /**
      * 初始化图片列表
@@ -328,8 +332,8 @@ void MainWindow::on_Glasses_triggered()
 {
     resetAction();
     ui->Glasses->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Glasses);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::Glasses);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::bigGlasses);
+    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::bigGlasses);
 }
 
 /**

@@ -8,16 +8,21 @@
 #include <QDebug>
 #include <QTransform>
 #include <QApplication>
+#include <QCursor>
+#include <QPixmap>
 
 MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
 {
     this->horizontalScrollBar()->setCursor(Qt::ArrowCursor);
     this->verticalScrollBar()->setCursor(Qt::ArrowCursor);
-    this->isZoomUp=true;//放大镜工具默认放大
+    this->isZoomUp = true;//默认放大镜工具为放大状态
     this->zoomUpRate=1.5;//默认的放大倍率，预计从设置中更改
-    this->zoomDownRate=0.75;//缩小倍率
+    this->zoomDownRate=0.75;//默认的缩小倍率
 
-
+    QPixmap bigGlassesPixmap(":/myIcons/icon/bigGlasses.png");
+    bigCursor =QCursor(bigGlassesPixmap);
+    QPixmap smallGlassesPixmap(":/myIcons/icon/smallGlasses.png");
+    smallCursor =QCursor(smallGlassesPixmap);
 }
 
 /**
@@ -38,7 +43,8 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
     QString location;
     //检测鼠标是否在图片范围内
     if(point.x() >= 0 && point.x() <= this->scene()->width() && point.y() >= 0 && point.y() <= this->scene()->height()) {
-        location = QString::number(point.x()) + " , " + QString::number(point.y()) + " 像素";
+        //坐标强制转为整型，从而使得缩小放大时不会显示亚像素位置
+        location = QString::number((int)point.x()) + " , " + QString::number((int)point.y()) + " 像素";
         //检测当前所使用的工具类型，然后动态改变鼠标样式
         switch(this->currentActionName)
         {
@@ -51,11 +57,11 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
                 break;
             }
             case bigGlasses:{
-                setCursor(Qt::CrossCursor);
+                setCursor(bigCursor);
                 break;
             }
             case smallGlasses:{
-                setCursor(Qt::CrossCursor);
+                setCursor(smallCursor);
                 break;
             }
             case OpenHand:{
@@ -136,6 +142,7 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
     //如果是抓手工具，则在点击时鼠标变成抓紧的样式
     if(this->currentActionName == OpenHand) {
         this->currentActionName = ClosedHand;
+        emit actionNameChanged(currentActionName);
         setCursor(Qt::ClosedHandCursor);
     }
     //获得鼠标移动时，当前所指图片中的像素位置
@@ -151,16 +158,20 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
     }else {
         return;
     }
-
-    //点击放大
-    if(this->currentActionName==Glasses){
-        if(isZoomUp){
-            emit zoomUpPressed(event);
-        }else{
-            emit zoomDownPressed(event);
+    //当为放大镜工具时，点击放大
+    if(this->currentActionName == bigGlasses) {
+        if(this->isZoomUp){
+            this->centerOn(this->mapToScene(event->pos()));
+            emit zoomUpPressed();//放大
         }
     }
-
+    //当为缩小工具时，点击缩小
+    if(this->currentActionName == smallGlasses) {
+        if(!this->isZoomUp) {
+            this->centerOn(this->mapToScene(event->pos()));
+            emit zoomDownPressed();//缩小
+        }
+    }
 }
 
 /**
@@ -179,6 +190,7 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
     //如果是抓手工具，则在点击释放时鼠标变成松开的样式
     if(this->currentActionName == ClosedHand) {
         this->currentActionName = OpenHand;
+        emit actionNameChanged(currentActionName);
         setCursor(Qt::OpenHandCursor);
     }
     //获得鼠标移动时，当前所指图片中的像素位置
@@ -194,15 +206,23 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
     }
 }
 
-
 /**
  * @brief MyGraphicsView::keyPressEvent
  * @param event
  * 监听键盘按键按下
  */
 void MyGraphicsView::keyPressEvent(QKeyEvent *event){
-    if(event->key()==Qt::Key_Alt){
-        isZoomUp=false;
+    if(event->isAutoRepeat()) {//按键重复响应时不执行
+        return;
+    }
+    //当为放大镜工具时，按下alt则变为缩小工具
+    if(event->key()== Qt::Key_Alt){
+        if(isZoomUp) {//这里是真正按下触发的事件
+            this->currentActionName = smallGlasses;
+            emit glassesChanged(false);
+            setCursor(smallCursor);
+        }
+        isZoomUp = false;
     }
 }
 
@@ -212,11 +232,19 @@ void MyGraphicsView::keyPressEvent(QKeyEvent *event){
  * 监听键盘按键松开
  */
 void MyGraphicsView::keyReleaseEvent(QKeyEvent *event){
-    if(event->key()==Qt::Key_Alt){
-        isZoomUp=true;
+    if(event->isAutoRepeat()) {//按键重复响应时不执行
+        return;
+    }
+    //当为缩小工具时，松开alt则变为放大镜工具
+    if(event->key()== Qt::Key_Alt){
+        if(!isZoomUp) {//这里是真正松开触发的事件
+            this->currentActionName = bigGlasses;
+            emit glassesChanged(true);
+            setCursor(bigCursor);
+        }
+        isZoomUp = true;
     }
 }
-
 
 /**
  * @brief MyGraphicsView::setActionName
@@ -230,14 +258,33 @@ void MyGraphicsView::setActionName(ActionName actionName)
 
 /**
  * @brief MyGraphicsView::zoomUp
+ * @param event
+ * 放大scence
  */
-void MyGraphicsView::zoomUp(QMouseEvent *event){
-
-    this->centerOn(this->mapToScene(event->pos()));
+void MyGraphicsView::zoomUp(){
     scale(zoomUpRate,zoomUpRate);
 }
 
-void MyGraphicsView::zoomDown(QMouseEvent *event){
-    this->centerOn(this->mapToScene(event->pos()));
+/**
+ * @brief MyGraphicsView::zoomDown
+ * @param event
+ * 缩小scence
+ */
+void MyGraphicsView::zoomDown(){
     scale(zoomDownRate,zoomDownRate);
+}
+
+/**
+ * @brief MyGraphicsView::setGlasses
+ * @param isZoomUp
+ * 改变放大镜工具状态
+ */
+void MyGraphicsView::setGlasses(bool flag)
+{
+    if(flag) {
+        this->currentActionName = bigGlasses;
+    }else{
+        this->currentActionName = smallGlasses;
+    }
+    this->isZoomUp = flag;
 }

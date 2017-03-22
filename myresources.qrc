@@ -16,7 +16,7 @@
         <file>icon/color.png</file>
         <file>icon/logo.png</file>
         <file>icon/up.png</file>
-        <file>icon/smallGlasses.png</file>
         <file>icon/bigGlasses.png</file>
+        <file>icon/smallGlasses.png</file>
     </qresource>
 </RCC>
