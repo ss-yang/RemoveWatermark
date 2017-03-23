@@ -215,8 +215,8 @@ void MyGraphicsView::keyPressEvent(QKeyEvent *event){
     if(event->isAutoRepeat()) {//按键重复响应时不执行
         return;
     }
-    //当为放大镜工具时，按下alt则变为缩小工具
-    if(event->key()== Qt::Key_Alt){
+    //当为放大镜工具时，按下control则变为缩小工具
+    if(event->key()== Qt::Key_Control){
         if(isZoomUp) {//这里是真正按下触发的事件
             this->currentActionName = smallGlasses;
             emit glassesChanged(false);
@@ -235,8 +235,8 @@ void MyGraphicsView::keyReleaseEvent(QKeyEvent *event){
     if(event->isAutoRepeat()) {//按键重复响应时不执行
         return;
     }
-    //当为缩小工具时，松开alt则变为放大镜工具
-    if(event->key()== Qt::Key_Alt){
+    //当为缩小工具时，松开control则变为放大镜工具
+    if(event->key()== Qt::Key_Control){
         if(!isZoomUp) {//这里是真正松开触发的事件
             this->currentActionName = bigGlasses;
             emit glassesChanged(true);
