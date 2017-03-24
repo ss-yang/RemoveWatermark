@@ -212,17 +212,23 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
  * 监听键盘按键按下
  */
 void MyGraphicsView::keyPressEvent(QKeyEvent *event){
+    if(this->scene() == NULL){
+        this->currentActionName = Default;
+        return;
+    }
     if(event->isAutoRepeat()) {//按键重复响应时不执行
         return;
     }
     //当为放大镜工具时，按下control则变为缩小工具
-    if(event->key()== Qt::Key_Control){
-        if(isZoomUp) {//这里是真正按下触发的事件
-            this->currentActionName = smallGlasses;
-            emit glassesChanged(false);
-            setCursor(smallCursor);
+    if(this->currentActionName == bigGlasses) {
+        if(event->key()== Qt::Key_Control){
+            if(isZoomUp) {//这里是真正按下触发的事件
+                this->currentActionName = smallGlasses;
+                emit glassesChanged(false);
+                setCursor(smallCursor);
+            }
+            isZoomUp = false;
         }
-        isZoomUp = false;
     }
 }
 
@@ -232,17 +238,23 @@ void MyGraphicsView::keyPressEvent(QKeyEvent *event){
  * 监听键盘按键松开
  */
 void MyGraphicsView::keyReleaseEvent(QKeyEvent *event){
+    if(this->scene() == NULL){
+        this->currentActionName = Default;
+        return;
+    }
     if(event->isAutoRepeat()) {//按键重复响应时不执行
         return;
     }
     //当为缩小工具时，松开control则变为放大镜工具
-    if(event->key()== Qt::Key_Control){
-        if(!isZoomUp) {//这里是真正松开触发的事件
-            this->currentActionName = bigGlasses;
-            emit glassesChanged(true);
-            setCursor(bigCursor);
+    if(this->currentActionName == smallGlasses) {
+        if(event->key()== Qt::Key_Control){
+            if(!isZoomUp) {//这里是真正松开触发的事件
+                this->currentActionName = bigGlasses;
+                emit glassesChanged(true);
+                setCursor(bigCursor);
+            }
+            isZoomUp = true;
         }
-        isZoomUp = true;
     }
 }
 
