@@ -26,13 +26,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         mainwindow.cpp \
     mygraphicsview.cpp \
-    mylabel.cpp
+    mylabel.cpp \
+    myslider.cpp
 
 HEADERS  += mainwindow.h \
     mygraphicsview.h \
-    mylabel.h
+    mylabel.h \
+    myslider.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    myslider.ui
 
 INCLUDEPATH += E:\opencv_QT\include\opencv\
 

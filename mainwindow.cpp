@@ -22,7 +22,6 @@
 #include <QColor>
 #include <QColorDialog>
 
-
 using namespace std;
 using namespace cv;
 
@@ -108,6 +107,12 @@ MainWindow::MainWindow(QWidget *parent) :
     palette = ui->BackColorLabel->palette();
     palette.setColor(QPalette::Background, QColor(255,255,255));//白色
     ui->BackColorLabel->setPalette(palette);
+
+    /**
+     * 初始化粗细设置按钮
+     */
+    thicknessSlider = new MySlider(this);
+    thicknessAction = ui->extraToolBar->addWidget(thicknessSlider);
 }
 
 MainWindow::~MainWindow()
@@ -119,6 +124,8 @@ MainWindow::~MainWindow()
     delete oriPixmapItem;
     delete currentScence;
     delete currentPixmapItem;
+    delete thicknessSlider;
+    delete thicknessAction;
 }
 
 /**
@@ -307,7 +314,7 @@ void MainWindow::on_Pencil_triggered()
 {
     resetAction();
     ui->Pencil->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Pencil);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Forbidden);
     ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::Pencil);
 
 }
@@ -320,7 +327,7 @@ void MainWindow::on_Eraser_triggered()
 {
     resetAction();
     ui->Eraser->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Eraser);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Forbidden);
     ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::Eraser);
 }
 
@@ -378,7 +385,6 @@ void MainWindow::on_FreeSelect_triggered()
  */
 void MainWindow::on_GetColor_triggered()
 {
-    resetAction();
     QColor color = QColorDialog::getColor(Qt::white,this,"设置前景色");
     palette = ui->ForeColorLabel->palette();
     palette.setColor(QPalette::Background, color);

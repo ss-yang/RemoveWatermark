@@ -23,6 +23,12 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     bigCursor =QCursor(bigGlassesPixmap);
     QPixmap smallGlassesPixmap(":/myIcons/icon/smallGlasses.png");
     smallCursor =QCursor(smallGlassesPixmap);
+    QPixmap pencilPixmap(":/myIcons/icon/pencil_24px.png");
+    pencilCursor =QCursor(pencilPixmap);
+    QPixmap eraserPixmap(":/myIcons/icon/eraser_24px.png");
+    eraserCursor =QCursor(eraserPixmap);
+    QPixmap forbiddenPixmap(":/myIcons/icon/forbidden.png");
+    forbiddenCursor =QCursor(forbiddenPixmap);
 }
 
 /**
@@ -49,11 +55,11 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
         switch(this->currentActionName)
         {
             case Pencil:{
-                setCursor(Qt::CrossCursor);
+                setCursor(pencilCursor);
                 break;
             }
             case Eraser:{
-                setCursor(Qt::CrossCursor);
+                setCursor(eraserCursor);
                 break;
             }
             case bigGlasses:{
@@ -112,6 +118,9 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
             case FreeSelect:{
                 setCursor(Qt::CrossCursor);
                 break;
+            }
+            case Forbidden:{
+                setCursor(forbiddenCursor);break;
             }
             case Default:{
                 setCursor(Qt::CrossCursor);break;

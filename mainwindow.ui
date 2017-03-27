@@ -562,7 +562,7 @@
    <addaction name="RectSelect"/>
    <addaction name="FreeSelect"/>
   </widget>
-  <widget class="QToolBar" name="colorToolBar">
+  <widget class="QToolBar" name="extraToolBar">
    <property name="windowTitle">
     <string>toolBar</string>
    </property>

@@ -3,6 +3,7 @@
 
 #include <mygraphicsview.h>
 #include <mylabel.h>
+#include <myslider.h>
 
 #include <QMainWindow>
 #include <QtCore>
@@ -14,6 +15,7 @@
 #include <QString>
 #include <QColor>
 #include <QPalette>
+#include <QAction>
 
 namespace Ui {
 class MainWindow;
@@ -80,6 +82,9 @@ private:
     QPalette palette;//调色板
 
     inline void resetAction();//重置工具栏按钮的选中状态
+
+    MySlider *thicknessSlider;//粗细设置控件
+    QAction *thicknessAction;//粗细设置action
 };
 
 #endif // MAINWINDOW_H

@@ -18,5 +18,8 @@
         <file>icon/up.png</file>
         <file>icon/bigGlasses.png</file>
         <file>icon/smallGlasses.png</file>
+        <file>icon/pencil_24px.png</file>
+        <file>icon/forbidden.png</file>
+        <file>icon/eraser_24px.png</file>
     </qresource>
 </RCC>

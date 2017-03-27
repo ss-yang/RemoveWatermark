@@ -12,7 +12,7 @@ class MyGraphicsView : public QGraphicsView
      Q_OBJECT
 
 public:
-    enum ActionName{Pencil, Eraser, bigGlasses, smallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default};
+    enum ActionName{Pencil, Eraser, bigGlasses, smallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default, Forbidden};
 
     MyGraphicsView(QWidget *parent);
 
@@ -49,8 +49,12 @@ private:
     bool isZoomUp;//标记放大缩小的状态，使用的原因是QT的键盘响应事件存在问题，具体见：http://z632922970z.blog.163.com/blog/static/16316610320112245372844/
     double zoomUpRate;//放大倍率
     double zoomDownRate;//缩小倍率
+
     QCursor bigCursor;//放大镜鼠标样式
     QCursor smallCursor;//缩小镜鼠标样式
+    QCursor pencilCursor;//铅笔鼠标样式
+    QCursor eraserCursor;//橡皮鼠标样式
+    QCursor forbiddenCursor;//禁止鼠标样式
 };
 
 #endif // MYGRAPHICSVIEW_H
