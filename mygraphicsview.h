@@ -39,6 +39,7 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
     void keyReleaseEvent(QKeyEvent *event);
+    void actionHandDrag(QMouseEvent *event,QPointF point);
 
 private:
     ActionName currentActionName = Default;//记录当前选中的工具
