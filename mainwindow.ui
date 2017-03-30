@@ -476,10 +476,10 @@
     </property>
     <addaction name="Open"/>
     <addaction name="Save"/>
-    <addaction name="Recall"/>
-    <addaction name="recovery"/>
+    <addaction name="Undo"/>
+    <addaction name="Redo"/>
     <addaction name="separator"/>
-    <addaction name="settings"/>
+    <addaction name="Settings"/>
     <addaction name="Exit"/>
    </widget>
    <widget class="QMenu" name="ToolMenu">
@@ -523,10 +523,10 @@
     <bool>false</bool>
    </attribute>
    <addaction name="Open"/>
-   <addaction name="settings"/>
+   <addaction name="Settings"/>
    <addaction name="Save"/>
-   <addaction name="Recall"/>
-   <addaction name="recovery"/>
+   <addaction name="Undo"/>
+   <addaction name="Redo"/>
   </widget>
   <widget class="QToolBar" name="editToolBar">
    <property name="windowTitle">
@@ -610,7 +610,7 @@
     <string>Ctrl+S</string>
    </property>
   </action>
-  <action name="Recall">
+  <action name="Undo">
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/back.png</normaloff>:/myIcons/icon/back.png</iconset>
@@ -731,7 +731,7 @@
     <string>Ctrl+F</string>
    </property>
   </action>
-  <action name="recovery">
+  <action name="Redo">
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/forward.png</normaloff>:/myIcons/icon/forward.png</iconset>
@@ -743,7 +743,7 @@
     <string>Ctrl+D</string>
    </property>
   </action>
-  <action name="settings">
+  <action name="Settings">
    <property name="icon">
     <iconset resource="myresources.qrc">
      <normaloff>:/myIcons/icon/config.png</normaloff>:/myIcons/icon/config.png</iconset>

@@ -7,10 +7,6 @@ MySlider::MySlider(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // 连接信号槽（相互改变）
-    connect(ui->spinBox, SIGNAL(valueChanged(int)), ui->Slider, SLOT(setValue(int)));
-    connect(ui->Slider, SIGNAL(valueChanged(int)), ui->spinBox, SLOT(setValue(int)));
-
     int Min = 1;
     int Max = 50;
     int SingleStep = 1;
@@ -31,6 +27,11 @@ MySlider::MySlider(QWidget *parent) :
     ui->Slider->setTickPosition(QSlider::TicksAbove);//设置刻度显示位置
     ui->Slider->setSingleStep(SingleStep);//设置步长，即移动的变化量
     ui->Slider->setValue(1);//设置初始值
+
+    // 连接信号槽（相互改变）
+    connect(ui->spinBox, SIGNAL(valueChanged(int)), ui->Slider, SLOT(setValue(int)));
+    connect(ui->Slider, SIGNAL(valueChanged(int)), ui->spinBox, SLOT(setValue(int)));
+    connect(ui->Slider,SIGNAL(valueChanged(int)),this,SIGNAL(valueChanged(int)));
 }
 
 MySlider::~MySlider()

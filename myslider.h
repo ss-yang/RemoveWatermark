@@ -15,6 +15,9 @@ public:
     explicit MySlider(QWidget *parent = 0);
     ~MySlider();
 
+signals:
+    void valueChanged(int value);
+
 private:
     Ui::MySlider *ui;
 };

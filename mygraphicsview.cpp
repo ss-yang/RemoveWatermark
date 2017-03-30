@@ -19,6 +19,9 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     this->zoomUpRate=1.5;//默认的放大倍率，预计从设置中更改
     this->zoomDownRate=0.75;//默认的缩小倍率
 
+    pencilPen = QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);//参数为：画刷，线宽，画笔风格，画笔端点，画笔连接风格
+    eraserPen = QPen(Qt::white, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
     QPixmap bigGlassesPixmap(":/myIcons/icon/bigGlasses.png");
     bigCursor =QCursor(bigGlassesPixmap);
     QPixmap smallGlassesPixmap(":/myIcons/icon/smallGlasses.png");
@@ -62,11 +65,11 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
                 setCursor(eraserCursor);
                 break;
             }
-            case bigGlasses:{
+            case BigGlasses:{
                 setCursor(bigCursor);
                 break;
             }
-            case smallGlasses:{
+            case SmallGlasses:{
                 setCursor(smallCursor);
                 break;
             }
@@ -168,14 +171,14 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
         return;
     }
     //当为放大镜工具时，点击放大
-    if(this->currentActionName == bigGlasses) {
+    if(this->currentActionName == BigGlasses) {
         if(this->isZoomUp){
             this->centerOn(this->mapToScene(event->pos()));
             emit zoomUpPressed();//放大
         }
     }
     //当为缩小工具时，点击缩小
-    if(this->currentActionName == smallGlasses) {
+    if(this->currentActionName == SmallGlasses) {
         if(!this->isZoomUp) {
             this->centerOn(this->mapToScene(event->pos()));
             emit zoomDownPressed();//缩小
@@ -229,10 +232,10 @@ void MyGraphicsView::keyPressEvent(QKeyEvent *event){
         return;
     }
     //当为放大镜工具时，按下control则变为缩小工具
-    if(this->currentActionName == bigGlasses) {
+    if(this->currentActionName == BigGlasses) {
         if(event->key()== Qt::Key_Control){
             if(isZoomUp) {//这里是真正按下触发的事件
-                this->currentActionName = smallGlasses;
+                this->currentActionName = SmallGlasses;
                 emit glassesChanged(false);
                 setCursor(smallCursor);
             }
@@ -255,10 +258,10 @@ void MyGraphicsView::keyReleaseEvent(QKeyEvent *event){
         return;
     }
     //当为缩小工具时，松开control则变为放大镜工具
-    if(this->currentActionName == smallGlasses) {
+    if(this->currentActionName == SmallGlasses) {
         if(event->key()== Qt::Key_Control){
             if(!isZoomUp) {//这里是真正松开触发的事件
-                this->currentActionName = bigGlasses;
+                this->currentActionName = BigGlasses;
                 emit glassesChanged(true);
                 setCursor(bigCursor);
             }
@@ -303,9 +306,45 @@ void MyGraphicsView::zoomDown(){
 void MyGraphicsView::setGlasses(bool flag)
 {
     if(flag) {
-        this->currentActionName = bigGlasses;
+        this->currentActionName = BigGlasses;
     }else{
-        this->currentActionName = smallGlasses;
+        this->currentActionName = SmallGlasses;
     }
     this->isZoomUp = flag;
+}
+
+/**
+ * @brief MyGraphicsView::setPencilColor
+ * @param color
+ * 设置铅笔工具颜色
+ */
+void MyGraphicsView::setPencilColor(QColor color){
+    pencilPen.setColor(color);
+}
+
+/**
+ * @brief MyGraphicsView::serEraserColor
+ * @param color
+ * 设置橡皮工具颜色
+ */
+void MyGraphicsView::setEraserColor(QColor color){
+    eraserPen.setColor(color);
+}
+
+/**
+ * @brief MyGraphicsView::setPencilWidth
+ * @param width
+ * 设置铅笔工具线宽
+ */
+void MyGraphicsView::setPencilWidth(int width){
+    pencilPen.setWidth(width);
+}
+
+/**
+ * @brief MyGraphicsView::setEraserWidth
+ * @param width
+ * 设置橡皮工具线宽
+ */
+void MyGraphicsView::setEraserWidth(int width){
+    eraserPen.setWidth(width);
 }

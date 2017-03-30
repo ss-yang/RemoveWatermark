@@ -6,8 +6,6 @@
 #include <myslider.h>
 
 #include <QMainWindow>
-#include <QtCore>
-#include <QtGui>
 #include <QFileSystemModel>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>

@@ -6,13 +6,15 @@
 #include <QString>
 #include <QPointF>
 #include <QCursor>
+#include <QPen>
+#include <QColor>
 
 class MyGraphicsView : public QGraphicsView
 {
      Q_OBJECT
 
 public:
-    enum ActionName{Pencil, Eraser, bigGlasses, smallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default, Forbidden};
+    enum ActionName{Pencil, Eraser, BigGlasses, SmallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default, Forbidden};
 
     MyGraphicsView(QWidget *parent);
 
@@ -28,6 +30,10 @@ public slots:
     void zoomDown();
     void setActionName(ActionName actionName);
     void setGlasses(bool flag);//改变放大镜工具状态
+    void setPencilColor(QColor color);//设置铅笔工具颜色
+    void setEraserColor(QColor color);//设置橡皮工具颜色
+    void setPencilWidth(int width);//设置铅笔工具线宽
+    void setEraserWidth(int width);//设置橡皮工具线宽
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
@@ -55,6 +61,9 @@ private:
     QCursor pencilCursor;//铅笔鼠标样式
     QCursor eraserCursor;//橡皮鼠标样式
     QCursor forbiddenCursor;//禁止鼠标样式
+
+    QPen pencilPen;//铅笔工具
+    QPen eraserPen;//橡皮工具
 };
 
 #endif // MYGRAPHICSVIEW_H
