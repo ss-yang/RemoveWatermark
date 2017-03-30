@@ -79,39 +79,7 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
             }
             case ClosedHand:{//抓手工具移动时改变滑轮位置，
                 setCursor(Qt::ClosedHandCursor);
-                if (!(event->buttons() & Qt::LeftButton)){break;}//当左键没有按住时拖动则跳过
-               //if ((point - startPoint).manhattanLength() < QApplication::startDragDistance()){break;}//移开一段距离后再进行拖动，但会有延迟感所以注释
-                int Ex = point.x() - this->startPoint.x();//鼠标移动到鼠标点击处的横轴距离
-                int Ey = point.y() - this->startPoint.y();//鼠标移动到鼠标点击处的纵轴距离
-                int length;
-                length = this->startPointHorValue - Ex;
-                if(Ex >= 0) {
-                    if(length > this->horizontalScrollBar()->minimum()){
-                        this->horizontalScrollBar()->setValue(length);
-                    }else{
-                        this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->minimum());
-                    }
-                }else{
-                    if(length < this->horizontalScrollBar()->maximum()) {
-                        this->horizontalScrollBar()->setValue(length);
-                    }else {
-                        this->horizontalScrollBar()->setValue(this->horizontalScrollBar()->maximum());
-                    }
-                }
-                length = this->startPointVerValue - Ey;
-                if(Ey >= 0) {
-                    if(length > this->verticalScrollBar()->minimum()){
-                        this->verticalScrollBar()->setValue(length);
-                    }else{
-                        this->verticalScrollBar()->setValue(this->verticalScrollBar()->minimum());
-                    }
-                }else{
-                    if(length < this->verticalScrollBar()->maximum()) {
-                        this->verticalScrollBar()->setValue(length);
-                    }else {
-                        this->verticalScrollBar()->setValue(this->verticalScrollBar()->maximum());
-                    }
-                }
+                actionHandDrag(event,point);//拖动图片
                 break;
             }
             case RectSelect:{
@@ -347,4 +315,16 @@ void MyGraphicsView::setPencilWidth(int width){
  */
 void MyGraphicsView::setEraserWidth(int width){
     eraserPen.setWidth(width);
+}
+
+/**
+ * @brief MyGraphicsView::actionHandDrag
+ * 拖动图片
+ */
+void MyGraphicsView::actionHandDrag(QMouseEvent *event,QPointF point){
+    if (!(event->buttons() & Qt::LeftButton)){return;}//当左键没有按住时拖动则跳过
+    int Ex = point.x() - this->startPoint.x();//鼠标移动到鼠标点击处的横轴距离
+    int Ey = point.y() - this->startPoint.y();//鼠标移动到鼠标点击处的纵轴距离
+    this->horizontalScrollBar()->setValue(horizontalScrollBar()->value()-Ex);
+    this->verticalScrollBar()->setValue(verticalScrollBar()->value()-Ey);
 }
