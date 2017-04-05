@@ -4,6 +4,7 @@
 #include <mygraphicsview.h>
 #include <mylabel.h>
 #include <myslider.h>
+#include "mypixmapitem.h"
 
 #include <QMainWindow>
 #include <QFileSystemModel>
@@ -66,6 +67,8 @@ private slots:
     void changeForeColor();//改变前景色
     void changeBackColor();//改变背景色
 
+    void on_Save_triggered();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemModel *markedImageModel;
@@ -73,9 +76,9 @@ private:
     QPixmap oriPixmap;
     QPixmap currentPixmap;
     QGraphicsScene *oriScence;
-    QGraphicsPixmapItem *oriPixmapItem;
+    MyPixmapItem *oriPixmapItem;
     QGraphicsScene *currentScence;
-    QGraphicsPixmapItem *currentPixmapItem;
+    MyPixmapItem *currentPixmapItem;
 
     QPalette palette;//调色板
 

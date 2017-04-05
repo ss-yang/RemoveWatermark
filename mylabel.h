@@ -16,7 +16,7 @@ signals:
     void changeColor();
 
 protected:
-    void mousePressEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *);
 };
 
 #endif // MYLABEL_H

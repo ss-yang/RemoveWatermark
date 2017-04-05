@@ -10,7 +10,6 @@
 #include <QFile>
 #include <QDir>
 #include <QFileDialog>
-#include <QImage>
 #include <QPixmap>
 #include <QPoint>
 #include <QPointF>
@@ -166,13 +165,19 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         ui->ImageSizeLabel->setText(width.setNum(oriPixmap.width()) + " × " + height.setNum(oriPixmap.height()) + " 像素");
         //视图栏显示图片
         oriScence = new QGraphicsScene;
-        oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
+        oriPixmapItem = new MyPixmapItem();
+        oriPixmapItem->setPixmap(oriPixmap);
         oriScence->addItem(oriPixmapItem);
+        ui->OriImageGraphicsView->setPixmap(oriPixmap);
+        ui->OriImageGraphicsView->setPixmapItem(oriPixmapItem);
         ui->OriImageGraphicsView->setScene(oriScence);
         ui->OriImageGraphicsView->show();
         currentScence = new QGraphicsScene;
-        currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
+        currentPixmapItem = new MyPixmapItem();
+        currentPixmapItem->setPixmap(currentPixmap);
         currentScence->addItem(currentPixmapItem);
+        ui->CurrentImageGraphicsView->setPixmap(currentPixmap);
+        ui->CurrentImageGraphicsView->setPixmapItem(currentPixmapItem);
         ui->CurrentImageGraphicsView->setScene(currentScence);
         ui->CurrentImageGraphicsView->show();
     }
@@ -434,3 +439,11 @@ void MainWindow::changeBackColor()
     ui->CurrentImageGraphicsView->setEraserColor(color);//设置编辑视图中橡皮工具颜色
 }
 
+/**
+ * @brief MainWindow::on_Save_triggered
+ * 保存当前的图片
+ */
+void MainWindow::on_Save_triggered()
+{
+    currentPixmapItem->saveCurrentPixmap("");
+}

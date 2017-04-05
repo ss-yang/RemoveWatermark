@@ -27,12 +27,16 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     mygraphicsview.cpp \
     mylabel.cpp \
-    myslider.cpp
+    myslider.cpp \
+    mypixmapitem.cpp \
+    myline.cpp
 
 HEADERS  += mainwindow.h \
     mygraphicsview.h \
     mylabel.h \
-    myslider.h
+    myslider.h \
+    mypixmapitem.h \
+    myline.h
 
 FORMS    += mainwindow.ui \
     myslider.ui

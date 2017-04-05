@@ -1,6 +1,9 @@
 #ifndef MYGRAPHICSVIEW_H
 #define MYGRAPHICSVIEW_H
 
+#include "myline.h"
+#include "mypixmapitem.h"
+
 #include <QGraphicsView>
 #include <QMouseEvent>
 #include <QString>
@@ -8,6 +11,9 @@
 #include <QCursor>
 #include <QPen>
 #include <QColor>
+#include <QGraphicsPixmapItem>
+#include <QPixmap>
+#include <QStack>
 
 class MyGraphicsView : public QGraphicsView
 {
@@ -17,6 +23,7 @@ public:
     enum ActionName{Pencil, Eraser, BigGlasses, SmallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default, Forbidden};
 
     MyGraphicsView(QWidget *parent);
+    ~MyGraphicsView();
 
 signals:
     void mouseMovetriggerSignal(QString location);
@@ -34,6 +41,8 @@ public slots:
     void setEraserColor(QColor color);//设置橡皮工具颜色
     void setPencilWidth(int width);//设置铅笔工具线宽
     void setEraserWidth(int width);//设置橡皮工具线宽
+    void setPixmap(QPixmap &map);//设置当前的图片
+    void setPixmapItem(MyPixmapItem* item);//设置当前scene中的图片项
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
@@ -45,6 +54,7 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
     void keyReleaseEvent(QKeyEvent *event);
+
     void actionHandDrag(QMouseEvent *event,QPointF point);
 
 private:
@@ -56,6 +66,7 @@ private:
     bool isZoomUp;//标记放大缩小的状态，使用的原因是QT的键盘响应事件存在问题，具体见：http://z632922970z.blog.163.com/blog/static/16316610320112245372844/
     double zoomUpRate;//放大倍率
     double zoomDownRate;//缩小倍率
+    bool isPressed;//标记鼠标左键是否被按下
 
     QCursor bigCursor;//放大镜鼠标样式
     QCursor smallCursor;//缩小镜鼠标样式
@@ -65,6 +76,11 @@ private:
 
     QPen pencilPen;//铅笔工具
     QPen eraserPen;//橡皮工具
+
+    QPixmap pixmap;//当前图片
+    MyPixmapItem *pixmapItem;//当前scene中的图片项
+
+    MyLine *currentLine;//铅笔/橡皮工具当前所指向的点
 };
 
 #endif // MYGRAPHICSVIEW_H
