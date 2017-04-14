@@ -28,15 +28,13 @@ SOURCES += main.cpp\
     mygraphicsview.cpp \
     mylabel.cpp \
     myslider.cpp \
-    mypixmapitem.cpp \
-    myline.cpp
+    opencvtool.cpp
 
 HEADERS  += mainwindow.h \
     mygraphicsview.h \
     mylabel.h \
     myslider.h \
-    mypixmapitem.h \
-    myline.h
+    opencvtool.h
 
 FORMS    += mainwindow.ui \
     myslider.ui

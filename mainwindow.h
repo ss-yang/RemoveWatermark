@@ -1,10 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <opencvtool.h>
+
 #include <mygraphicsview.h>
 #include <mylabel.h>
 #include <myslider.h>
-#include "mypixmapitem.h"
 
 #include <QMainWindow>
 #include <QFileSystemModel>
@@ -76,9 +77,9 @@ private:
     QPixmap oriPixmap;
     QPixmap currentPixmap;
     QGraphicsScene *oriScence;
-    MyPixmapItem *oriPixmapItem;
+    QGraphicsPixmapItem *oriPixmapItem;
     QGraphicsScene *currentScence;
-    MyPixmapItem *currentPixmapItem;
+    QGraphicsPixmapItem *currentPixmapItem;
 
     QPalette palette;//调色板
 
@@ -86,6 +87,8 @@ private:
 
     MySlider *thicknessSlider;//粗细设置控件
     QAction *thicknessAction;//粗细设置action
+
+    OpenCVTool opencvtool;
 };
 
 #endif // MAINWINDOW_H

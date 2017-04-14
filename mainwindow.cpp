@@ -53,7 +53,7 @@ MainWindow::MainWindow(QWidget *parent) :
     markedImageModel->setFilter(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files);
 
     QStringList filter;
-    filter<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.jpeg"<<"*.gif"<<"*.JPG"<<"*.PNG"<<"*.BMP"<<"*.JPEG"<<"*.GIF";
+    filter<<"*.jpg"<<"*.png"<<"*.bmp"<<"*.jpeg"<<"*.JPG"<<"*.PNG"<<"*.BMP"<<"*.JPEG";
 
     markedImageModel->setNameFilters(filter);//过滤非指定类型
     markedImageModel->setNameFilterDisables(false);//隐藏被过滤的文件，没有此句的话不符合指定类型的文件以灰色不可选显示
@@ -86,6 +86,12 @@ MainWindow::MainWindow(QWidget *parent) :
     thicknessSlider = new MySlider(this);
     thicknessAction = ui->extraToolBar->addWidget(thicknessSlider);
 
+    /**
+     * 初始化OpenCV工具类
+     */
+    opencvtool = OpenCVTool();
+
+
     //当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
     QObject::connect(ui->OriImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
     QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
@@ -113,8 +119,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->OriImageGraphicsView,SIGNAL(glassesChanged(bool)),ui->CurrentImageGraphicsView,SLOT(setGlasses(bool)));
     QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(glassesChanged(bool)),ui->OriImageGraphicsView,SLOT(setGlasses(bool)));
     //当粗细发生改变时，同步改变铅笔和橡皮的粗细
-    QObject::connect(thicknessSlider,SIGNAL(valueChanged(int)),ui->CurrentImageGraphicsView,SLOT(setPencilWidth(int)));
-    QObject::connect(thicknessSlider,SIGNAL(valueChanged(int)),ui->CurrentImageGraphicsView,SLOT(setEraserWidth(int)));
+    QObject::connect(thicknessSlider,SIGNAL(valueChanged(int)),ui->CurrentImageGraphicsView,SLOT(setWidth(int)));
 }
 
 MainWindow::~MainWindow()
@@ -160,23 +165,23 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
     }else if(!oriPixmap.load(path) || !currentPixmap.load(path)){//是图片则读取图片显示
         QMessageBox::warning(this,"提示","打开图像失败！");
     }else {
+        Mat mat = imread((const char *)path.toLocal8Bit(), 1);
+        oriPixmap = opencvtool.MatToPixmap(mat);
+        currentPixmap = opencvtool.MatToPixmap(mat);
+        ui->CurrentImageGraphicsView->setCurrentMat(mat);
         QString width,height;
         //更新状态栏图片大小信息
         ui->ImageSizeLabel->setText(width.setNum(oriPixmap.width()) + " × " + height.setNum(oriPixmap.height()) + " 像素");
         //视图栏显示图片
         oriScence = new QGraphicsScene;
-        oriPixmapItem = new MyPixmapItem();
-        oriPixmapItem->setPixmap(oriPixmap);
+        oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
         oriScence->addItem(oriPixmapItem);
-        ui->OriImageGraphicsView->setPixmap(oriPixmap);
         ui->OriImageGraphicsView->setPixmapItem(oriPixmapItem);
         ui->OriImageGraphicsView->setScene(oriScence);
         ui->OriImageGraphicsView->show();
         currentScence = new QGraphicsScene;
-        currentPixmapItem = new MyPixmapItem();
-        currentPixmapItem->setPixmap(currentPixmap);
+        currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
         currentScence->addItem(currentPixmapItem);
-        ui->CurrentImageGraphicsView->setPixmap(currentPixmap);
         ui->CurrentImageGraphicsView->setPixmapItem(currentPixmapItem);
         ui->CurrentImageGraphicsView->setScene(currentScence);
         ui->CurrentImageGraphicsView->show();
@@ -186,7 +191,7 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
 /**
  * @brief MainWindow::on_SaveImageListView_doubleClicked
  * @param index
- * 保存图片列表双击打开目录=
+ * 保存图片列表双击打开目录
  */
 void MainWindow::on_SaveImageListView_doubleClicked(const QModelIndex &index)
 {
@@ -445,5 +450,5 @@ void MainWindow::changeBackColor()
  */
 void MainWindow::on_Save_triggered()
 {
-    currentPixmapItem->saveCurrentPixmap("");
+
 }

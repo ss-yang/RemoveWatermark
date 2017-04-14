@@ -1,8 +1,11 @@
 #ifndef MYGRAPHICSVIEW_H
 #define MYGRAPHICSVIEW_H
 
-#include "myline.h"
-#include "mypixmapitem.h"
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core/core.hpp>
+
+#include <opencvtool.h>
 
 #include <QGraphicsView>
 #include <QMouseEvent>
@@ -15,6 +18,8 @@
 #include <QPixmap>
 #include <QStack>
 
+using namespace cv;
+
 class MyGraphicsView : public QGraphicsView
 {
      Q_OBJECT
@@ -24,6 +29,9 @@ public:
 
     MyGraphicsView(QWidget *parent);
     ~MyGraphicsView();
+
+    inline void clearUndoStack();//清空撤销区
+    inline void clearRedoStack();//清空恢复区
 
 signals:
     void mouseMovetriggerSignal(QString location);
@@ -39,10 +47,9 @@ public slots:
     void setGlasses(bool flag);//改变放大镜工具状态
     void setPencilColor(QColor color);//设置铅笔工具颜色
     void setEraserColor(QColor color);//设置橡皮工具颜色
-    void setPencilWidth(int width);//设置铅笔工具线宽
-    void setEraserWidth(int width);//设置橡皮工具线宽
-    void setPixmap(QPixmap &map);//设置当前的图片
-    void setPixmapItem(MyPixmapItem* item);//设置当前scene中的图片项
+    void setWidth(int width);//设置线宽
+    void setPixmapItem(QGraphicsPixmapItem* item);//设置当前scene中的图片项
+    void setCurrentMat(Mat& m);//设置当前的Mat
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
@@ -73,14 +80,18 @@ private:
     QCursor pencilCursor;//铅笔鼠标样式
     QCursor eraserCursor;//橡皮鼠标样式
     QCursor forbiddenCursor;//禁止鼠标样式
+    QPixmap pixmap;//当前的图片Pixmap
+    QGraphicsPixmapItem *pixmapItem;//当前scene中的图片项
 
-    QPen pencilPen;//铅笔工具
-    QPen eraserPen;//橡皮工具
+    Mat currentMat;//当前的图片Mat
+    int thickness;//画笔粗细
+    Scalar pencilColor;//铅笔颜色
+    Scalar eraserColor;//橡皮颜色
 
-    QPixmap pixmap;//当前图片
-    MyPixmapItem *pixmapItem;//当前scene中的图片项
+    QStack<QPixmap> undoStack;//撤销
+    QStack<QPixmap> redoStack;//恢复
 
-    MyLine *currentLine;//铅笔/橡皮工具当前所指向的点
+    OpenCVTool opencvTool;//Opencv工具类
 };
 
 #endif // MYGRAPHICSVIEW_H

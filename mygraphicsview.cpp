@@ -22,9 +22,6 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     this->zoomDownRate=0.75;//默认的缩小倍率
     this->isPressed = false;//默认鼠标左键没有被按下
 
-    pencilPen = QPen(Qt::black, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);//参数为：画刷，线宽，画笔风格，画笔端点，画笔连接风格
-    eraserPen = QPen(Qt::white, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
-
     QPixmap bigGlassesPixmap(":/myIcons/icon/bigGlasses.png");
     bigCursor =QCursor(bigGlassesPixmap);
     QPixmap smallGlassesPixmap(":/myIcons/icon/smallGlasses.png");
@@ -35,10 +32,40 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     eraserCursor =QCursor(eraserPixmap);
     QPixmap forbiddenPixmap(":/myIcons/icon/forbidden.png");
     forbiddenCursor =QCursor(forbiddenPixmap);
+
+    opencvTool = OpenCVTool();//初始化工具类
+    thickness = 1;//初始化画笔粗细
+    pencilColor = Scalar(0,0,0);//初始化铅笔颜色 黑色
+    eraserColor = Scalar(255,255,255);//初始化橡皮颜色 白色
+
 }
 
 MyGraphicsView::~MyGraphicsView(){
     delete pixmapItem;
+}
+
+/**
+ * @brief MyGraphicsView::clearUndoStack
+ * 清空撤销区
+ */
+inline void MyGraphicsView::clearUndoStack()
+{
+    while(!undoStack.empty())
+    {
+        undoStack.pop();
+    }
+}
+
+/**
+ * @brief MyGraphicsView::clearRedoStack
+ * 清空恢复区
+ */
+inline void MyGraphicsView::clearRedoStack()
+{
+    while(!redoStack.empty())
+    {
+        redoStack.pop();
+    }
 }
 
 /**
@@ -55,7 +82,7 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
     QPointF point = this->pixmapItem->mapFromScene(this->mapToScene(event->pos()));
     QString location;
     //检测鼠标是否在图片范围内
-    if(point.x() >= 0 && point.x() <= this->pixmap.width() && point.y() >= 0 && point.y() <= this->pixmap.height()) {
+    if(point.x() >= 0 && point.x() <= this->pixmapItem->pixmap().width() && point.y() >= 0 && point.y() <= this->pixmapItem->pixmap().height()) {
         //坐标强制转为整型，从而使得缩小放大时不会显示亚像素位置
         location = QString::number((int)point.x()) + " , " + QString::number((int)point.y()) + " 像素";
         //检测当前所使用的工具类型，然后动态改变鼠标样式
@@ -64,14 +91,11 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
             case Pencil:{
                 setCursor(pencilCursor);
                 if(isPressed) {
-                    currentLine = new MyLine();
-                    currentLine->setPen(pencilPen);
-                    startPoint = endPoint;
-                    endPoint = point;
-                    currentLine->setStartPoint(startPoint);
-                    currentLine->setEndPoint(endPoint);
-                    pixmapItem->undoStack.push(currentLine);
+                    opencvTool.drawLine(currentMat, startPoint.toPoint(), point.toPoint(), pencilColor, thickness);
+                    pixmap = opencvTool.MatToPixmap(currentMat);
+                    pixmapItem->setPixmap(pixmap);
                     pixmapItem->update();
+                    startPoint = point;
                 }
                 break;
             }
@@ -142,7 +166,7 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
     //获得鼠标移动时，当前所指图片中的像素位置
     QPointF point = this->pixmapItem->mapFromScene(this->mapToScene(event->pos()));
     //检测鼠标是否在图片范围内
-    if(point.x() >= 0 && point.x() <= this->pixmap.width() && point.y() >= 0 && point.y() <= this->pixmap.height()) {
+    if(point.x() >= 0 && point.x() <= this->pixmapItem->pixmap().width() && point.y() >= 0 && point.y() <= this->pixmapItem->pixmap().height()) {
         this->startPoint = point;
         this->startPointHorValue = this->horizontalScrollBar()->value();
         this->startPointVerValue = this->verticalScrollBar()->value();
@@ -167,22 +191,12 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
     this->isPressed = true;
     if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
         //当铅笔工具或橡皮工具开心新的操作时，则清空恢复区
-        pixmapItem->clearRedoStack();
-        //制造间隔点
-        currentLine = new MyLine();
-        currentLine->setPen(QPen(Qt::white));
-        currentLine->setStartPoint(QPoint(0,0));
-        currentLine->setEndPoint(QPoint(0,0));
-        pixmapItem->undoStack.push(currentLine);
-
+        clearRedoStack();
         //当为铅笔工具时，前景色画点
         if(this->currentActionName == Pencil) {
-            currentLine = new MyLine();
-            currentLine->setPen(pencilPen);
-            currentLine->setStartPoint(point);
-            currentLine->setEndPoint(point);
-            endPoint = startPoint;
-            pixmapItem->undoStack.push(currentLine);
+            opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
+            pixmap = opencvTool.MatToPixmap(currentMat);
+            pixmapItem->setPixmap(pixmap);
             pixmapItem->update();
         }
 
@@ -212,22 +226,14 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
     //获得鼠标移动时，当前所指图片中的像素位置
     QPointF point = this->pixmapItem->mapFromScene(this->mapToScene(event->pos()));
     //检测鼠标是否在图片范围内
-    if(point.x() >= 0 && point.x() <= this->pixmap.width() && point.y() >= 0 && point.y() <= this->pixmap.height()) {
+    if(point.x() >= 0 && point.x() <= this->pixmapItem->pixmap().width() && point.y() >= 0 && point.y() <= this->pixmapItem->pixmap().height()) {
         this->endPoint = point;
     }else {
         return;
     }
     this->isPressed = false;//设置鼠标左键被按下
     if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
-        //当为铅笔工具时，制造间隔点
-        if(this->currentActionName == Pencil) {
-            currentLine = new MyLine();
-            currentLine->setPen(QPen(Qt::white));
-            currentLine->setStartPoint(QPoint(0,0));
-            currentLine->setEndPoint(QPoint(0,0));
-            pixmapItem->undoStack.push(currentLine);
-            pixmapItem->update();
-        }
+
     }
 }
 
@@ -332,7 +338,7 @@ void MyGraphicsView::setGlasses(bool flag)
  * 设置铅笔工具颜色
  */
 void MyGraphicsView::setPencilColor(QColor color){
-    pencilPen.setColor(color);
+    pencilColor = Scalar(color.blue(), color.green(), color.red());
 }
 
 /**
@@ -341,26 +347,18 @@ void MyGraphicsView::setPencilColor(QColor color){
  * 设置橡皮工具颜色
  */
 void MyGraphicsView::setEraserColor(QColor color){
-    eraserPen.setColor(color);
+    eraserColor = Scalar(color.blue(), color.green(), color.red());
 }
 
 /**
  * @brief MyGraphicsView::setPencilWidth
  * @param width
- * 设置铅笔工具线宽
+ * 设置线宽
  */
-void MyGraphicsView::setPencilWidth(int width){
-    pencilPen.setWidth(width);
+void MyGraphicsView::setWidth(int width){
+    thickness = width;
 }
 
-/**
- * @brief MyGraphicsView::setEraserWidth
- * @param width
- * 设置橡皮工具线宽
- */
-void MyGraphicsView::setEraserWidth(int width){
-    eraserPen.setWidth(width);
-}
 
 /**
  * @brief MyGraphicsView::actionHandDrag
@@ -375,19 +373,20 @@ void MyGraphicsView::actionHandDrag(QMouseEvent *event,QPointF point){
 }
 
 /**
- * @brief MyGraphicsView::setPixmap
- * @param map
- * 设置当前的图片
- */
-void MyGraphicsView::setPixmap(QPixmap &map){
-    this->pixmap = map;
-}
-
-/**
  * @brief setPixmapItem
  * @param item
  * 设置当前scene中的图片项
  */
-void MyGraphicsView::setPixmapItem(MyPixmapItem *item){
+void MyGraphicsView::setPixmapItem(QGraphicsPixmapItem *item){
     this->pixmapItem = item;
+}
+
+/**
+ * @brief MyGraphicsView::setCurrentMat
+ * @param m
+ * 设置当前的Mat
+ */
+void MyGraphicsView::setCurrentMat(Mat &m)
+{
+    currentMat = m;
 }
