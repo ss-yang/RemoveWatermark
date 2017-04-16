@@ -39,13 +39,21 @@ HEADERS  += mainwindow.h \
 FORMS    += mainwindow.ui \
     myslider.ui
 
-INCLUDEPATH += E:\opencv_QT\include\opencv\
+#INCLUDEPATH += E:\opencv_QT\include\opencv\
 
-INCLUDEPATH += E:\opencv_QT\include\opencv2\
+#INCLUDEPATH += E:\opencv_QT\include\opencv2\
 
-INCLUDEPATH += E:\opencv_QT\include\
+#INCLUDEPATH += E:\opencv_QT\include\
 
-LIBS += -L E:\opencv_QT\lib\libopencv_*.a
+#LIBS += -L E:\opencv_QT\lib\libopencv_*.a
+
+INCLUDEPATH += F:\QtOpencv\opencv\include\opencv\
+
+INCLUDEPATH += F:\QtOpencv\opencv\include\opencv2\
+
+INCLUDEPATH += F:\QtOpencv\opencv\include
+
+LIBS += -L F:\QtOpencv\opencv\lib\libopencv_*.a
 
 RESOURCES += \ 
 		myresources.qrc

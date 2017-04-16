@@ -14,6 +14,7 @@
 #include <QCursor>
 #include <QPen>
 #include <QColor>
+#include <QGraphicsItem>
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QStack>
@@ -64,6 +65,10 @@ protected:
 
     void actionHandDrag(QMouseEvent *event,QPointF point);
 
+    bool isInsideofRoi(QPointF point);
+
+    void updatePixmapItem();
+
 private:
     ActionName currentActionName = Default;//记录当前选中的工具
     QPointF startPoint;//鼠标点击起始点
@@ -82,6 +87,11 @@ private:
     QCursor forbiddenCursor;//禁止鼠标样式
     QPixmap pixmap;//当前的图片Pixmap
     QGraphicsPixmapItem *pixmapItem;//当前scene中的图片项
+
+    QPixmap roi;//rectSelect工具选择的区域-QPixmap
+    Mat mroi;//rectSelect工具选择的区域-Mat
+    QGraphicsPixmapItem * roiItem;//rectSelect工具选择的区域
+    bool hasSelected;
 
     Mat currentMat;//当前的图片Mat
     int thickness;//画笔粗细

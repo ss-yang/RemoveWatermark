@@ -38,6 +38,9 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     pencilColor = Scalar(0,0,0);//初始化铅笔颜色 黑色
     eraserColor = Scalar(255,255,255);//初始化橡皮颜色 白色
 
+//    roiItem = new QGraphicsPixmapItem;//初始化roiItem
+    hasSelected = false;//默认未选择roi
+
 }
 
 MyGraphicsView::~MyGraphicsView(){
@@ -92,9 +95,7 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
                 setCursor(pencilCursor);
                 if(isPressed) {
                     opencvTool.drawLine(currentMat, startPoint.toPoint(), point.toPoint(), pencilColor, thickness);
-                    pixmap = opencvTool.MatToPixmap(currentMat);
-                    pixmapItem->setPixmap(pixmap);
-                    pixmapItem->update();
+                    updatePixmapItem();
                     startPoint = point;
                 }
                 break;
@@ -153,18 +154,37 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
     if (!(event->button() == Qt::LeftButton)){
         return;
     }
+    //获得鼠标移动时，当前所指图片中的像素位置
+    QPointF point = this->pixmapItem->mapFromScene(this->mapToScene(event->pos()));
     if(this->scene() == NULL){
         this->currentActionName = Default;
         return;
     }
     //如果是抓手工具，则在点击时鼠标变成抓紧的样式
     if(this->currentActionName == OpenHand) {
+        //判断光标是否在选择区域，否则将选择区域roi合成到mat中，更新到pixmap,删除roiItem
+        if(hasSelected){
+            if(!isInsideofRoi(point)){
+                QPoint *a,*b;
+                a = new QPoint(this->roiItem->x(),this->roiItem->y());
+                b = new QPoint(this->roiItem->x() + this->roiItem->pixmap().width(),
+                           this->roiItem->y() + this->roiItem->pixmap().height());
+                Mat tempRoi = opencvTool.selectRoi(currentMat,*a,*b);//移动后的roi
+                Mat mask;
+                cvtColor(mroi, mask, CV_BGR2GRAY);
+                this->mroi.copyTo(tempRoi,mask);
+                imshow("teee",currentMat);
+                roiItem->setSelected(false);
+                this->scene()->removeItem(roiItem);
+                updatePixmapItem();
+            }
+        }
+
+        //改变光标样式
         this->currentActionName = ClosedHand;
         emit actionNameChanged(currentActionName);
         setCursor(Qt::ClosedHandCursor);
     }
-    //获得鼠标移动时，当前所指图片中的像素位置
-    QPointF point = this->pixmapItem->mapFromScene(this->mapToScene(event->pos()));
     //检测鼠标是否在图片范围内
     if(point.x() >= 0 && point.x() <= this->pixmapItem->pixmap().width() && point.y() >= 0 && point.y() <= this->pixmapItem->pixmap().height()) {
         this->startPoint = point;
@@ -195,11 +215,8 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
         //当为铅笔工具时，前景色画点
         if(this->currentActionName == Pencil) {
             opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
-            pixmap = opencvTool.MatToPixmap(currentMat);
-            pixmapItem->setPixmap(pixmap);
-            pixmapItem->update();
+            updatePixmapItem();
         }
-
     }
 
 }
@@ -232,6 +249,25 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
         return;
     }
     this->isPressed = false;//设置鼠标左键被按下
+    //画矩形
+    if(this->currentActionName == RectSelect){
+        mroi = opencvTool.selectRoi(currentMat,startPoint.toPoint(),point.toPoint());
+        roi = opencvTool.MatToPixmap(mroi);
+        roiItem = new QGraphicsPixmapItem;
+        roiItem->setPixmap(roi);
+        roiItem->moveBy(startPoint.x(),startPoint.y());
+        this->scene()->addItem(roiItem);
+        this->scene()->setFocusItem(roiItem);
+        this->scene()->update();
+
+        roiItem->setFlag(QGraphicsItem::ItemIsSelectable);//设置可选
+        roiItem->setFlag(QGraphicsItem::ItemIsMovable);//设置可移动
+        roiItem->setSelected(true);
+        this->hasSelected = true;
+
+        this->currentActionName = OpenHand;//选取完成，切换到抓手工具
+
+    }
     if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
 
     }
@@ -368,8 +404,43 @@ void MyGraphicsView::actionHandDrag(QMouseEvent *event,QPointF point){
     if (!(event->buttons() & Qt::LeftButton)){return;}//当左键没有按住时拖动则跳过
     int Ex = point.x() - this->startPoint.x();//鼠标移动到鼠标点击处的横轴距离
     int Ey = point.y() - this->startPoint.y();//鼠标移动到鼠标点击处的纵轴距离
-    this->horizontalScrollBar()->setValue(horizontalScrollBar()->value()-Ex);
-    this->verticalScrollBar()->setValue(verticalScrollBar()->value()-Ey);
+    if(roiItem == NULL)
+        qDebug()<<"roiItem == NULL";
+    if(isInsideofRoi(point)){
+        //拖动选择区域Roi
+        roiItem->setX(roiItem->x()+Ex);
+        roiItem->setY(roiItem->y()+Ey);
+    }else{
+        //推动Graphicview
+        this->horizontalScrollBar()->setValue(horizontalScrollBar()->value()-Ex);
+        this->verticalScrollBar()->setValue(verticalScrollBar()->value()-Ey);
+    }
+}
+
+/**
+ * @brief MyGraphicsView::isInsideofRoi
+ * @param point
+ * @return true if point inside of roi
+ * 判断当前点是否在Roi选择区域内
+ */
+bool MyGraphicsView::isInsideofRoi(QPointF point)
+{
+    if(point.x()>roiItem->x() && point.x()<point.x() + roiItem->pixmap().width() &&
+            point.y()>roiItem->y() && point.y()<point.y() + roiItem->pixmap().height()){
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief MyGraphicsView::updatePixmapItem
+ * 更新currentMat到PixmapItem
+ */
+void MyGraphicsView::updatePixmapItem()
+{
+    pixmap = opencvTool.MatToPixmap(currentMat);
+    pixmapItem->setPixmap(pixmap);
+    pixmapItem->update();
 }
 
 /**

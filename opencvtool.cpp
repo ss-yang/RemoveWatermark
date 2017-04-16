@@ -59,3 +59,19 @@ void OpenCVTool::drawLine(Mat& img, QPoint pt1, QPoint pt2, const Scalar &color,
     Point ednPoint = Point(pt2.x(), pt2.y());
     line(img, startPoint, ednPoint, color, thickness);
 }
+
+
+/**
+ * @brief OpenCVTool::selectRoi
+ * @param img
+ * @param pt1
+ * @param pt2
+ * 获取感兴趣区域
+ */
+Mat OpenCVTool::selectRoi(Mat &img, QPoint pt1, QPoint pt2)
+{
+    Point startPoint = Point(pt1.x(), pt1.y());
+    Point endPoint = Point(pt2.x(), pt2.y());
+    Mat roi = img(Rect(startPoint.x, startPoint.y, endPoint.x-startPoint.x, endPoint.y-startPoint.y));
+    return roi;
+}
