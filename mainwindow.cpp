@@ -376,7 +376,7 @@ void MainWindow::on_RectSelect_triggered()
 {
     resetAction();
     ui->RectSelect->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::RectSelect);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Forbidden);
     ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::RectSelect);
 }
 
@@ -450,5 +450,5 @@ void MainWindow::changeBackColor()
  */
 void MainWindow::on_Save_triggered()
 {
-
+    currentPixmapItem->pixmap().save("D:eeeddee.bmp");
 }

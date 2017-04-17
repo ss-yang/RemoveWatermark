@@ -72,6 +72,33 @@ Mat OpenCVTool::selectRoi(Mat &img, QPoint pt1, QPoint pt2)
 {
     Point startPoint = Point(pt1.x(), pt1.y());
     Point endPoint = Point(pt2.x(), pt2.y());
-    Mat roi = img(Rect(startPoint.x, startPoint.y, endPoint.x-startPoint.x, endPoint.y-startPoint.y));
+    int gapX = endPoint.x-startPoint.x;
+    int gapY = endPoint.y-startPoint.y;
+
+
+    // 2
+    if(gapY<0 && gapX>0){
+        int temp = startPoint.y;
+        startPoint.y = endPoint.y;
+        endPoint.y = temp;
+    }
+    // 3
+    else if(gapX<0 && gapY<0){
+        Point temp = startPoint;
+        startPoint = endPoint;
+        endPoint = temp;
+    }
+
+    // 4
+    else if(gapX<0 && gapY>0){
+        int temp = startPoint.x;
+        startPoint.x = endPoint.x;
+        endPoint.x = temp;
+    }
+    else if(gapX == 0 || gapY == 0){
+        //invalid
+    }
+    Mat roi = img(Rect(startPoint.x, startPoint.y, endPoint.x - startPoint.x, endPoint.y - startPoint.y));
+
     return roi;
 }

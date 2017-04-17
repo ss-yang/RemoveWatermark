@@ -26,7 +26,7 @@ class MyGraphicsView : public QGraphicsView
      Q_OBJECT
 
 public:
-    enum ActionName{Pencil, Eraser, BigGlasses, SmallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default, Forbidden};
+    enum ActionName{Pencil, Eraser, BigGlasses, SmallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, SelectMove,Default, Forbidden};
 
     MyGraphicsView(QWidget *parent);
     ~MyGraphicsView();
@@ -65,9 +65,12 @@ protected:
 
     void actionHandDrag(QMouseEvent *event,QPointF point);
 
+    void selectMoving(QMouseEvent *event,QPointF point);
+
     bool isInsideofRoi(QPointF point);
 
     void updatePixmapItem();
+
 
 private:
     ActionName currentActionName = Default;//记录当前选中的工具
