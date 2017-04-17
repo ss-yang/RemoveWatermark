@@ -38,6 +38,7 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     pencilColor = Scalar(0,0,0);//初始化铅笔颜色 黑色
     eraserColor = Scalar(255,255,255);//初始化橡皮颜色 白色
 
+    roiIsSelected = false;//默认选择区域为未选中状态
 }
 
 MyGraphicsView::~MyGraphicsView(){
@@ -92,9 +93,7 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
                 setCursor(pencilCursor);
                 if(isPressed) {
                     opencvTool.drawLine(currentMat, startPoint.toPoint(), point.toPoint(), pencilColor, thickness);
-                    pixmap = opencvTool.MatToPixmap(currentMat);
-                    pixmapItem->setPixmap(pixmap);
-                    pixmapItem->update();
+                    updatePixmapItem();
                     startPoint = point;
                 }
                 break;
@@ -126,6 +125,14 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
             }
             case FreeSelect:{
                 setCursor(Qt::CrossCursor);
+                break;
+            }
+            case SelectMove:{
+                if(isInsideOfRoi(point)) {
+                    setCursor(Qt::SizeAllCursor);
+                }else {
+                    setCursor(Qt::CrossCursor);
+                }
                 break;
             }
             case Forbidden:{
@@ -168,8 +175,6 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
     //检测鼠标是否在图片范围内
     if(point.x() >= 0 && point.x() <= this->pixmapItem->pixmap().width() && point.y() >= 0 && point.y() <= this->pixmapItem->pixmap().height()) {
         this->startPoint = point;
-        this->startPointHorValue = this->horizontalScrollBar()->value();
-        this->startPointVerValue = this->verticalScrollBar()->value();
     }else {
         return;
     }
@@ -195,11 +200,8 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
         //当为铅笔工具时，前景色画点
         if(this->currentActionName == Pencil) {
             opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
-            pixmap = opencvTool.MatToPixmap(currentMat);
-            pixmapItem->setPixmap(pixmap);
-            pixmapItem->update();
+            updatePixmapItem();
         }
-
     }
 
 }
@@ -234,6 +236,23 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
     this->isPressed = false;//设置鼠标左键被按下
     if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
 
+    }
+    //如果是矩形选择工具，则画矩形
+    if(this->currentActionName == RectSelect) {
+        roiMat = opencvTool.selectRectRoi(currentMat, startPoint.toPoint(), endPoint.toPoint());
+        roiPixmap = opencvTool.MatToPixmap(roiMat);
+        roiItem = new QGraphicsPixmapItem(roiPixmap);
+        roiItem->moveBy(startPoint.x(), startPoint.y());//设置item的出现位置
+        roiItem->setFlag(QGraphicsItem::ItemIsSelectable);//设置可选
+        roiItem->setFlag(QGraphicsItem::ItemIsMovable);//设置可移动
+        roiItem->setSelected(true);//设置被选中
+        this->roiIsSelected = true;
+        //加入到scene中
+        this->scene()->addItem(roiItem);
+        this->scene()->setFocusItem(roiItem);
+        this->scene()->update();
+        //设置当前的工具
+        this->currentActionName = SelectMove;
     }
 }
 
@@ -362,7 +381,7 @@ void MyGraphicsView::setWidth(int width){
 
 /**
  * @brief MyGraphicsView::actionHandDrag
- * 拖动图片
+ * 抓手移动实现
  */
 void MyGraphicsView::actionHandDrag(QMouseEvent *event,QPointF point){
     if (!(event->buttons() & Qt::LeftButton)){return;}//当左键没有按住时拖动则跳过
@@ -389,4 +408,30 @@ void MyGraphicsView::setPixmapItem(QGraphicsPixmapItem *item){
 void MyGraphicsView::setCurrentMat(Mat &m)
 {
     currentMat = m;
+}
+
+/**
+ * @brief MyGraphicsView::isInsideOfRoi
+ * @param point
+ * @return
+ * 判断鼠标是否在所选区域内
+ */
+bool MyGraphicsView::isInsideOfRoi(QPointF point)
+{
+    if(point.x()>roiItem->x() && point.y()>roiItem->y() && point.x()<(roiItem->x()+roiPixmap.width()) && point.y()<(roiItem->y()+roiPixmap.height()))
+    {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * @brief MyGraphicsView::updatePixmapItem
+ * 更新currentMat到PixmapItem
+ */
+void MyGraphicsView::updatePixmapItem()
+{
+    pixmap = opencvTool.MatToPixmap(currentMat);
+    pixmapItem->setPixmap(pixmap);
+    pixmapItem->update();
 }

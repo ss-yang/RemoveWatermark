@@ -56,6 +56,23 @@ Mat OpenCVTool::PixmapToMat(QPixmap& src)
 void OpenCVTool::drawLine(Mat& img, QPoint pt1, QPoint pt2, const Scalar &color, int thickness)
 {
     Point startPoint = Point(pt1.x(), pt1.y());
-    Point ednPoint = Point(pt2.x(), pt2.y());
-    line(img, startPoint, ednPoint, color, thickness);
+    Point endPoint = Point(pt2.x(), pt2.y());
+    line(img, startPoint, endPoint, color, thickness);
+}
+
+/**
+ * @brief OpenCVTool::selectRoi
+ * @param img
+ * @param pt1
+ * @param pt2
+ * @return
+ * 获取矩形选择区域
+ */
+Mat OpenCVTool::selectRectRoi(Mat &img, QPoint pt1, QPoint pt2)
+{
+    Point startPoint = Point(pt1.x(), pt1.y());
+    Point endPoint = Point(pt2.x(), pt2.y());
+    //rectRoi指向图片中的该区域，共享同一个内存
+    Mat rectRoi = img(Rect(startPoint.x, startPoint.y, endPoint.x - startPoint.x, endPoint.y - startPoint.y));
+    return rectRoi;
 }

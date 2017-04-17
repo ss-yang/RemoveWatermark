@@ -376,7 +376,7 @@ void MainWindow::on_RectSelect_triggered()
 {
     resetAction();
     ui->RectSelect->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::RectSelect);
+    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Forbidden);
     ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::RectSelect);
 }
 

@@ -25,7 +25,7 @@ class MyGraphicsView : public QGraphicsView
      Q_OBJECT
 
 public:
-    enum ActionName{Pencil, Eraser, BigGlasses, SmallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, Default, Forbidden};
+    enum ActionName{Pencil, Eraser, BigGlasses, SmallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, SelectMove, Default, Forbidden};
 
     MyGraphicsView(QWidget *parent);
     ~MyGraphicsView();
@@ -62,14 +62,16 @@ protected:
 
     void keyReleaseEvent(QKeyEvent *event);
 
-    void actionHandDrag(QMouseEvent *event,QPointF point);
+    void actionHandDrag(QMouseEvent *event,QPointF point);//抓手移动实现
+
+    bool isInsideOfRoi(QPointF point);//判断鼠标是否在所选区域内
+
+    void updatePixmapItem();//更新currentMat到PixmapItem
 
 private:
     ActionName currentActionName = Default;//记录当前选中的工具
     QPointF startPoint;//鼠标点击起始点
     QPointF endPoint;//鼠标释放点
-    int startPointHorValue;//鼠标点击时横轴滑轮的位置
-    int startPointVerValue;//鼠标点击时纵轴滑轮的位置
     bool isZoomUp;//标记放大缩小的状态，使用的原因是QT的键盘响应事件存在问题，具体见：http://z632922970z.blog.163.com/blog/static/16316610320112245372844/
     double zoomUpRate;//放大倍率
     double zoomDownRate;//缩小倍率
@@ -85,6 +87,12 @@ private:
 
     Mat currentMat;//当前的图片Mat
     int thickness;//画笔粗细
+
+    QPixmap roiPixmap;//选择工具所选的区域Pixmap
+    Mat roiMat;//选择工具所选的区域Mat
+    QGraphicsPixmapItem *roiItem;//选择工具所选的区域Item
+    bool roiIsSelected;//选择工具所选的区域是否被选中
+
     Scalar pencilColor;//铅笔颜色
     Scalar eraserColor;//橡皮颜色
 
