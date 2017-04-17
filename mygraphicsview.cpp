@@ -100,6 +100,11 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
             }
             case Eraser:{
                 setCursor(eraserCursor);
+                if(isPressed) {
+                    opencvTool.drawLine(currentMat, startPoint.toPoint(), point.toPoint(), eraserColor, thickness);
+                    updatePixmapItem();
+                    startPoint = point;
+                }
                 break;
             }
             case BigGlasses:{
@@ -202,8 +207,12 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
             opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
             updatePixmapItem();
         }
+        //当为橡皮工具时，背景色画点
+        if(this->currentActionName == Eraser) {
+            opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
+            updatePixmapItem();
+        }
     }
-
 }
 
 /**
