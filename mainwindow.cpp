@@ -450,5 +450,5 @@ void MainWindow::changeBackColor()
  */
 void MainWindow::on_Save_triggered()
 {
-
+    currentPixmapItem->pixmap().save("D:eeeddee.bmp");
 }
