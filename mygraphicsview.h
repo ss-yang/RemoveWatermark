@@ -17,6 +17,7 @@
 #include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QStack>
+#include <QPointF>
 
 using namespace cv;
 
@@ -64,9 +65,13 @@ protected:
 
     void actionHandDrag(QMouseEvent *event,QPointF point);//抓手移动实现
 
+    void selectMoving(QMouseEvent *event,QPointF point);//拖动选中区域
+
     bool isInsideOfRoi(QPointF point);//判断鼠标是否在所选区域内
 
     void updatePixmapItem();//更新currentMat到PixmapItem
+
+    void roiToCurrentMat();//将选择的区域合成到图片中
 
 private:
     ActionName currentActionName = Default;//记录当前选中的工具
@@ -91,7 +96,6 @@ private:
     QPixmap roiPixmap;//选择工具所选的区域Pixmap
     Mat roiMat;//选择工具所选的区域Mat
     QGraphicsPixmapItem *roiItem;//选择工具所选的区域Item
-    bool roiIsSelected;//选择工具所选的区域是否被选中
 
     Scalar pencilColor;//铅笔颜色
     Scalar eraserColor;//橡皮颜色

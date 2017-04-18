@@ -1,6 +1,5 @@
 #include "mygraphicsview.h"
 
-#include <QList>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
 #include <QPointF>
@@ -37,8 +36,6 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     thickness = 1;//初始化画笔粗细
     pencilColor = Scalar(0,0,0);//初始化铅笔颜色 黑色
     eraserColor = Scalar(255,255,255);//初始化橡皮颜色 白色
-
-    roiIsSelected = false;//默认选择区域为未选中状态
 }
 
 MyGraphicsView::~MyGraphicsView(){
@@ -135,6 +132,7 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
             case SelectMove:{
                 if(isInsideOfRoi(point)) {
                     setCursor(Qt::SizeAllCursor);
+                    selectMoving(event, this->mapToScene(event->pos()));
                 }else {
                     setCursor(Qt::CrossCursor);
                 }
@@ -199,6 +197,7 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
     }
     //设置鼠标左键被按下
     this->isPressed = true;
+    //当为铅笔或者橡皮工具时
     if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
         //当铅笔工具或橡皮工具开心新的操作时，则清空恢复区
         clearRedoStack();
@@ -211,6 +210,14 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
         if(this->currentActionName == Eraser) {
             opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
             updatePixmapItem();
+        }
+    }
+    //当为工具为selectMove时,判断鼠标点击的位置
+    if(this->currentActionName == SelectMove) {
+        if(!isInsideOfRoi(point)){//判断鼠标是否在区域外，若在则将区域合成到mat中，然后删除roiItem
+            roiToCurrentMat();//将选择的区域合成到图片中
+            updatePixmapItem();
+            this->currentActionName = RectSelect;
         }
     }
 }
@@ -251,11 +258,22 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
         roiMat = opencvTool.selectRectRoi(currentMat, startPoint.toPoint(), endPoint.toPoint());
         roiPixmap = opencvTool.MatToPixmap(roiMat);
         roiItem = new QGraphicsPixmapItem(roiPixmap);
-        roiItem->moveBy(startPoint.x(), startPoint.y());//设置item的出现位置
+
+        QPointF temp = QPointF();
+        if(startPoint.x() > endPoint.x()){
+            temp.setX(endPoint.x());
+        }else{
+            temp.setX(startPoint.x());
+        }
+        if(startPoint.y() > endPoint.y()){
+            temp.setY(endPoint.y());
+        }else{
+            temp.setY(startPoint.y());
+        }
+        roiItem->setPos(temp);//设置位置
         roiItem->setFlag(QGraphicsItem::ItemIsSelectable);//设置可选
         roiItem->setFlag(QGraphicsItem::ItemIsMovable);//设置可移动
         roiItem->setSelected(true);//设置被选中
-        this->roiIsSelected = true;
         //加入到scene中
         this->scene()->addItem(roiItem);
         this->scene()->setFocusItem(roiItem);
@@ -324,6 +342,12 @@ void MyGraphicsView::keyReleaseEvent(QKeyEvent *event){
  */
 void MyGraphicsView::setActionName(ActionName actionName)
 {
+    if(currentActionName == SelectMove) {//当从selectmove切换到其他工具时，若roi区域还未合成到图片中，则将其合成到图片中
+        if(roiItem->isSelected()){
+            roiToCurrentMat();
+            updatePixmapItem();
+        }
+    }
     this->currentActionName = actionName;
 }
 
@@ -420,6 +444,28 @@ void MyGraphicsView::setCurrentMat(Mat &m)
 }
 
 /**
+ * @brief MyGraphicsView::selectMoving
+ * @param event
+ * @param point
+ * 拖动选中区域
+ */
+void MyGraphicsView::selectMoving(QMouseEvent *event, QPointF point)
+{
+    if (!(event->buttons() & Qt::LeftButton)){return;}//当左键没有按住时拖动则跳过
+    QPointF sceneStartPoint = pixmapItem->mapToScene(startPoint);
+    qreal Ex = point.x() - sceneStartPoint.x();//鼠标移动到鼠标点击处的横轴距离
+    qreal Ey = point.y() - sceneStartPoint.y();//鼠标移动到鼠标点击处的纵轴距离
+    qreal currentX = roiItem->scenePos().x() + Ex;
+    qreal currentY = roiItem->scenePos().y() + Ey;
+    //if(currentX < 0.0) {currentX = 0.0;}
+    //if(currentX > (pixmap.width() - roiPixmap.width())) {currentX = pixmap.width() - roiPixmap.width();}
+    //if(currentY < 0.0) {currentY = 0.0;}
+    //if(currentY > (pixmap.height() - roiPixmap.height())) {currentY = pixmap.height() - roiPixmap.height();}
+    roiItem->setPos(currentX, currentY);
+    startPoint = pixmapItem->mapFromScene(point);
+}
+
+/**
  * @brief MyGraphicsView::isInsideOfRoi
  * @param point
  * @return
@@ -427,7 +473,7 @@ void MyGraphicsView::setCurrentMat(Mat &m)
  */
 bool MyGraphicsView::isInsideOfRoi(QPointF point)
 {
-    if(point.x()>roiItem->x() && point.y()>roiItem->y() && point.x()<(roiItem->x()+roiPixmap.width()) && point.y()<(roiItem->y()+roiPixmap.height()))
+    if(point.x()>roiItem->scenePos().x() && point.y()>roiItem->scenePos().y() && point.x()<(roiItem->scenePos().x()+roiPixmap.width()) && point.y()<(roiItem->scenePos().y()+roiPixmap.height()))
     {
         return true;
     }
@@ -443,4 +489,21 @@ void MyGraphicsView::updatePixmapItem()
     pixmap = opencvTool.MatToPixmap(currentMat);
     pixmapItem->setPixmap(pixmap);
     pixmapItem->update();
+}
+
+/**
+ * @brief MyGraphicsView::roiToCurrentMat
+ * 将选择的区域合成到图片中
+ */
+void MyGraphicsView::roiToCurrentMat()
+{
+    QPointF a,b;
+    a = QPointF(roiItem->x(), roiItem->y());
+    b = QPointF(roiItem->x() + roiItem->pixmap().width(), roiItem->y() + roiItem->pixmap().height());
+    Mat tempMat = currentMat.clone();//在新图上覆盖的原因：copyto函数在执行时，若移动的区域和原来的区域有重合的话，覆盖会不合理
+    Mat tempRoi = opencvTool.selectRectRoi(tempMat, a.toPoint(), b.toPoint());
+    roiMat.copyTo(tempRoi);
+    currentMat = tempMat;
+    roiItem->setSelected(false);//设置为未选中
+    this->scene()->removeItem(roiItem);
 }
