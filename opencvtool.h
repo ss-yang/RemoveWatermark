@@ -19,9 +19,7 @@ public:
 
     void drawLine(Mat& img, QPoint pt1, QPoint pt2, const Scalar& color, int thickness=1);//画线函数
 
-    void drawRect(Mat& img, QPoint pt1, QPoint pt2, const Scalar& color, int thickness=1);//画矩形函数
-
-    Mat selectRoi(Mat& img, QPoint pt1, QPoint pt2);
+    Mat selectRectRoi(Mat &img, QPoint pt1, QPoint pt2);//获取矩形选择区域
 };
 
 #endif // OPENCVTOOL_H
