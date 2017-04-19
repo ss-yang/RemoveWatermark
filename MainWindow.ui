@@ -25,8 +25,8 @@
    <string>水印消除工具 V1.0</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="myresources.qrc">
-    <normaloff>:/myIcons/icon/logo.png</normaloff>:/myIcons/icon/logo.png</iconset>
+   <iconset resource="Resources.qrc">
+    <normaloff>:/Icons/icon/logo.png</normaloff>:/Icons/icon/logo.png</iconset>
   </property>
   <property name="windowOpacity">
    <double>1.000000000000000</double>
@@ -79,8 +79,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="myresources.qrc">
-              <normaloff>:/myIcons/icon/up.png</normaloff>:/myIcons/icon/up.png</iconset>
+             <iconset resource="Resources.qrc">
+              <normaloff>:/Icons/icon/up.png</normaloff>:/Icons/icon/up.png</iconset>
             </property>
            </widget>
           </item>
@@ -129,8 +129,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="myresources.qrc">
-              <normaloff>:/myIcons/icon/up.png</normaloff>:/myIcons/icon/up.png</iconset>
+             <iconset resource="Resources.qrc">
+              <normaloff>:/Icons/icon/up.png</normaloff>:/Icons/icon/up.png</iconset>
             </property>
            </widget>
           </item>
@@ -170,7 +170,7 @@
              </font>
             </property>
             <property name="text">
-             <string>原始视图</string>
+             <string>含水印视图</string>
             </property>
            </widget>
           </item>
@@ -194,7 +194,7 @@
            </widget>
           </item>
           <item>
-           <widget class="MyLabel" name="ForeColorLabel">
+           <widget class="ColorLabel" name="ForeColorLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -235,7 +235,7 @@
            </widget>
           </item>
           <item>
-           <widget class="MyLabel" name="BackColorLabel">
+           <widget class="ColorLabel" name="BackColorLabel">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -286,12 +286,12 @@
            </font>
           </property>
           <property name="text">
-           <string>操作视图</string>
+           <string>人工去除水印视图</string>
           </property>
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="MyGraphicsView" name="OriImageGraphicsView">
+         <widget class="ImageGraphicsview" name="OriImageGraphicsView">
           <property name="mouseTracking">
            <bool>true</bool>
           </property>
@@ -304,7 +304,7 @@
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="MyGraphicsView" name="CurrentImageGraphicsView">
+         <widget class="ImageGraphicsview" name="CurrentImageGraphicsView">
           <property name="mouseTracking">
            <bool>true</bool>
           </property>
@@ -335,7 +335,7 @@
            </font>
           </property>
           <property name="text">
-           <string>预提取水印样式</string>
+           <string>机器学习到的水印</string>
           </property>
          </widget>
         </item>
@@ -351,7 +351,7 @@
            </font>
           </property>
           <property name="text">
-           <string>模拟去除结果</string>
+           <string>机器自动消除的水印</string>
           </property>
          </widget>
         </item>
@@ -443,7 +443,7 @@
      <x>0</x>
      <y>0</y>
      <width>1280</width>
-     <height>28</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="font">
@@ -579,8 +579,8 @@
   </widget>
   <action name="Open">
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/open.png</normaloff>:/myIcons/icon/open.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/open.png</normaloff>:/Icons/icon/open.png</iconset>
    </property>
    <property name="text">
     <string>打开</string>
@@ -600,8 +600,8 @@
   </action>
   <action name="Save">
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/save.png</normaloff>:/myIcons/icon/save.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/save.png</normaloff>:/Icons/icon/save.png</iconset>
    </property>
    <property name="text">
     <string>保存</string>
@@ -612,8 +612,8 @@
   </action>
   <action name="Undo">
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/back.png</normaloff>:/myIcons/icon/back.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/back.png</normaloff>:/Icons/icon/back.png</iconset>
    </property>
    <property name="text">
     <string>撤销</string>
@@ -624,9 +624,9 @@
   </action>
   <action name="Exit">
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/exit.png</normaloff>
-     <normalon>icon/exit.png</normalon>:/myIcons/icon/exit.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/exit.png</normaloff>
+     <normalon>icon/exit.png</normalon>:/Icons/icon/exit.png</iconset>
    </property>
    <property name="text">
     <string>退出</string>
@@ -643,8 +643,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/pencil.png</normaloff>:/myIcons/icon/pencil.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/pencil.png</normaloff>:/Icons/icon/pencil.png</iconset>
    </property>
    <property name="text">
     <string>铅笔</string>
@@ -658,8 +658,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/eraser.png</normaloff>:/myIcons/icon/eraser.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/eraser.png</normaloff>:/Icons/icon/eraser.png</iconset>
    </property>
    <property name="text">
     <string>橡皮</string>
@@ -673,8 +673,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/glasses.png</normaloff>:/myIcons/icon/glasses.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/glasses.png</normaloff>:/Icons/icon/glasses.png</iconset>
    </property>
    <property name="text">
     <string>放大镜</string>
@@ -688,8 +688,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/hand.png</normaloff>:/myIcons/icon/hand.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/hand.png</normaloff>:/Icons/icon/hand.png</iconset>
    </property>
    <property name="text">
     <string>抓手工具</string>
@@ -703,8 +703,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/rece.png</normaloff>:/myIcons/icon/rece.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/rece.png</normaloff>:/Icons/icon/rece.png</iconset>
    </property>
    <property name="text">
     <string>矩形选择工具</string>
@@ -721,8 +721,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/freeSelect.png</normaloff>:/myIcons/icon/freeSelect.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/freeSelect.png</normaloff>:/Icons/icon/freeSelect.png</iconset>
    </property>
    <property name="text">
     <string>自由选择工具</string>
@@ -733,8 +733,8 @@
   </action>
   <action name="Redo">
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/forward.png</normaloff>:/myIcons/icon/forward.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/forward.png</normaloff>:/Icons/icon/forward.png</iconset>
    </property>
    <property name="text">
     <string>重做</string>
@@ -745,8 +745,8 @@
   </action>
   <action name="Settings">
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/config.png</normaloff>:/myIcons/icon/config.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/config.png</normaloff>:/Icons/icon/config.png</iconset>
    </property>
    <property name="text">
     <string>设置</string>
@@ -754,8 +754,8 @@
   </action>
   <action name="GetColor">
    <property name="icon">
-    <iconset resource="myresources.qrc">
-     <normaloff>:/myIcons/icon/color.png</normaloff>:/myIcons/icon/color.png</iconset>
+    <iconset resource="Resources.qrc">
+     <normaloff>:/Icons/icon/color.png</normaloff>:/Icons/icon/color.png</iconset>
    </property>
    <property name="text">
     <string>编辑颜色</string>
@@ -768,18 +768,18 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>MyGraphicsView</class>
-   <extends>QGraphicsView</extends>
-   <header location="global">mygraphicsview.h</header>
+   <class>ColorLabel</class>
+   <extends>QLabel</extends>
+   <header location="global">ColorLabel.h</header>
   </customwidget>
   <customwidget>
-   <class>MyLabel</class>
-   <extends>QLabel</extends>
-   <header location="global">mylabel.h</header>
+   <class>ImageGraphicsview</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">ImageGraphicsview.h</header>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="myresources.qrc"/>
+  <include location="Resources.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -1,7 +1,4 @@
-#include "opencvtool.h"
-
-#include <QImage>
-#include <QDebug>
+#include "OpenCVTool.h"
 
 OpenCVTool::OpenCVTool()
 {

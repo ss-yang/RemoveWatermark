@@ -5,6 +5,8 @@
 
 #include <QPixmap>
 #include <QPoint>
+#include <QImage>
+#include <QDebug>
 
 using namespace cv;
 

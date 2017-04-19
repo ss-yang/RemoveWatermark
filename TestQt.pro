@@ -23,37 +23,40 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    mygraphicsview.cpp \
-    mylabel.cpp \
-    myslider.cpp \
-    opencvtool.cpp
+SOURCES +=\
+    ColorLabel.cpp \
+    ThicknessSlider.cpp \
+    OpenCVTool.cpp \
+    ImageGraphicsview.cpp \
+    MainWindow.cpp \
+    Main.cpp
 
-HEADERS  += mainwindow.h \
-    mygraphicsview.h \
-    mylabel.h \
-    myslider.h \
-    opencvtool.h
+HEADERS  += \
+    ColorLabel.h \
+    ThicknessSlider.h \
+    OpenCVTool.h \
+    ImageGraphicsview.h \
+    MainWindow.h
 
-FORMS    += mainwindow.ui \
-    myslider.ui
+FORMS    += \
+    ThicknessSlider.ui \
+    MainWindow.ui
 
-#INCLUDEPATH += E:\opencv_QT\include\opencv\
+INCLUDEPATH += E:\opencv_QT\include\opencv\
 
-#INCLUDEPATH += E:\opencv_QT\include\opencv2\
+INCLUDEPATH += E:\opencv_QT\include\opencv2\
 
-#INCLUDEPATH += E:\opencv_QT\include\
+INCLUDEPATH += E:\opencv_QT\include\
 
-#LIBS += -L E:\opencv_QT\lib\libopencv_*.a
+LIBS += -L E:\opencv_QT\lib\libopencv_*.a
 
-INCLUDEPATH += F:\QtOpencv\opencv\include\opencv\
+#INCLUDEPATH += F:\QtOpencv\opencv\include\opencv\
 
-INCLUDEPATH += F:\QtOpencv\opencv\include\opencv2\
+#INCLUDEPATH += F:\QtOpencv\opencv\include\opencv2\
 
-INCLUDEPATH += F:\QtOpencv\opencv\include
+#INCLUDEPATH += F:\QtOpencv\opencv\include
 
-LIBS += -L F:\QtOpencv\opencv\lib\libopencv_*.a
+#LIBS += -L F:\QtOpencv\opencv\lib\libopencv_*.a
 
-RESOURCES += \ 
-		myresources.qrc
+RESOURCES += \   
+    Resources.qrc

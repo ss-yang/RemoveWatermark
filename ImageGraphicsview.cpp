@@ -1,18 +1,6 @@
-#include "mygraphicsview.h"
+#include "ImageGraphicsview.h"
 
-#include <QGraphicsItem>
-#include <QGraphicsScene>
-#include <QPointF>
-#include <QPoint>
-#include <QScrollBar>
-#include <QDebug>
-#include <QApplication>
-#include <QCursor>
-#include <QPixmap>
-#include <QPainter>
-
-
-MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
+ImageGraphicsview::ImageGraphicsview(QWidget *parent):QGraphicsView(parent)
 {
     this->horizontalScrollBar()->setCursor(Qt::ArrowCursor);
     this->verticalScrollBar()->setCursor(Qt::ArrowCursor);
@@ -21,15 +9,15 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     this->zoomDownRate=0.75;//默认的缩小倍率
     this->isPressed = false;//默认鼠标左键没有被按下
 
-    QPixmap bigGlassesPixmap(":/myIcons/icon/bigGlasses.png");
+    QPixmap bigGlassesPixmap(":/Icons/icon/bigGlasses.png");
     bigCursor =QCursor(bigGlassesPixmap);
-    QPixmap smallGlassesPixmap(":/myIcons/icon/smallGlasses.png");
+    QPixmap smallGlassesPixmap(":/Icons/icon/smallGlasses.png");
     smallCursor =QCursor(smallGlassesPixmap);
-    QPixmap pencilPixmap(":/myIcons/icon/pencil_24px.png");
+    QPixmap pencilPixmap(":/Icons/icon/pencil_24px.png");
     pencilCursor =QCursor(pencilPixmap, 0, pencilPixmap.height());//让鼠标焦点位与图片左下角，默认为图片中心
-    QPixmap eraserPixmap(":/myIcons/icon/eraser_24px.png");
+    QPixmap eraserPixmap(":/Icons/icon/eraser_24px.png");
     eraserCursor =QCursor(eraserPixmap);
-    QPixmap forbiddenPixmap(":/myIcons/icon/forbidden.png");
+    QPixmap forbiddenPixmap(":/Icons/icon/forbidden.png");
     forbiddenCursor =QCursor(forbiddenPixmap);
 
     opencvTool = OpenCVTool();//初始化工具类
@@ -38,15 +26,15 @@ MyGraphicsView::MyGraphicsView(QWidget *parent):QGraphicsView(parent)
     eraserColor = Scalar(255,255,255);//初始化橡皮颜色 白色
 }
 
-MyGraphicsView::~MyGraphicsView(){
+ImageGraphicsview::~ImageGraphicsview(){
     delete pixmapItem;
 }
 
 /**
- * @brief MyGraphicsView::clearUndoStack
+ * @brief ImageGraphicsview::clearUndoStack
  * 清空撤销区
  */
-inline void MyGraphicsView::clearUndoStack()
+inline void ImageGraphicsview::clearUndoStack()
 {
     while(!undoStack.empty())
     {
@@ -55,10 +43,10 @@ inline void MyGraphicsView::clearUndoStack()
 }
 
 /**
- * @brief MyGraphicsView::clearRedoStack
+ * @brief ImageGraphicsview::clearRedoStack
  * 清空恢复区
  */
-inline void MyGraphicsView::clearRedoStack()
+inline void ImageGraphicsview::clearRedoStack()
 {
     while(!redoStack.empty())
     {
@@ -67,11 +55,11 @@ inline void MyGraphicsView::clearRedoStack()
 }
 
 /**
- * @brief MyGraphicsView::mouseMoveEvent
+ * @brief ImageGraphicsview::mouseMoveEvent
  * @param event
  * 鼠标移动事件
  */
-void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
+void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
     if(this->scene() == NULL){
         this->currentActionName = Default;
         return;
@@ -155,11 +143,11 @@ void MyGraphicsView::mouseMoveEvent(QMouseEvent *event){
 }
 
 /**
- * @brief MyGraphicsView::mousePressEvent
+ * @brief ImageGraphicsview::mousePressEvent
  * @param event
  * 鼠标点击事件（只检测左键点击）
  */
-void MyGraphicsView::mousePressEvent(QMouseEvent *event){
+void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
     if (!(event->button() == Qt::LeftButton)){
         return;
     }
@@ -223,11 +211,11 @@ void MyGraphicsView::mousePressEvent(QMouseEvent *event){
 }
 
 /**
- * @brief MyGraphicsView::mouseReleaseEvent
+ * @brief ImageGraphicsview::mouseReleaseEvent
  * @param event
  * 鼠标点击释放事件（只检测左键点击）
  */
-void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
+void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
     if (!(event->button() == Qt::LeftButton)){
         return;
     }
@@ -284,11 +272,11 @@ void MyGraphicsView::mouseReleaseEvent(QMouseEvent *event){
 }
 
 /**
- * @brief MyGraphicsView::keyPressEvent
+ * @brief ImageGraphicsview::keyPressEvent
  * @param event
  * 监听键盘按键按下
  */
-void MyGraphicsView::keyPressEvent(QKeyEvent *event){
+void ImageGraphicsview::keyPressEvent(QKeyEvent *event){
     if(this->scene() == NULL){
         this->currentActionName = Default;
         return;
@@ -310,11 +298,11 @@ void MyGraphicsView::keyPressEvent(QKeyEvent *event){
 }
 
 /**
- * @brief MyGraphicsView::keyReleaseEvent
+ * @brief ImageGraphicsview::keyReleaseEvent
  * @param event
  * 监听键盘按键松开
  */
-void MyGraphicsView::keyReleaseEvent(QKeyEvent *event){
+void ImageGraphicsview::keyReleaseEvent(QKeyEvent *event){
     if(this->scene() == NULL){
         this->currentActionName = Default;
         return;
@@ -336,11 +324,11 @@ void MyGraphicsView::keyReleaseEvent(QKeyEvent *event){
 }
 
 /**
- * @brief MyGraphicsView::setActionName
+ * @brief ImageGraphicsview::setActionName
  * @param actionName
  * 设置当前对象中所使用的工具类型
  */
-void MyGraphicsView::setActionName(ActionName actionName)
+void ImageGraphicsview::setActionName(ActionName actionName)
 {
     if(currentActionName == SelectMove) {//当从selectmove切换到其他工具时，若roi区域还未合成到图片中，则将其合成到图片中
         if(roiItem->isSelected()){
@@ -352,29 +340,29 @@ void MyGraphicsView::setActionName(ActionName actionName)
 }
 
 /**
- * @brief MyGraphicsView::zoomUp
+ * @brief ImageGraphicsview::zoomUp
  * @param event
  * 放大scence
  */
-void MyGraphicsView::zoomUp(){
+void ImageGraphicsview::zoomUp(){
     scale(zoomUpRate,zoomUpRate);
 }
 
 /**
- * @brief MyGraphicsView::zoomDown
+ * @brief ImageGraphicsview::zoomDown
  * @param event
  * 缩小scence
  */
-void MyGraphicsView::zoomDown(){
+void ImageGraphicsview::zoomDown(){
     scale(zoomDownRate,zoomDownRate);
 }
 
 /**
- * @brief MyGraphicsView::setGlasses
+ * @brief ImageGraphicsview::setGlasses
  * @param isZoomUp
  * 改变放大镜工具状态
  */
-void MyGraphicsView::setGlasses(bool flag)
+void ImageGraphicsview::setGlasses(bool flag)
 {
     if(flag) {
         this->currentActionName = BigGlasses;
@@ -385,38 +373,38 @@ void MyGraphicsView::setGlasses(bool flag)
 }
 
 /**
- * @brief MyGraphicsView::setPencilColor
+ * @brief ImageGraphicsview::setPencilColor
  * @param color
  * 设置铅笔工具颜色
  */
-void MyGraphicsView::setPencilColor(QColor color){
+void ImageGraphicsview::setPencilColor(QColor color){
     pencilColor = Scalar(color.blue(), color.green(), color.red());
 }
 
 /**
- * @brief MyGraphicsView::serEraserColor
+ * @brief ImageGraphicsview::serEraserColor
  * @param color
  * 设置橡皮工具颜色
  */
-void MyGraphicsView::setEraserColor(QColor color){
+void ImageGraphicsview::setEraserColor(QColor color){
     eraserColor = Scalar(color.blue(), color.green(), color.red());
 }
 
 /**
- * @brief MyGraphicsView::setPencilWidth
+ * @brief ImageGraphicsview::setPencilWidth
  * @param width
  * 设置线宽
  */
-void MyGraphicsView::setWidth(int width){
+void ImageGraphicsview::setWidth(int width){
     thickness = width;
 }
 
 
 /**
- * @brief MyGraphicsView::actionHandDrag
+ * @brief ImageGraphicsview::actionHandDrag
  * 抓手移动实现
  */
-void MyGraphicsView::actionHandDrag(QMouseEvent *event,QPointF point){
+void ImageGraphicsview::actionHandDrag(QMouseEvent *event,QPointF point){
     if (!(event->buttons() & Qt::LeftButton)){return;}//当左键没有按住时拖动则跳过
     int Ex = point.x() - this->startPoint.x();//鼠标移动到鼠标点击处的横轴距离
     int Ey = point.y() - this->startPoint.y();//鼠标移动到鼠标点击处的纵轴距离
@@ -425,31 +413,31 @@ void MyGraphicsView::actionHandDrag(QMouseEvent *event,QPointF point){
 }
 
 /**
- * @brief setPixmapItem
+ * @brief ImageGraphicsview::setPixmapItem
  * @param item
  * 设置当前scene中的图片项
  */
-void MyGraphicsView::setPixmapItem(QGraphicsPixmapItem *item){
+void ImageGraphicsview::setPixmapItem(QGraphicsPixmapItem *item){
     this->pixmapItem = item;
 }
 
 /**
- * @brief MyGraphicsView::setCurrentMat
+ * @brief ImageGraphicsview::setCurrentMat
  * @param m
  * 设置当前的Mat
  */
-void MyGraphicsView::setCurrentMat(Mat &m)
+void ImageGraphicsview::setCurrentMat(Mat &m)
 {
     currentMat = m;
 }
 
 /**
- * @brief MyGraphicsView::selectMoving
+ * @brief ImageGraphicsview::selectMoving
  * @param event
  * @param point
  * 拖动选中区域
  */
-void MyGraphicsView::selectMoving(QMouseEvent *event, QPointF point)
+void ImageGraphicsview::selectMoving(QMouseEvent *event, QPointF point)
 {
     if (!(event->buttons() & Qt::LeftButton)){return;}//当左键没有按住时拖动则跳过
     QPointF sceneStartPoint = pixmapItem->mapToScene(startPoint);
@@ -466,12 +454,12 @@ void MyGraphicsView::selectMoving(QMouseEvent *event, QPointF point)
 }
 
 /**
- * @brief MyGraphicsView::isInsideOfRoi
+ * @brief ImageGraphicsview::isInsideOfRoi
  * @param point
  * @return
  * 判断鼠标是否在所选区域内
  */
-bool MyGraphicsView::isInsideOfRoi(QPointF point)
+bool ImageGraphicsview::isInsideOfRoi(QPointF point)
 {
     if(point.x()>roiItem->scenePos().x() && point.y()>roiItem->scenePos().y() && point.x()<(roiItem->scenePos().x()+roiPixmap.width()) && point.y()<(roiItem->scenePos().y()+roiPixmap.height()))
     {
@@ -481,10 +469,10 @@ bool MyGraphicsView::isInsideOfRoi(QPointF point)
 }
 
 /**
- * @brief MyGraphicsView::updatePixmapItem
+ * @brief ImageGraphicsview::updatePixmapItem
  * 更新currentMat到PixmapItem
  */
-void MyGraphicsView::updatePixmapItem()
+void ImageGraphicsview::updatePixmapItem()
 {
     pixmap = opencvTool.MatToPixmap(currentMat);
     pixmapItem->setPixmap(pixmap);
@@ -492,10 +480,10 @@ void MyGraphicsView::updatePixmapItem()
 }
 
 /**
- * @brief MyGraphicsView::roiToCurrentMat
+ * @brief ImageGraphicsview::roiToCurrentMat
  * 将选择的区域合成到图片中
  */
-void MyGraphicsView::roiToCurrentMat()
+void ImageGraphicsview::roiToCurrentMat()
 {
     QPointF a,b;
     a = QPointF(roiItem->x(), roiItem->y());

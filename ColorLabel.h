@@ -1,16 +1,16 @@
-#ifndef MYLABEL_H
-#define MYLABEL_H
+#ifndef COLORLABEL_H
+#define COLORLABEL_H
 
 #include <QLabel>
 #include <QMouseEvent>
 #include <QColor>
 
-class MyLabel : public QLabel
+class ColorLabel : public QLabel
 {
     Q_OBJECT
 
 public:
-    MyLabel(QWidget *parent);
+    ColorLabel(QWidget *parent);
 
 signals:
     void changeColor();
@@ -19,4 +19,4 @@ protected:
     void mousePressEvent(QMouseEvent *);
 };
 
-#endif // MYLABEL_H
+#endif // COLORLABEL_H

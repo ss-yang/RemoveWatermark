@@ -1,36 +1,38 @@
-#ifndef MYGRAPHICSVIEW_H
-#define MYGRAPHICSVIEW_H
+#ifndef IMAGEGRAPHICSVIEW_H
+#define IMAGEGRAPHICSVIEW_H
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core/core.hpp>
 
-#include <opencvtool.h>
+#include <OpenCVTool.h>
 
 #include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsItem>
+#include <QGraphicsPixmapItem>
 #include <QMouseEvent>
 #include <QString>
 #include <QPointF>
+#include <QPoint>
 #include <QCursor>
-#include <QPen>
 #include <QColor>
-#include <QGraphicsItem>
-#include <QGraphicsPixmapItem>
 #include <QPixmap>
 #include <QStack>
-#include <QPointF>
+#include <QScrollBar>
+#include <QDebug>
 
 using namespace cv;
 
-class MyGraphicsView : public QGraphicsView
+class ImageGraphicsview : public QGraphicsView
 {
      Q_OBJECT
 
 public:
     enum ActionName{Pencil, Eraser, BigGlasses, SmallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, SelectMove, Default, Forbidden};
 
-    MyGraphicsView(QWidget *parent);
-    ~MyGraphicsView();
+    ImageGraphicsview(QWidget *parent);
+    ~ImageGraphicsview();
 
     inline void clearUndoStack();//清空撤销区
     inline void clearRedoStack();//清空恢复区
@@ -107,4 +109,4 @@ private:
     OpenCVTool opencvTool;//Opencv工具类
 };
 
-#endif // MYGRAPHICSVIEW_H
+#endif // IMAGEGRAPHICSVIEW_H

@@ -1,28 +1,5 @@
-#include "mainwindow.h"
+#include "MainWindow.h"
 #include "ui_mainwindow.h"
-
-#include <opencv2/opencv.hpp>
-#include <ctime>
-
-#include <QDebug>
-#include <QString>
-#include <QMessageBox>
-#include <QFile>
-#include <QDir>
-#include <QFileDialog>
-#include <QPixmap>
-#include <QPoint>
-#include <QPointF>
-#include <QFileSystemModel>
-#include <QGraphicsScene>
-#include <QGraphicsPixmapItem>
-#include <QScrollBar>
-#include <QPalette>
-#include <QColor>
-#include <QColorDialog>
-
-using namespace std;
-using namespace cv;
 
 //图像
 vector<Mat> markedImg;
@@ -83,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
     /**
      * 初始化粗细设置按钮
      */
-    thicknessSlider = new MySlider(this);
+    thicknessSlider = new ThicknessSlider(this);
     thicknessAction = ui->extraToolBar->addWidget(thicknessSlider);
 
     /**
@@ -274,7 +251,7 @@ void MainWindow::on_SaveImagePathButton_clicked()
 }
 
 /**
- * @brief updatePixelLocationLabel
+ * @brief MainWindow::updatePixelLocationLabel
  * @param event
  * 当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
  */
@@ -327,8 +304,8 @@ void MainWindow::on_Pencil_triggered()
 {
     resetAction();
     ui->Pencil->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Forbidden);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::Pencil);
+    ui->OriImageGraphicsView->setActionName(ImageGraphicsview::Forbidden);
+    ui->CurrentImageGraphicsView->setActionName(ImageGraphicsview::Pencil);
 
 }
 
@@ -340,8 +317,8 @@ void MainWindow::on_Eraser_triggered()
 {
     resetAction();
     ui->Eraser->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Forbidden);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::Eraser);
+    ui->OriImageGraphicsView->setActionName(ImageGraphicsview::Forbidden);
+    ui->CurrentImageGraphicsView->setActionName(ImageGraphicsview::Eraser);
 }
 
 /**
@@ -352,8 +329,8 @@ void MainWindow::on_Glasses_triggered()
 {
     resetAction();
     ui->Glasses->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::BigGlasses);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::BigGlasses);
+    ui->OriImageGraphicsView->setActionName(ImageGraphicsview::BigGlasses);
+    ui->CurrentImageGraphicsView->setActionName(ImageGraphicsview::BigGlasses);
 }
 
 /**
@@ -364,8 +341,8 @@ void MainWindow::on_Hand_triggered()
 {
     resetAction();
     ui->Hand->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::OpenHand);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::OpenHand);
+    ui->OriImageGraphicsView->setActionName(ImageGraphicsview::OpenHand);
+    ui->CurrentImageGraphicsView->setActionName(ImageGraphicsview::OpenHand);
 }
 
 /**
@@ -376,8 +353,8 @@ void MainWindow::on_RectSelect_triggered()
 {
     resetAction();
     ui->RectSelect->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::Forbidden);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::RectSelect);
+    ui->OriImageGraphicsView->setActionName(ImageGraphicsview::Forbidden);
+    ui->CurrentImageGraphicsView->setActionName(ImageGraphicsview::RectSelect);
 }
 
 /**
@@ -388,8 +365,8 @@ void MainWindow::on_FreeSelect_triggered()
 {
     resetAction();
     ui->FreeSelect->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(MyGraphicsView::FreeSelect);
-    ui->CurrentImageGraphicsView->setActionName(MyGraphicsView::FreeSelect);
+    ui->OriImageGraphicsView->setActionName(ImageGraphicsview::FreeSelect);
+    ui->CurrentImageGraphicsView->setActionName(ImageGraphicsview::FreeSelect);
 }
 
 /**

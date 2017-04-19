@@ -1,9 +1,9 @@
-#include "myslider.h"
-#include "ui_myslider.h"
+#include "ThicknessSlider.h"
+#include "ui_ThicknessSlider.h"
 
-MySlider::MySlider(QWidget *parent) :
+ThicknessSlider::ThicknessSlider(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::MySlider)
+    ui(new Ui::ThicknessSlider)
 {
     ui->setupUi(this);
 
@@ -34,7 +34,7 @@ MySlider::MySlider(QWidget *parent) :
     connect(ui->Slider,SIGNAL(valueChanged(int)),this,SIGNAL(valueChanged(int)));
 }
 
-MySlider::~MySlider()
+ThicknessSlider::~ThicknessSlider()
 {
     delete ui;
 }

@@ -1,14 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <opencvtool.h>
+#include <opencv2/opencv.hpp>
+#include <ctime>
 
-#include <mygraphicsview.h>
-#include <mylabel.h>
-#include <myslider.h>
+#include <OpenCVTool.h>
+#include <ImageGraphicsview.h>
+#include <ColorLabel.h>
+#include <ThicknessSlider.h>
 
 #include <QMainWindow>
-#include <QFileSystemModel>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QMouseEvent>
@@ -16,6 +17,20 @@
 #include <QColor>
 #include <QPalette>
 #include <QAction>
+#include <QFile>
+#include <QDir>
+#include <QFileSystemModel>
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QColorDialog>
+#include <QPixmap>
+#include <QPoint>
+#include <QPointF>
+#include <QScrollBar>
+#include <QDebug>
+
+using namespace std;
+using namespace cv;
 
 namespace Ui {
 class MainWindow;
@@ -85,7 +100,7 @@ private:
 
     inline void resetAction();//重置工具栏按钮的选中状态
 
-    MySlider *thicknessSlider;//粗细设置控件
+    ThicknessSlider *thicknessSlider;//粗细设置控件
     QAction *thicknessAction;//粗细设置action
 
     OpenCVTool opencvtool;
