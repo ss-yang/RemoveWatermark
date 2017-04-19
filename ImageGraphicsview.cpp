@@ -187,15 +187,12 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
     this->isPressed = true;
     //当为铅笔或者橡皮工具时
     if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
-        //当铅笔工具或橡皮工具开心新的操作时，则清空恢复区
-        clearRedoStack();
-        //当为铅笔工具时，前景色画点
-        if(this->currentActionName == Pencil) {
+        clearRedoStack();//当铅笔工具或橡皮工具开心新的操作时，则清空恢复区
+        if(this->currentActionName == Pencil) {//当为铅笔工具时，前景色画点
             opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
             updatePixmapItem();
         }
-        //当为橡皮工具时，背景色画点
-        if(this->currentActionName == Eraser) {
+        if(this->currentActionName == Eraser) {//当为橡皮工具时，背景色画点
             opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
             updatePixmapItem();
         }
@@ -266,8 +263,7 @@ void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
         this->scene()->addItem(roiItem);
         this->scene()->setFocusItem(roiItem);
         this->scene()->update();
-        //设置当前的工具
-        this->currentActionName = SelectMove;
+        this->currentActionName = SelectMove;//设置当前的工具
     }
 }
 
@@ -494,4 +490,37 @@ void ImageGraphicsview::roiToCurrentMat()
     currentMat = tempMat;
     roiItem->setSelected(false);//设置为未选中
     this->scene()->removeItem(roiItem);
+}
+
+/**
+ * @brief ImageGraphicsview::undo
+ * 撤销
+ */
+void ImageGraphicsview::undo()
+{
+
+}
+
+/**
+ * @brief ImageGraphicsview::redo
+ * 恢复
+ */
+void ImageGraphicsview::redo()
+{
+
+}
+
+/**
+ * @brief ImageGraphicsview::reset
+ * 重置变量状态
+ */
+void ImageGraphicsview::reset()
+{
+    isZoomUp = true;
+    isPressed = false;
+    clearRedoStack();
+    clearUndoStack();
+    currentActionName = Default;
+    startPoint = QPointF(0.0,0.0);
+    endPoint = QPointF(0.0,0.0);
 }

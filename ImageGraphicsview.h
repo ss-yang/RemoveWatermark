@@ -33,9 +33,7 @@ public:
 
     ImageGraphicsview(QWidget *parent);
     ~ImageGraphicsview();
-
-    inline void clearUndoStack();//清空撤销区
-    inline void clearRedoStack();//清空恢复区
+    void reset();//重置变量状态
 
 signals:
     void mouseMovetriggerSignal(QString location);
@@ -54,27 +52,22 @@ public slots:
     void setWidth(int width);//设置线宽
     void setPixmapItem(QGraphicsPixmapItem* item);//设置当前scene中的图片项
     void setCurrentMat(Mat& m);//设置当前的Mat
+    void undo();//撤销
+    void redo();//恢复
 
 protected:
     void mouseMoveEvent(QMouseEvent *event);
-
     void mousePressEvent(QMouseEvent *event);
-
     void mouseReleaseEvent(QMouseEvent *event);
-
     void keyPressEvent(QKeyEvent *event);
-
     void keyReleaseEvent(QKeyEvent *event);
-
     void actionHandDrag(QMouseEvent *event,QPointF point);//抓手移动实现
-
     void selectMoving(QMouseEvent *event,QPointF point);//拖动选中区域
-
     bool isInsideOfRoi(QPointF point);//判断鼠标是否在所选区域内
-
     void updatePixmapItem();//更新currentMat到PixmapItem
-
     void roiToCurrentMat();//将选择的区域合成到图片中
+    inline void clearUndoStack();//清空撤销区
+    inline void clearRedoStack();//清空恢复区
 
 private:
     ActionName currentActionName = Default;//记录当前选中的工具
@@ -103,8 +96,8 @@ private:
     Scalar pencilColor;//铅笔颜色
     Scalar eraserColor;//橡皮颜色
 
-    QStack<QPixmap> undoStack;//撤销
-    QStack<QPixmap> redoStack;//恢复
+    QStack<Mat> undoStack;//撤销
+    QStack<Mat> redoStack;//恢复
 
     OpenCVTool opencvTool;//Opencv工具类
 };

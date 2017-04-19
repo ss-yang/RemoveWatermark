@@ -149,16 +149,19 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         QString width,height;
         //更新状态栏图片大小信息
         ui->ImageSizeLabel->setText(width.setNum(oriPixmap.width()) + " × " + height.setNum(oriPixmap.height()) + " 像素");
+        resetAction();//重置工具栏选中状态
         //视图栏显示图片
         oriScence = new QGraphicsScene;
         oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
         oriScence->addItem(oriPixmapItem);
+        ui->OriImageGraphicsView->reset();
         ui->OriImageGraphicsView->setPixmapItem(oriPixmapItem);
         ui->OriImageGraphicsView->setScene(oriScence);
         ui->OriImageGraphicsView->show();
         currentScence = new QGraphicsScene;
         currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
         currentScence->addItem(currentPixmapItem);
+        ui->CurrentImageGraphicsView->reset();
         ui->CurrentImageGraphicsView->setPixmapItem(currentPixmapItem);
         ui->CurrentImageGraphicsView->setScene(currentScence);
         ui->CurrentImageGraphicsView->show();
