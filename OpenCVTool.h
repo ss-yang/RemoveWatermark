@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QPoint>
 #include <QImage>
+#include <QRGB>
 #include <QDebug>
 
 using namespace cv;
