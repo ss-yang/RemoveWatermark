@@ -418,6 +418,7 @@ void ImageGraphicsview::actionHandDrag(QMouseEvent *event,QPointF point){
  */
 void ImageGraphicsview::setPixmapItem(QGraphicsPixmapItem *item){
     this->pixmapItem = item;
+    pixmap = item->pixmap();
     initMaskItem();//初始化图层
 }
 
@@ -445,11 +446,12 @@ void ImageGraphicsview::selectMoving(QMouseEvent *event, QPointF point)
     qreal Ey = point.y() - sceneStartPoint.y();//鼠标移动到鼠标点击处的纵轴距离
     qreal currentX = roiItem->scenePos().x() + Ex;
     qreal currentY = roiItem->scenePos().y() + Ey;
-    //if(currentX < 0.0) {currentX = 0.0;}
-    //if(currentX > (pixmap.width() - roiPixmap.width())) {currentX = pixmap.width() - roiPixmap.width();}
-    //if(currentY < 0.0) {currentY = 0.0;}
-    //if(currentY > (pixmap.height() - roiPixmap.height())) {currentY = pixmap.height() - roiPixmap.height();}
-    roiItem->setPos(currentX, currentY);
+    if(currentX < pixmapItem->scenePos().x()) {currentX = pixmapItem->scenePos().x();}
+    if(currentX > pixmapItem->scenePos().x() + pixmap.width() - roiPixmap.width()) {currentX = pixmapItem->scenePos().x() + pixmap.width() - roiPixmap.width();}
+    if(currentY < pixmapItem->scenePos().y()) {currentY = pixmapItem->scenePos().y();}
+    if(currentY > pixmapItem->scenePos().y() + pixmap.height() - roiPixmap.height()) {currentY = pixmapItem->scenePos().y() + pixmap.height() - roiPixmap.height();}
+    roiItem->setX(currentX);
+    roiItem->setY(currentY);
     startPoint = pixmapItem->mapFromScene(point);
 }
 
