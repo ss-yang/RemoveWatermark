@@ -117,3 +117,33 @@ Mat OpenCVTool::selectRectRoi(Mat &img, QPoint pt1, QPoint pt2)
     Mat rectRoi = img(Rect(startPoint.x, startPoint.y, endPoint.x - startPoint.x, endPoint.y - startPoint.y));
     return rectRoi;
 }
+
+/**
+ * @brief OpenCVTool::mask2CurrentMat
+ * @param mask
+ * @param currentMat
+ * @return
+ * 将图层与原图合并
+ */
+Mat OpenCVTool::mask2CurrentMat(Mat &mask, Mat &currentMat)
+{
+    Mat result = Mat(currentMat.rows, currentMat.cols, CV_8UC3);
+    for(int i = 0; i < currentMat.rows; i++) {
+        Vec4b *p1 = mask.ptr<Vec4b>(i);
+        Vec3b *p2 = currentMat.ptr<Vec3b>(i);
+        Vec3b *p3 = result.ptr<Vec3b>(i);
+        for(int j = 0; j < currentMat.cols; j++) {
+            Vec4b &pix1 = *p1++;
+            Vec3b &pix2 = *p2++;
+            Vec3b &pix3 = *p3++;
+            if(pix1[3] == 0) {
+                pix3 = pix2;
+            }else{
+                pix3[0] = pix1[0];
+                pix3[1] = pix1[1];
+                pix3[2] = pix1[2];
+            }
+        }
+    }
+    return result;
+}

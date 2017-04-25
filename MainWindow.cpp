@@ -155,16 +155,16 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
         oriScence->addItem(oriPixmapItem);
         ui->OriImageGraphicsView->reset();
-        ui->OriImageGraphicsView->setPixmapItem(oriPixmapItem);
         ui->OriImageGraphicsView->setScene(oriScence);
         ui->OriImageGraphicsView->show();
+        ui->OriImageGraphicsView->setPixmapItem(oriPixmapItem);
         currentScence = new QGraphicsScene;
         currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
         currentScence->addItem(currentPixmapItem);
         ui->CurrentImageGraphicsView->reset();
-        ui->CurrentImageGraphicsView->setPixmapItem(currentPixmapItem);
         ui->CurrentImageGraphicsView->setScene(currentScence);
         ui->CurrentImageGraphicsView->show();
+        ui->CurrentImageGraphicsView->setPixmapItem(currentPixmapItem);
     }
 }
 

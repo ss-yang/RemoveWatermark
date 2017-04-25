@@ -65,7 +65,9 @@ protected:
     void selectMoving(QMouseEvent *event,QPointF point);//拖动选中区域
     bool isInsideOfRoi(QPointF point);//判断鼠标是否在所选区域内
     void updatePixmapItem();//更新currentMat到PixmapItem
-    void roiToCurrentMat();//将选择的区域合成到图片中
+    void updateMaskItem();//更新maskMat到maskItem
+    inline void initMaskItem();//初始化maskItem
+    void roiToMaskMat();//将选择的区域合成到图层中
     inline void clearUndoStack();//清空撤销区
     inline void clearRedoStack();//清空恢复区
 
@@ -92,6 +94,10 @@ private:
     QPixmap roiPixmap;//选择工具所选的区域Pixmap
     Mat roiMat;//选择工具所选的区域Mat
     QGraphicsPixmapItem *roiItem;//选择工具所选的区域Item
+
+    QPixmap maskPixmap;//图层Pixmap
+    Mat maskMat;//图层Mat
+    QGraphicsPixmapItem *maskItem;//图层Item
 
     Scalar pencilColor;//铅笔颜色
     Scalar eraserColor;//橡皮颜色

@@ -22,12 +22,14 @@ ImageGraphicsview::ImageGraphicsview(QWidget *parent):QGraphicsView(parent)
 
     opencvTool = OpenCVTool();//初始化工具类
     thickness = 1;//初始化画笔粗细
-    pencilColor = Scalar(0,0,0);//初始化铅笔颜色 黑色
-    eraserColor = Scalar(255,255,255);//初始化橡皮颜色 白色
+    pencilColor = Scalar(0,0,0,255);//初始化铅笔颜色 黑色
+    eraserColor = Scalar(255,255,255,0);//初始化橡皮颜色 白色
 }
 
 ImageGraphicsview::~ImageGraphicsview(){
     delete pixmapItem;
+    delete roiItem;
+    delete maskItem;
 }
 
 /**
@@ -77,8 +79,8 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
             case Pencil:{
                 setCursor(pencilCursor);
                 if(isPressed) {
-                    opencvTool.drawLine(currentMat, startPoint.toPoint(), point.toPoint(), pencilColor, thickness);
-                    updatePixmapItem();
+                    opencvTool.drawLine(maskMat, startPoint.toPoint(), point.toPoint(), pencilColor, thickness);
+                    updateMaskItem();
                     startPoint = point;
                 }
                 break;
@@ -86,8 +88,8 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
             case Eraser:{
                 setCursor(eraserCursor);
                 if(isPressed) {
-                    opencvTool.drawLine(currentMat, startPoint.toPoint(), point.toPoint(), eraserColor, thickness);
-                    updatePixmapItem();
+                    opencvTool.drawLine(maskMat, startPoint.toPoint(), point.toPoint(), eraserColor, thickness);
+                    updateMaskItem();
                     startPoint = point;
                 }
                 break;
@@ -189,19 +191,19 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
     if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
         clearRedoStack();//当铅笔工具或橡皮工具开心新的操作时，则清空恢复区
         if(this->currentActionName == Pencil) {//当为铅笔工具时，前景色画点
-            opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
-            updatePixmapItem();
+            opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
+            updateMaskItem();
         }
         if(this->currentActionName == Eraser) {//当为橡皮工具时，背景色画点
-            opencvTool.drawLine(currentMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
-            updatePixmapItem();
+            opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
+            updateMaskItem();
         }
     }
     //当为工具为selectMove时,判断鼠标点击的位置
     if(this->currentActionName == SelectMove) {
-        if(!isInsideOfRoi(point)){//判断鼠标是否在区域外，若在则将区域合成到mat中，然后删除roiItem
-            roiToCurrentMat();//将选择的区域合成到图片中
-            updatePixmapItem();
+        if(!isInsideOfRoi(point)){//判断鼠标是否在区域外，若在则将区域合成到maskMat中，然后删除roiItem
+            roiToMaskMat();//将选择的区域合成到图片中
+            updateMaskItem();
             this->currentActionName = RectSelect;
         }
     }
@@ -239,8 +241,9 @@ void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
 
     }
     //如果是矩形选择工具，则画矩形
-    if(this->currentActionName == RectSelect) {
-        roiMat = opencvTool.selectRectRoi(currentMat, startPoint.toPoint(), endPoint.toPoint());
+    if(this->currentActionName == RectSelect && startPoint != endPoint) {
+        Mat tempMat = opencvTool.mask2CurrentMat(maskMat, currentMat);
+        roiMat = opencvTool.selectRectRoi(tempMat, startPoint.toPoint(), endPoint.toPoint());
         roiPixmap = opencvTool.MatToPixmap(roiMat);
         roiItem = new QGraphicsPixmapItem(roiPixmap);
 
@@ -326,10 +329,10 @@ void ImageGraphicsview::keyReleaseEvent(QKeyEvent *event){
  */
 void ImageGraphicsview::setActionName(ActionName actionName)
 {
-    if(currentActionName == SelectMove) {//当从selectmove切换到其他工具时，若roi区域还未合成到图片中，则将其合成到图片中
+    if(this->currentActionName == SelectMove) {//当从selectmove切换到其他工具时，若roi区域还未合成到图片中，则将其合成到图片中
         if(roiItem->isSelected()){
-            roiToCurrentMat();
-            updatePixmapItem();
+            roiToMaskMat();
+            updateMaskItem();
         }
     }
     this->currentActionName = actionName;
@@ -374,7 +377,7 @@ void ImageGraphicsview::setGlasses(bool flag)
  * 设置铅笔工具颜色
  */
 void ImageGraphicsview::setPencilColor(QColor color){
-    pencilColor = Scalar(color.blue(), color.green(), color.red());
+    pencilColor = Scalar(color.blue(), color.green(), color.red(), 255);
 }
 
 /**
@@ -383,7 +386,7 @@ void ImageGraphicsview::setPencilColor(QColor color){
  * 设置橡皮工具颜色
  */
 void ImageGraphicsview::setEraserColor(QColor color){
-    eraserColor = Scalar(color.blue(), color.green(), color.red());
+    eraserColor = Scalar(color.blue(), color.green(), color.red(), 0);
 }
 
 /**
@@ -415,6 +418,7 @@ void ImageGraphicsview::actionHandDrag(QMouseEvent *event,QPointF point){
  */
 void ImageGraphicsview::setPixmapItem(QGraphicsPixmapItem *item){
     this->pixmapItem = item;
+    initMaskItem();//初始化图层
 }
 
 /**
@@ -476,18 +480,46 @@ void ImageGraphicsview::updatePixmapItem()
 }
 
 /**
- * @brief ImageGraphicsview::roiToCurrentMat
+ * @brief ImageGraphicsview::updateMaskItem
+ * 更新maskMat到maskItem
+ */
+void ImageGraphicsview::updateMaskItem()
+{
+    maskPixmap = opencvTool.MatToPixmap(maskMat);
+    maskItem->setPixmap(maskPixmap);
+    maskItem->update();
+}
+
+/**
+ * @brief ImageGraphicsview::initMaskItem
+ * 初始化maskItem
+ */
+inline void ImageGraphicsview::initMaskItem()
+{
+    this->maskMat = Mat(pixmapItem->pixmap().height(), pixmapItem->pixmap().width(), CV_8UC4, Scalar::all(0));//生成一个全透明的图层
+    maskPixmap = opencvTool.MatToPixmap(maskMat);
+    maskItem = new QGraphicsPixmapItem(maskPixmap);
+    this->scene()->addItem(maskItem);
+    this->scene()->update();
+}
+
+/**
+ * @brief ImageGraphicsview::roiToMaskMat
  * 将选择的区域合成到图片中
  */
-void ImageGraphicsview::roiToCurrentMat()
+void ImageGraphicsview::roiToMaskMat()
 {
     QPointF a,b;
     a = QPointF(roiItem->x(), roiItem->y());
     b = QPointF(roiItem->x() + roiItem->pixmap().width(), roiItem->y() + roiItem->pixmap().height());
-    Mat tempMat = currentMat.clone();//在新图上覆盖的原因：copyto函数在执行时，若移动的区域和原来的区域有重合的话，覆盖会不合理
+    Mat tempMat = maskMat.clone();//在新图上覆盖的原因：copyto函数在执行时，若移动的区域和原来的区域有重合的话，覆盖会不合理
     Mat tempRoi = opencvTool.selectRectRoi(tempMat, a.toPoint(), b.toPoint());
-    roiMat.copyTo(tempRoi);
-    currentMat = tempMat;
+    //将roiMat覆盖到maskMat上
+    Mat alpha = Mat(roiMat.rows, roiMat.cols, CV_8UC1, Scalar(255));
+    Mat in[] = {roiMat, alpha};
+    int fromTo1[] = {0,0, 1,1, 2,2, 3,3};
+    mixChannels(in, 2, &tempRoi, 1, fromTo1, 4);
+    maskMat = tempMat;
     roiItem->setSelected(false);//设置为未选中
     this->scene()->removeItem(roiItem);
 }
