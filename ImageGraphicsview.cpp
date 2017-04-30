@@ -8,6 +8,7 @@ ImageGraphicsview::ImageGraphicsview(QWidget *parent):QGraphicsView(parent)
     this->zoomUpRate=1.5;//默认的放大倍率，预计从设置中更改
     this->zoomDownRate=0.75;//默认的缩小倍率
     this->isPressed = false;//默认鼠标左键没有被按下
+    this->isRoiMoved = false;//默认所选区域在选中后没有被移动过
 
     QPixmap bigGlassesPixmap(":/Icons/icon/bigGlasses.png");
     bigCursor =QCursor(bigGlassesPixmap);
@@ -23,6 +24,7 @@ ImageGraphicsview::ImageGraphicsview(QWidget *parent):QGraphicsView(parent)
     opencvTool = OpenCVTool();//初始化工具类
     thickness = 1;//初始化画笔粗细
     pencilColor = Scalar(0,0,0,255);//初始化铅笔颜色 黑色
+    backColor = Scalar(255,255,255);//初始化背景色 白色
     eraserColor = Scalar(255,255,255,0);//初始化橡皮颜色 白色
 }
 
@@ -120,8 +122,9 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
                 break;
             }
             case SelectMove:{
-                if(isInsideOfRoi(point)) {
+                if(isInsideOfRoi(point) && roiItem->isSelected()) {
                     setCursor(Qt::SizeAllCursor);
+                    isRoiMoved = true;//所选区域被移动了
                     selectMoving(event, this->mapToScene(event->pos()));
                 }else {
                     setCursor(Qt::CrossCursor);
@@ -201,7 +204,7 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
     }
     //当为工具为selectMove时,判断鼠标点击的位置
     if(this->currentActionName == SelectMove) {
-        if(!isInsideOfRoi(point)){//判断鼠标是否在区域外，若在则将区域合成到maskMat中，然后删除roiItem
+        if(!isInsideOfRoi(point) && roiItem->isSelected()){//判断鼠标是否在区域外，若在则将区域合成到maskMat中，然后删除roiItem
             roiToMaskMat();//将选择的区域合成到图片中
             updateMaskItem();
             this->currentActionName = RectSelect;
@@ -246,7 +249,7 @@ void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
         roiMat = opencvTool.selectRectRoi(tempMat, startPoint.toPoint(), endPoint.toPoint());
         roiPixmap = opencvTool.MatToPixmap(roiMat);
         roiItem = new QGraphicsPixmapItem(roiPixmap);
-
+        isRoiMoved = false;
         QPointF temp = QPointF();
         if(startPoint.x() > endPoint.x()){
             temp.setX(endPoint.x());
@@ -292,6 +295,19 @@ void ImageGraphicsview::keyPressEvent(QKeyEvent *event){
                 setCursor(smallCursor);
             }
             isZoomUp = false;
+        }
+    }
+    //当为选择区域时，按下delete键则删除选择区域，图片不变
+    if(this->currentActionName == SelectMove) {
+        if(event->key() == Qt::Key_Delete) {
+            roiItem->setSelected(false);//设置为未选中
+//            if(!isRoiMoved) {//若选择区域没有移动过，则mask上区域变为全透明，mat上区域用背景色填充
+//                QPointF position = roiItem->scenePos();
+                  // TODO 该功能暂时不做，思考：由于是动了两幅图像，在撤销和恢复时该如何处理？
+//            }
+            this->scene()->removeItem(roiItem);
+            this->scene()->update();
+            this->currentActionName = RectSelect;
         }
     }
 }
@@ -386,7 +402,7 @@ void ImageGraphicsview::setPencilColor(QColor color){
  * 设置橡皮工具颜色
  */
 void ImageGraphicsview::setEraserColor(QColor color){
-    eraserColor = Scalar(color.blue(), color.green(), color.red(), 0);
+    backColor = Scalar(color.blue(), color.green(), color.red());
 }
 
 /**
@@ -552,6 +568,7 @@ void ImageGraphicsview::reset()
 {
     isZoomUp = true;
     isPressed = false;
+    isRoiMoved = false;
     clearRedoStack();
     clearUndoStack();
     currentActionName = Default;

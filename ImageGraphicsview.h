@@ -94,12 +94,14 @@ private:
     QPixmap roiPixmap;//选择工具所选的区域Pixmap
     Mat roiMat;//选择工具所选的区域Mat
     QGraphicsPixmapItem *roiItem;//选择工具所选的区域Item
+    bool isRoiMoved;//所选区域在选中后是否被移动过
 
     QPixmap maskPixmap;//图层Pixmap
     Mat maskMat;//图层Mat
     QGraphicsPixmapItem *maskItem;//图层Item
 
-    Scalar pencilColor;//铅笔颜色
+    Scalar pencilColor;//铅笔颜色（前景色）
+    Scalar backColor;//背景色
     Scalar eraserColor;//橡皮颜色
 
     QStack<Mat> undoStack;//撤销
