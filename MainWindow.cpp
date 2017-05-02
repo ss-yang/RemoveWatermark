@@ -13,7 +13,7 @@ int X, Y, WIDTH, HEIGHT;
 QString markedImageDirPath;
 QString unMarkedImageDirPath;
 //当前图片列表目录
-QString curLoadImageDirPath = "";
+QString curLoadImageDirPath = "E:/标准测试图片";
 QString curSaveImageDirPath = "";
 
 MainWindow::MainWindow(QWidget *parent) :

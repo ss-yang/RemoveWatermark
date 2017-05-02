@@ -119,6 +119,33 @@ Mat OpenCVTool::selectRectRoi(Mat &img, QPoint pt1, QPoint pt2)
 }
 
 /**
+ * @brief OpenCVTool::selectFreeRoi
+ * @param img
+ * @param binaryMat
+ * @param movePoints
+ * @return
+ * 获取自由选择的区域
+ */
+Mat OpenCVTool::selectFreeRoi(Mat &img, Mat &binaryMat, Rect tempRect)
+{
+    Mat tempImg = img(tempRect);//获取到选择区域处的图片
+    Mat tempBinaryMat = binaryMat(tempRect);//获取到二值图像上选择到的区域
+    vector<vector<Point>> contours;
+    findContours(tempBinaryMat, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);//获取二值图像上的轮廓信息
+    Mat alphaMat = Mat ::zeros(tempBinaryMat.size(), CV_8UC1);
+    for(int i = 0; i < (int)contours.size(); i++) {
+        drawContours(alphaMat, contours, i, Scalar(255), CV_FILLED);//轮廓内部填充
+    }
+    Mat tempResult = Mat(tempImg.size(), CV_8UC3, Scalar::all(0));
+    tempImg.copyTo(tempResult,alphaMat);
+    Mat result = Mat(tempImg.size(), CV_8UC4, Scalar::all(0));
+    Mat in[] = {tempResult, alphaMat};
+    int fromTo1[] = {0,0, 1,1, 2,2, 3,3};
+    mixChannels(in, 2, &result, 1, fromTo1, 4);
+    return result;
+}
+
+/**
  * @brief OpenCVTool::mask2CurrentMat
  * @param mask
  * @param currentMat

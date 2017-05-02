@@ -32,6 +32,7 @@ ImageGraphicsview::~ImageGraphicsview(){
     delete pixmapItem;
     delete roiItem;
     delete maskItem;
+    delete selectItem;
 }
 
 /**
@@ -56,6 +57,28 @@ inline void ImageGraphicsview::clearRedoStack()
     {
         redoStack.pop();
     }
+}
+
+/**
+ * @brief ImageGraphicsview::minRect
+ * @param movePoints
+ * @return
+ * 计算点集的最外面矩形边界
+ */
+Rect ImageGraphicsview::minRect(vector<Point> movePoints)
+{
+    vector<int> X;
+    vector<int> Y;
+    foreach (Point point, movePoints) {
+        X.push_back(point.x);
+        Y.push_back(point.y);
+    }
+    int minX = *min_element(std::begin(X),std::end(X));
+    int maxX = *max_element(std::begin(X),std::end(X));
+    int minY = *min_element(std::begin(Y),std::end(Y));
+    int maxY = *max_element(std::begin(Y),std::end(Y));
+    Rect rect = Rect(minX-1, minY-1, maxX-minX+3, maxY-minY+3);//略微扩大矩形范围，使得在检测轮廓时边界线能被检测到
+    return rect;
 }
 
 /**
@@ -119,6 +142,13 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
             }
             case FreeSelect:{
                 setCursor(Qt::CrossCursor);
+                if(isPressed) {
+                    opencvTool.drawLine(selectMat, prePoint.toPoint(), point.toPoint(), Scalar(0,0,0,255), 2);
+                    opencvTool.drawLine(binaryMat,prePoint.toPoint(), point.toPoint(), Scalar::all(255), 1);
+                    updateSelcetItem();
+                    prePoint = point;
+                    movePoints.push_back(Point(prePoint.toPoint().x(), prePoint.toPoint().y()));
+                }
                 break;
             }
             case SelectMove:{
@@ -202,12 +232,20 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
             updateMaskItem();
         }
     }
+    //当为自由选择工具时
+    if(this->currentActionName == FreeSelect) {
+        opencvTool.drawLine(selectMat,point.toPoint(), point.toPoint(), Scalar(0,0,0,255), 2);
+        opencvTool.drawLine(binaryMat,point.toPoint(), point.toPoint(), Scalar::all(255), 1);
+        updateSelcetItem();
+        oriStartPoint = point.toPoint();
+        prePoint = point;
+        movePoints.push_back(Point(oriStartPoint.x(), oriStartPoint.y()));
+    }
     //当为工具为selectMove时,判断鼠标点击的位置
     if(this->currentActionName == SelectMove) {
         if(!isInsideOfRoi(point) && roiItem->isSelected()){//判断鼠标是否在区域外，若在则将区域合成到maskMat中，然后删除roiItem
             roiToMaskMat();//将选择的区域合成到图片中
             updateMaskItem();
-            this->currentActionName = RectSelect;
         }
     }
 }
@@ -269,6 +307,31 @@ void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
         this->scene()->addItem(roiItem);
         this->scene()->setFocusItem(roiItem);
         this->scene()->update();
+        preAction = RectSelect;
+        this->currentActionName = SelectMove;//设置当前的工具
+    }
+    //如果是自由选择工具
+    if(this->currentActionName == FreeSelect && startPoint != endPoint) {
+        opencvTool.drawLine(selectMat, endPoint.toPoint(), oriStartPoint, Scalar(0,0,0,255), 2);
+        opencvTool.drawLine(binaryMat,endPoint.toPoint(), oriStartPoint, Scalar::all(255), 1);
+        movePoints.push_back(Point(endPoint.toPoint().x(), endPoint.toPoint().y()));
+        this->scene()->removeItem(selectItem);
+        this->scene()->update();
+        Mat tempMat = opencvTool.mask2CurrentMat(maskMat, currentMat);
+        Rect tempRect = minRect(movePoints);//计算点集的最外面（up-right）矩形边界
+        roiMat = opencvTool.selectFreeRoi(tempMat, binaryMat, tempRect);
+        roiPixmap = opencvTool.MatToPixmap(roiMat);
+        roiItem = new QGraphicsPixmapItem(roiPixmap);
+
+        roiItem->setX(tempRect.x);roiItem->setY(tempRect.y);
+        roiItem->setFlag(QGraphicsItem::ItemIsSelectable);//设置可选
+        roiItem->setFlag(QGraphicsItem::ItemIsMovable);//设置可移动
+        roiItem->setSelected(true);//设置被选中
+        //加入到scene中
+        this->scene()->addItem(roiItem);
+        this->scene()->setFocusItem(roiItem);
+        this->scene()->update();
+        preAction = FreeSelect;
         this->currentActionName = SelectMove;//设置当前的工具
     }
 }
@@ -306,8 +369,19 @@ void ImageGraphicsview::keyPressEvent(QKeyEvent *event){
                   // TODO 该功能暂时不做，思考：由于是动了两幅图像，在撤销和恢复时该如何处理？
 //            }
             this->scene()->removeItem(roiItem);
+            if(preAction == RectSelect) {
+                this->currentActionName = RectSelect;
+            }
+            else if(preAction == FreeSelect) {
+                selectMat = Scalar::all(0);//重置选择工具绘制图层
+                updateSelcetItem();
+                binaryMat = Scalar::all(0);//重置二值图
+                movePoints.clear();//清空移动点
+                this->currentActionName = FreeSelect;
+                this->scene()->addItem(selectItem);
+            }
             this->scene()->update();
-            this->currentActionName = RectSelect;
+            setCursor(Qt::CrossCursor);
         }
     }
 }
@@ -435,7 +509,7 @@ void ImageGraphicsview::actionHandDrag(QMouseEvent *event,QPointF point){
 void ImageGraphicsview::setPixmapItem(QGraphicsPixmapItem *item){
     this->pixmapItem = item;
     pixmap = item->pixmap();
-    initMaskItem();//初始化图层
+    initItem();//初始化图层
 }
 
 /**
@@ -490,7 +564,7 @@ bool ImageGraphicsview::isInsideOfRoi(QPointF point)
  * @brief ImageGraphicsview::updatePixmapItem
  * 更新currentMat到PixmapItem
  */
-void ImageGraphicsview::updatePixmapItem()
+inline void ImageGraphicsview::updatePixmapItem()
 {
     pixmap = opencvTool.MatToPixmap(currentMat);
     pixmapItem->setPixmap(pixmap);
@@ -501,7 +575,7 @@ void ImageGraphicsview::updatePixmapItem()
  * @brief ImageGraphicsview::updateMaskItem
  * 更新maskMat到maskItem
  */
-void ImageGraphicsview::updateMaskItem()
+inline void ImageGraphicsview::updateMaskItem()
 {
     maskPixmap = opencvTool.MatToPixmap(maskMat);
     maskItem->setPixmap(maskPixmap);
@@ -509,16 +583,32 @@ void ImageGraphicsview::updateMaskItem()
 }
 
 /**
- * @brief ImageGraphicsview::initMaskItem
- * 初始化maskItem
+ * @brief ImageGraphicsview::updateSelcetItem
+ * 更新selectMat到selectItem
  */
-inline void ImageGraphicsview::initMaskItem()
+inline void ImageGraphicsview::updateSelcetItem()
+{
+    selectPixmap = opencvTool.MatToPixmap(selectMat);
+    selectItem->setPixmap(selectPixmap);
+    selectItem->update();
+}
+
+/**
+ * @brief ImageGraphicsview::initItem
+ * 初始化所有透明Item
+ */
+inline void ImageGraphicsview::initItem()
 {
     this->maskMat = Mat(pixmapItem->pixmap().height(), pixmapItem->pixmap().width(), CV_8UC4, Scalar::all(0));//生成一个全透明的图层
     maskPixmap = opencvTool.MatToPixmap(maskMat);
     maskItem = new QGraphicsPixmapItem(maskPixmap);
     this->scene()->addItem(maskItem);
+    selectMat = Mat(pixmapItem->pixmap().height(), pixmapItem->pixmap().width(), CV_8UC4, Scalar::all(0));//生成一个全透明的图层
+    selectPixmap = opencvTool.MatToPixmap(selectMat);
+    selectItem = new QGraphicsPixmapItem();
+    this->scene()->addItem(selectItem);
     this->scene()->update();
+    binaryMat = Mat(pixmapItem->pixmap().height(), pixmapItem->pixmap().width(), CV_8UC1, Scalar::all(0));//生成一个全黑二值图像
 }
 
 /**
@@ -533,10 +623,23 @@ void ImageGraphicsview::roiToMaskMat()
     Mat tempMat = maskMat.clone();//在新图上覆盖的原因：copyto函数在执行时，若移动的区域和原来的区域有重合的话，覆盖会不合理
     Mat tempRoi = opencvTool.selectRectRoi(tempMat, a.toPoint(), b.toPoint());
     //将roiMat覆盖到maskMat上
-    Mat alpha = Mat(roiMat.rows, roiMat.cols, CV_8UC1, Scalar(255));
-    Mat in[] = {roiMat, alpha};
-    int fromTo1[] = {0,0, 1,1, 2,2, 3,3};
-    mixChannels(in, 2, &tempRoi, 1, fromTo1, 4);
+    if(roiMat.type() == CV_8UC3) {
+        Mat alpha = Mat(roiMat.rows, roiMat.cols, CV_8UC1, Scalar(255));
+        Mat in[] = {roiMat, alpha};
+        int fromTo1[] = {0,0, 1,1, 2,2, 3,3};
+        mixChannels(in, 2, &tempRoi, 1, fromTo1, 4);
+        this->currentActionName = RectSelect;
+    }
+    else if(roiMat.type() == CV_8UC4) {
+        roiMat.copyTo(tempRoi);
+        selectMat = Scalar::all(0);//重置选择工具绘制图层
+        updateSelcetItem();
+        binaryMat = Scalar::all(0);//重置二值图
+        movePoints.clear();//清空移动点
+        this->currentActionName = FreeSelect;
+        this->scene()->addItem(selectItem);
+        this->scene()->update();
+    }
     maskMat = tempMat;
     roiItem->setSelected(false);//设置为未选中
     this->scene()->removeItem(roiItem);

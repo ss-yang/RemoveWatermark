@@ -22,6 +22,7 @@
 #include <QScrollBar>
 #include <QDebug>
 
+using namespace std;
 using namespace cv;
 
 class ImageGraphicsview : public QGraphicsView
@@ -64,15 +65,18 @@ protected:
     void actionHandDrag(QMouseEvent *event,QPointF point);//抓手移动实现
     void selectMoving(QMouseEvent *event,QPointF point);//拖动选中区域
     bool isInsideOfRoi(QPointF point);//判断鼠标是否在所选区域内
-    void updatePixmapItem();//更新currentMat到PixmapItem
-    void updateMaskItem();//更新maskMat到maskItem
-    inline void initMaskItem();//初始化maskItem
+    inline void updatePixmapItem();//更新currentMat到PixmapItem
+    inline void updateMaskItem();//更新maskMat到maskItem
+    inline void updateSelcetItem();//更新selectMat到selectItem
+    inline void initItem();//初始化所有透明Item
     void roiToMaskMat();//将选择的区域合成到图层中
     inline void clearUndoStack();//清空撤销区
     inline void clearRedoStack();//清空恢复区
+    Rect minRect(vector<Point> movePoints);//计算点集的最外面矩形边界
 
 private:
     ActionName currentActionName = Default;//记录当前选中的工具
+    ActionName preAction;//前一次的action
     QPointF startPoint;//鼠标点击起始点
     QPointF endPoint;//鼠标释放点
     bool isZoomUp;//标记放大缩小的状态，使用的原因是QT的键盘响应事件存在问题，具体见：http://z632922970z.blog.163.com/blog/static/16316610320112245372844/
@@ -95,6 +99,15 @@ private:
     Mat roiMat;//选择工具所选的区域Mat
     QGraphicsPixmapItem *roiItem;//选择工具所选的区域Item
     bool isRoiMoved;//所选区域在选中后是否被移动过
+
+    vector<Point> movePoints;//自由选择工具在移动时经过的点的集合
+    QPointF prePoint;//移动的前一个点
+    Mat binaryMat;//掩膜二值图像
+    QPoint oriStartPoint;//最初始的点击点
+
+    QPixmap selectPixmap;//选择工具绘制图层
+    Mat selectMat;//选择工具绘制Mat
+    QGraphicsPixmapItem *selectItem;//选择工具绘制Item
 
     QPixmap maskPixmap;//图层Pixmap
     Mat maskMat;//图层Mat
