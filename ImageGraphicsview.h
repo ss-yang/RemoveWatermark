@@ -70,6 +70,7 @@ protected:
     inline void updateSelcetItem();//更新selectMat到selectItem
     inline void initItem();//初始化所有透明Item
     void roiToMaskMat();//将选择的区域合成到图层中
+    void roiCancellSelect();//取消选择的区域
     inline void clearUndoStack();//清空撤销区
     inline void clearRedoStack();//清空恢复区
     Rect minRect(vector<Point> movePoints);//计算点集的最外面矩形边界

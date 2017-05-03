@@ -1,5 +1,5 @@
 #include "MainWindow.h"
-#include "ui_mainwindow.h"
+#include "ui_MainWindow.h"
 
 //图像
 vector<Mat> markedImg;
@@ -145,6 +145,7 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         Mat mat = imread((const char *)path.toLocal8Bit(), 1);
         oriPixmap = opencvtool.MatToPixmap(mat);
         currentPixmap = opencvtool.MatToPixmap(mat);
+        ui->OriImageGraphicsView->setCurrentMat(mat);
         ui->CurrentImageGraphicsView->setCurrentMat(mat);
         QString width,height;
         //更新状态栏图片大小信息
@@ -431,4 +432,22 @@ void MainWindow::changeBackColor()
 void MainWindow::on_Save_triggered()
 {
     currentPixmapItem->pixmap().save("D:eeeddee.bmp");
+}
+
+/**
+ * @brief MainWindow::on_Undo_triggered
+ * 撤销
+ */
+void MainWindow::on_Undo_triggered()
+{
+    ui->CurrentImageGraphicsView->undo();
+}
+
+/**
+ * @brief MainWindow::on_Redo_triggered
+ * 恢复
+ */
+void MainWindow::on_Redo_triggered()
+{
+    ui->CurrentImageGraphicsView->redo();
 }

@@ -222,6 +222,8 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
     this->isPressed = true;
     //当为铅笔或者橡皮工具时
     if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
+        Mat temp = maskMat.clone();
+        undoStack.push(temp);
         clearRedoStack();//当铅笔工具或橡皮工具开心新的操作时，则清空恢复区
         if(this->currentActionName == Pencil) {//当为铅笔工具时，前景色画点
             opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
@@ -278,9 +280,6 @@ void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
         return;
     }
     this->isPressed = false;//设置鼠标左键被按下
-    if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
-
-    }
     //如果是矩形选择工具，则画矩形
     if(this->currentActionName == RectSelect && startPoint != endPoint) {
         Mat tempMat = opencvTool.mask2CurrentMat(maskMat, currentMat);
@@ -363,25 +362,11 @@ void ImageGraphicsview::keyPressEvent(QKeyEvent *event){
     //当为选择区域时，按下delete键则删除选择区域，图片不变
     if(this->currentActionName == SelectMove) {
         if(event->key() == Qt::Key_Delete) {
-            roiItem->setSelected(false);//设置为未选中
-//            if(!isRoiMoved) {//若选择区域没有移动过，则mask上区域变为全透明，mat上区域用背景色填充
+            roiCancellSelect();//取消选择的区域
+//          if(!isRoiMoved) {//若选择区域没有移动过，则mask上区域用背景色填充
 //                QPointF position = roiItem->scenePos();
-                  // TODO 该功能暂时不做，思考：由于是动了两幅图像，在撤销和恢复时该如何处理？
-//            }
-            this->scene()->removeItem(roiItem);
-            if(preAction == RectSelect) {
-                this->currentActionName = RectSelect;
-            }
-            else if(preAction == FreeSelect) {
-                selectMat = Scalar::all(0);//重置选择工具绘制图层
-                updateSelcetItem();
-                binaryMat = Scalar::all(0);//重置二值图
-                movePoints.clear();//清空移动点
-                this->currentActionName = FreeSelect;
-                this->scene()->addItem(selectItem);
-            }
-            this->scene()->update();
-            setCursor(Qt::CrossCursor);
+            // TODO 该功能暂时不做，思考：由于是动了两幅图像，在撤销和恢复时该如何处理？
+//          }
         }
     }
 }
@@ -640,9 +625,34 @@ void ImageGraphicsview::roiToMaskMat()
         this->scene()->addItem(selectItem);
         this->scene()->update();
     }
+    Mat temp = maskMat.clone();
+    undoStack.push(temp);
     maskMat = tempMat;
     roiItem->setSelected(false);//设置为未选中
     this->scene()->removeItem(roiItem);
+}
+
+/**
+ * @brief ImageGraphicsview::roiCancellSelect
+ * 取消选择的区域
+ */
+void ImageGraphicsview::roiCancellSelect()
+{
+    roiItem->setSelected(false);//设置为未选中
+    this->scene()->removeItem(roiItem);
+    if(preAction == RectSelect) {
+        this->currentActionName = RectSelect;
+    }
+    else if(preAction == FreeSelect) {
+        selectMat = Scalar::all(0);//重置选择工具绘制图层
+        updateSelcetItem();
+        binaryMat = Scalar::all(0);//重置二值图
+        movePoints.clear();//清空移动点
+        this->currentActionName = FreeSelect;
+        this->scene()->addItem(selectItem);
+    }
+    this->scene()->update();
+    setCursor(Qt::CrossCursor);
 }
 
 /**
@@ -651,7 +661,15 @@ void ImageGraphicsview::roiToMaskMat()
  */
 void ImageGraphicsview::undo()
 {
-
+    if(currentActionName == SelectMove) {
+        roiCancellSelect();
+    }
+    else if(!undoStack.empty()) {
+        Mat temp = maskMat.clone();
+        redoStack.push(temp);
+        maskMat = undoStack.pop();
+        updateMaskItem();
+    }
 }
 
 /**
@@ -660,7 +678,15 @@ void ImageGraphicsview::undo()
  */
 void ImageGraphicsview::redo()
 {
-
+    if(currentActionName == SelectMove) {
+        roiCancellSelect();
+    }
+    else if(!redoStack.empty()) {
+        Mat temp = maskMat.clone();
+        undoStack.push(temp);
+        maskMat = redoStack.pop();
+        updateMaskItem();
+    }
 }
 
 /**

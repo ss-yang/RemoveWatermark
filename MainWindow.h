@@ -85,6 +85,10 @@ private slots:
 
     void on_Save_triggered();
 
+    void on_Undo_triggered();
+
+    void on_Redo_triggered();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemModel *markedImageModel;
