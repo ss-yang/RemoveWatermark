@@ -29,14 +29,16 @@ SOURCES +=\
     OpenCVTool.cpp \
     ImageGraphicsview.cpp \
     MainWindow.cpp \
-    Main.cpp
+    Main.cpp \
+    Images.cpp
 
 HEADERS  += \
     ColorLabel.h \
     ThicknessSlider.h \
     OpenCVTool.h \
     ImageGraphicsview.h \
-    MainWindow.h
+    MainWindow.h \
+    Images.h
 
 FORMS    += \
     ThicknessSlider.ui \

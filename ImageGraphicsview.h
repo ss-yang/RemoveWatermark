@@ -35,6 +35,8 @@ public:
     ImageGraphicsview(QWidget *parent);
     ~ImageGraphicsview();
     void reset();//重置变量状态
+    Mat saveCurrentMat(string filename);//保存当前图片到指定的路径
+    bool isSaved;//当前图片是否被修改（保存了则为true）
 
 signals:
     void mouseMovetriggerSignal(QString location);

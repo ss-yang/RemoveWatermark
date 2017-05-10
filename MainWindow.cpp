@@ -1,21 +1,6 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-//图像
-vector<Mat> markedImg;
-vector<Mat> unmarkedImg;
-//图片路径
-vector<string> markedImgPath;
-vector<string> unmarkedImgPath;
-//水印位置
-int X, Y, WIDTH, HEIGHT;
-//图片目录
-QString markedImageDirPath;
-QString unMarkedImageDirPath;
-//当前图片列表目录
-QString curLoadImageDirPath = "E:/标准测试图片";
-QString curSaveImageDirPath = "";
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -110,6 +95,8 @@ MainWindow::~MainWindow()
     delete currentPixmapItem;
     delete thicknessSlider;
     delete thicknessAction;
+    delete maskItem;
+    delete resultItem;
 }
 
 /**
@@ -134,7 +121,9 @@ void MainWindow::on_Open_triggered()
  */
 void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
 {
-    QString path = markedImageModel->fileInfo(index).absoluteFilePath();
+    QString path = markedImageModel->fileInfo(index).absoluteFilePath();//获取到绝对路径
+    //获取到图片的文件名，并去除文件名中的格式
+    markedImageFileName = markedImageModel->fileInfo(index).fileName();
     if(markedImageModel->fileInfo(index).isDir()) {//是目录则进入目录
         curLoadImageDirPath = path;
         ui->LoadImageListView->setRootIndex(markedImageModel->setRootPath(path));
@@ -142,11 +131,13 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
     }else if(!oriPixmap.load(path) || !currentPixmap.load(path)){//是图片则读取图片显示
         QMessageBox::warning(this,"提示","打开图像失败！");
     }else {
-        Mat mat = imread((const char *)path.toLocal8Bit(), 1);
-        oriPixmap = opencvtool.MatToPixmap(mat);
-        currentPixmap = opencvtool.MatToPixmap(mat);
-        ui->OriImageGraphicsView->setCurrentMat(mat);
-        ui->CurrentImageGraphicsView->setCurrentMat(mat);
+        markedImageDirPath = (const char *)path.toLocal8Bit();//QString转string
+        unMarkedImageDirPath.clear();//清空修改图片的路径
+        markedMat = imread(markedImageDirPath, 1);
+        oriPixmap = opencvtool.MatToPixmap(markedMat);
+        currentPixmap = opencvtool.MatToPixmap(markedMat);
+        ui->OriImageGraphicsView->setCurrentMat(markedMat);
+        ui->CurrentImageGraphicsView->setCurrentMat(markedMat);
         QString width,height;
         //更新状态栏图片大小信息
         ui->ImageSizeLabel->setText(width.setNum(oriPixmap.width()) + " × " + height.setNum(oriPixmap.height()) + " 像素");
@@ -431,7 +422,30 @@ void MainWindow::changeBackColor()
  */
 void MainWindow::on_Save_triggered()
 {
-    currentPixmapItem->pixmap().save("D:eeeddee.bmp");
+    if(ui->CurrentImageGraphicsView->scene() ==NULL) {//没有加载图片时，不执行
+        return;
+    }
+    if(ui->CurrentImageGraphicsView->isSaved) {//已被保存未修改过，不执行
+        return;
+    }
+    if(unMarkedImageDirPath.length() == 0) {//当保存修改的图片路径为空时
+        QString targetPath = curSaveImageDirPath + "/" + markedImageFileName;
+        QString path = QFileDialog::getSaveFileName(this,"保存修改后文件",targetPath,"*.bmp");
+        if(!path.isEmpty()) {
+            unMarkedImageDirPath = (const char *)path.toLocal8Bit();//QString转string
+            unmarkedMat = ui->CurrentImageGraphicsView->saveCurrentMat(unMarkedImageDirPath);//获取到保存的Mat
+            //更新保存目录控件
+            int first = path.lastIndexOf ("/"); //从后面查找"/"位置
+            markedImageFileName = path.right(path.length()-first-1);//获取到新的文件名
+            path = path.left(first);//获得上一级路径
+            if(first < 0) {path = "";}
+            curSaveImageDirPath = path;
+            ui->SaveImageListView->setRootIndex(unMarkedImageModel->setRootPath(path));
+            ui->SaveImagePathLineEdit->setText(path);
+        }
+    }else{//文件被保存过时，直接按路径保存
+        unmarkedMat = ui->CurrentImageGraphicsView->saveCurrentMat(unMarkedImageDirPath);//获取到保存的Mat
+    }
 }
 
 /**

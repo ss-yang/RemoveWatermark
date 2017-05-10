@@ -107,6 +107,7 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
                     opencvTool.drawLine(maskMat, startPoint.toPoint(), point.toPoint(), pencilColor, thickness);
                     updateMaskItem();
                     startPoint = point;
+                    isSaved = false;
                 }
                 break;
             }
@@ -116,6 +117,7 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
                     opencvTool.drawLine(maskMat, startPoint.toPoint(), point.toPoint(), eraserColor, thickness);
                     updateMaskItem();
                     startPoint = point;
+                    isSaved = false;
                 }
                 break;
             }
@@ -228,10 +230,12 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
         if(this->currentActionName == Pencil) {//当为铅笔工具时，前景色画点
             opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
             updateMaskItem();
+            isSaved = false;
         }
         if(this->currentActionName == Eraser) {//当为橡皮工具时，背景色画点
             opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
             updateMaskItem();
+            isSaved = false;
         }
     }
     //当为自由选择工具时
@@ -630,6 +634,7 @@ void ImageGraphicsview::roiToMaskMat()
     maskMat = tempMat;
     roiItem->setSelected(false);//设置为未选中
     this->scene()->removeItem(roiItem);
+    isSaved = false;
 }
 
 /**
@@ -669,6 +674,7 @@ void ImageGraphicsview::undo()
         redoStack.push(temp);
         maskMat = undoStack.pop();
         updateMaskItem();
+        isSaved = false;
     }
 }
 
@@ -686,7 +692,21 @@ void ImageGraphicsview::redo()
         undoStack.push(temp);
         maskMat = redoStack.pop();
         updateMaskItem();
+        isSaved = false;
     }
+}
+
+/**
+ * @brief ImageGraphicsview::saveCurrentMat
+ * @param path
+ * 保存当前图片到指定的路径
+ */
+Mat ImageGraphicsview::saveCurrentMat(string filename)
+{
+    Mat img = opencvTool.mask2CurrentMat(maskMat, currentMat);
+    imwrite(filename, img);
+    isSaved = true;
+    return img;
 }
 
 /**
@@ -698,6 +718,7 @@ void ImageGraphicsview::reset()
     isZoomUp = true;
     isPressed = false;
     isRoiMoved = false;
+    isSaved = false;
     clearRedoStack();
     clearUndoStack();
     currentActionName = Default;
