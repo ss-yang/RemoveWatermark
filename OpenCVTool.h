@@ -3,6 +3,8 @@
 
 #include <opencv2/opencv.hpp>
 
+#include <Images.h>
+
 #include <QPixmap>
 #include <QPoint>
 #include <QImage>
@@ -28,6 +30,10 @@ public:
     Mat selectFreeRoi(Mat &img, Mat &binaryMat, Rect tempRect);//获取自由选择的区域
 
     Mat mask2CurrentMat(Mat& mask, Mat& currentMat);//将图层与原图合并
+
+    void getMaskAndOpacity(vector<Images> calculateImg, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//计算水印以及混合比
+
+    void getResultMat(Mat &markedMat, Mat &resultMat, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//模拟去除结果
 };
 
 #endif // OPENCVTOOL_H

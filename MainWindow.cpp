@@ -53,6 +53,14 @@ MainWindow::MainWindow(QWidget *parent) :
      */
     opencvtool = OpenCVTool();
 
+    /**
+     * 初始化水印区域的位置
+     */
+    X=0;Y=0;HEIGHT=0;WIDTH=0;
+    ui->XLineEdit->setText(QString::number(X));
+    ui->YLineEdit->setText(QString::number(Y));
+    ui->WLineEdit->setText(QString::number(WIDTH));
+    ui->HLineEdit->setText(QString::number(HEIGHT));
 
     //当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
     QObject::connect(ui->OriImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
@@ -97,6 +105,8 @@ MainWindow::~MainWindow()
     delete thicknessAction;
     delete maskItem;
     delete resultItem;
+    delete maskScene;
+    delete resultScene;
 }
 
 /**
@@ -531,4 +541,47 @@ void MainWindow::on_Undo_triggered()
 void MainWindow::on_Redo_triggered()
 {
     ui->CurrentImageGraphicsView->redo();
+}
+
+/**
+ * @brief MainWindow::on_getMaskAction_triggered
+ * 计算提取水印
+ */
+void MainWindow::on_getMaskAction_triggered()
+{
+    X = ui->XLineEdit->text().toInt();
+    Y = ui->YLineEdit->text().toInt();
+    WIDTH = ui->WLineEdit->text().toInt();
+    HEIGHT = ui->HLineEdit->text().toInt();
+    if(calculateImg.size() == 0) {
+        QMessageBox::warning(this,"提示","图片数量不足！");
+        return;
+    }
+    if(WIDTH ==0 && HEIGHT ==0) {
+        QMessageBox::warning(this,"提示","未指定水印区域！");
+        return;
+    }
+    opencvtool.getMaskAndOpacity(calculateImg,maskMat,opacityMat,X,Y,WIDTH,HEIGHT);
+    maskPixmap = opencvtool.MatToPixmap(maskMat);
+    maskScene = new QGraphicsScene;
+    maskItem = new QGraphicsPixmapItem(maskPixmap);
+    maskScene->addItem(maskItem);
+    ui->MaskImageGraphicsView->setScene(maskScene);
+    ui->MaskImageGraphicsView->show();
+}
+
+/**
+ * @brief MainWindow::on_getResultAction_triggered
+ * 模拟去除结果
+ */
+void MainWindow::on_getResultAction_triggered()
+{
+    Mat marked = markedMat.clone();
+    opencvtool.getResultMat(marked,resultMat, maskMat,opacityMat,X,Y,WIDTH,HEIGHT);
+    resultPixmap = opencvtool.MatToPixmap(resultMat);
+    resultScene = new QGraphicsScene;
+    resultItem = new QGraphicsPixmapItem(resultPixmap);
+    resultScene->addItem(resultItem);
+    ui->ResultImagegraphicsView->setScene(resultScene);
+    ui->ResultImagegraphicsView->show();
 }

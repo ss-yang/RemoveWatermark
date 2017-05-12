@@ -174,3 +174,81 @@ Mat OpenCVTool::mask2CurrentMat(Mat &mask, Mat &currentMat)
     }
     return result;
 }
+
+/**
+ * @brief OpenCVTool::getMaskAndOpacity
+ * @param calculateImg
+ * @param maskMat
+ * @param opacityMat
+ * @param X
+ * @param Y
+ * @param WIDTH
+ * @param HEIGHT
+ * 计算水印以及混合比
+ */
+void OpenCVTool::getMaskAndOpacity(vector<Images> calculateImg, Mat &maskMat, Mat &opacityMat, int X, int Y, int WIDTH, int HEIGHT)
+{
+    maskMat = Mat(HEIGHT, WIDTH, CV_32FC3);
+    opacityMat = Mat(HEIGHT, WIDTH, CV_32FC3);
+    Rect rect = Rect(X, Y, WIDTH, HEIGHT);
+    Mat Ex = Mat(HEIGHT, WIDTH, CV_32FC3);
+    Mat Ey = Mat(HEIGHT, WIDTH, CV_32FC3);
+    Mat Exy = Mat(HEIGHT, WIDTH, CV_32FC3);
+    Mat Ex2 = Mat(HEIGHT, WIDTH, CV_32FC3);
+    Mat one = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(1));
+    int n = calculateImg.size();
+    Ex = 0; Ey = 0; Exy = 0; Ex2 = 0;
+
+    for(int i = 0; i < n; i++) {
+        Images img = calculateImg[i];
+        Mat marked = img.markedMat.clone();
+        Mat temp1(marked, rect);
+        temp1.convertTo(temp1,CV_32FC3);
+        Mat unmarked = img.unMarkedMat.clone();
+        Mat temp2(unmarked, rect);
+        temp2.convertTo(temp2,CV_32FC3);
+
+        Ex = Ex + temp2;
+        Ey = Ey + temp1;
+        Exy = Exy + temp2.mul(temp1);
+        Ex2 = Ex2 + temp2.mul(temp2);
+    }
+    opacityMat = (Exy - Ex.mul(Ey) / n) / (Ex2 - Ex.mul(Ex) / n);
+    //单个整数无法与矩阵进行加减操作，需要将整数转为矩阵
+    maskMat = (Ey - opacityMat.mul(Ex)) / (one - opacityMat) / n;
+    opacityMat = opacityMat.mul(255);
+    opacityMat.convertTo(opacityMat, CV_8UC3);
+    maskMat.convertTo(maskMat,CV_8UC3);
+}
+
+/**
+ * @brief OpenCVTool::getResultMat
+ * @param markedMat
+ * @param resultMat
+ * @param maskMat
+ * @param opacityMat
+ * @param X
+ * @param Y
+ * @param WIDTH
+ * @param HEIGHT
+ * 模拟去除结果
+ */
+void OpenCVTool::getResultMat(Mat &markedMat, Mat &resultMat, Mat &maskMat, Mat &opacityMat, int X, int Y, int WIDTH, int HEIGHT)
+{
+    markedMat.convertTo(markedMat, CV_32FC3);
+    Rect rect = Rect(X, Y, WIDTH, HEIGHT);
+    Mat marked(markedMat, rect);
+    resultMat = Mat(HEIGHT, WIDTH, CV_32FC3);
+    maskMat.convertTo(maskMat, CV_32FC3);
+    opacityMat.convertTo(opacityMat, CV_32FC3);
+    Mat one = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(1));
+    Mat max = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(255));
+    opacityMat = opacityMat / max;//混合度归一化
+    //计算原图
+    resultMat = (marked - maskMat.mul(one - opacityMat)) / opacityMat;
+    //图像格式复原
+    resultMat.convertTo(resultMat,CV_8UC3);
+    markedMat.convertTo(markedMat, CV_8UC3);
+    maskMat.convertTo(maskMat, CV_8UC3);
+    opacityMat.convertTo(opacityMat, CV_8UC3);
+}

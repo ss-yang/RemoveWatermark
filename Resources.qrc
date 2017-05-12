@@ -21,5 +21,7 @@
         <file>icon/pencil_24px.png</file>
         <file>icon/forbidden.png</file>
         <file>icon/eraser_24px.png</file>
+        <file>icon/getMaskImage.png</file>
+        <file>icon/getResultImage.png</file>
     </qresource>
 </RCC>

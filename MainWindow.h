@@ -3,7 +3,6 @@
 
 #include <opencv2/opencv.hpp>
 #include <ctime>
-#include <map>
 
 #include <OpenCVTool.h>
 #include <ImageGraphicsview.h>
@@ -71,6 +70,8 @@ private slots:
     void on_Save_triggered();
     void on_Undo_triggered();
     void on_Redo_triggered();
+    void on_getMaskAction_triggered();
+    void on_getResultAction_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -112,10 +113,13 @@ private:
 
     QPixmap maskPixmap;//水印Pixmap
     Mat maskMat;//水印Mat
+    Mat opacityMat;//混合比Mat
+    QGraphicsScene *maskScene;
     QGraphicsPixmapItem *maskItem;//水印Item
 
     QPixmap resultPixmap;//模拟去除pixmap
     Mat resultMat;//模拟去除Mat
+    QGraphicsScene *resultScene;
     QGraphicsPixmapItem *resultItem;//模拟去除Item
 };
 
