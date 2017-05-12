@@ -122,8 +122,6 @@ void MainWindow::on_Open_triggered()
 void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
 {
     QString path = markedImageModel->fileInfo(index).absoluteFilePath();//获取到绝对路径
-    //获取到图片的文件名，并去除文件名中的格式
-    markedImageFileName = markedImageModel->fileInfo(index).fileName();
     if(markedImageModel->fileInfo(index).isDir()) {//是目录则进入目录
         curLoadImageDirPath = path;
         ui->LoadImageListView->setRootIndex(markedImageModel->setRootPath(path));
@@ -131,13 +129,46 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
     }else if(!oriPixmap.load(path) || !currentPixmap.load(path)){//是图片则读取图片显示
         QMessageBox::warning(this,"提示","打开图像失败！");
     }else {
-        markedImageDirPath = (const char *)path.toLocal8Bit();//QString转string
-        unMarkedImageDirPath.clear();//清空修改图片的路径
-        markedMat = imread(markedImageDirPath, 1);
+        //当当前图片未保存时，提示保存
+        if(ui->CurrentImageGraphicsView->scene() != NULL && !ui->CurrentImageGraphicsView->isSaved) {//
+            int reply = QMessageBox::warning(this,tr("提示"),tr("图片尚未保存，是否保存该图片？"),tr("保存"),tr("不保存"),tr("取消"),0,2);
+            if(reply == 0) {//保存图片
+                on_Save_triggered();
+                return;
+            }else if(reply == 2){//取消，直接返回，该次操作无效
+                return;
+            }//不保存，忽略图片，执行下一步
+        }else if(ui->CurrentImageGraphicsView->scene() != NULL && ui->CurrentImageGraphicsView->isSaved){//当图片保存了，提示是否将其带入到计算
+            int reply = QMessageBox::warning(this,tr("提示"),tr("是否将该图片带入到计算中？"),tr("是"),tr("否"),0,1);
+            if(reply == 0) {//是，则将其存入到calculateImg中
+                Images img = Images(markedImageDirPath, unMarkedImageDirPath, markedMat.clone(), unmarkedMat.clone());
+                calculateImg.push_back(img);
+            }//否，执行下一步
+        }
+        //获取到图片的文件名，并去除文件名中的格式
+        markedImageFileName = markedImageModel->fileInfo(index).fileName();
+        int first = markedImageFileName.lastIndexOf ("."); //从后面查找"."位置
+        markedImageFileName = markedImageFileName.left(first);//去除文件名中的格式
+        //判断将要打开的图片在集合中是否存在，若存在则从集合中取出，同时将其从集合中删除
+        string pa = (const char *)path.toLocal8Bit();//QString转string;
+        int result = isContainMarkedImg(pa);//判断是否存在
+        if(result != 0) {
+            Images img = calculateImg[result - 1];
+            calculateImg.erase(calculateImg.begin()+result-1);
+            markedImageDirPath = img.markedImgPath;
+            unMarkedImageDirPath = img.unmarkedImgPath;
+            markedMat = img.markedMat;
+            unmarkedMat = img.unMarkedMat;
+        }else{//不存在，则读取图片
+            markedImageDirPath = pa;
+            unMarkedImageDirPath.clear();//清空修改图片的路径
+            markedMat = imread(markedImageDirPath, 1);
+            unmarkedMat = markedMat.clone();
+        }
         oriPixmap = opencvtool.MatToPixmap(markedMat);
-        currentPixmap = opencvtool.MatToPixmap(markedMat);
+        currentPixmap = opencvtool.MatToPixmap(unmarkedMat);
         ui->OriImageGraphicsView->setCurrentMat(markedMat);
-        ui->CurrentImageGraphicsView->setCurrentMat(markedMat);
+        ui->CurrentImageGraphicsView->setCurrentMat(unmarkedMat);
         QString width,height;
         //更新状态栏图片大小信息
         ui->ImageSizeLabel->setText(width.setNum(oriPixmap.width()) + " × " + height.setNum(oriPixmap.height()) + " 像素");
@@ -146,14 +177,14 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         oriScence = new QGraphicsScene;
         oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
         oriScence->addItem(oriPixmapItem);
-        ui->OriImageGraphicsView->reset();
+        ui->OriImageGraphicsView->reset();//重置状态
         ui->OriImageGraphicsView->setScene(oriScence);
         ui->OriImageGraphicsView->show();
         ui->OriImageGraphicsView->setPixmapItem(oriPixmapItem);
         currentScence = new QGraphicsScene;
         currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
         currentScence->addItem(currentPixmapItem);
-        ui->CurrentImageGraphicsView->reset();
+        ui->CurrentImageGraphicsView->reset();//重置状态
         ui->CurrentImageGraphicsView->setScene(currentScence);
         ui->CurrentImageGraphicsView->show();
         ui->CurrentImageGraphicsView->setPixmapItem(currentPixmapItem);
@@ -388,6 +419,42 @@ inline void MainWindow::resetAction() {
     ui->Hand->setChecked(false);
     ui->RectSelect->setChecked(false);
     ui->FreeSelect->setChecked(false);
+}
+
+/**
+ * @brief MainWindow::isContainMarkedImg
+ * @param markedPath
+ * @return
+ * 集合中是否存在水印图
+ */
+int MainWindow::isContainMarkedImg(string markedPath)
+{
+    Images img;
+    for(unsigned int i =0; i< calculateImg.size();i++) {
+        img = calculateImg[i];
+        if(img.markedImgPath == markedPath) {
+            return i+1;
+        }
+    }
+    return 0;
+}
+
+/**
+ * @brief MainWindow::isContainUnMarkedImg
+ * @param unmarkedPath
+ * @return
+ * 集合中是否存在去水印图
+ */
+int MainWindow::isContainUnMarkedImg(string unmarkedPath)
+{
+    Images img;
+    for(unsigned int i =0; i< calculateImg.size();i++) {
+        img = calculateImg[i];
+        if(img.unmarkedImgPath == unmarkedPath) {
+            return i+1;
+        }
+    }
+    return 0;
 }
 
 /**

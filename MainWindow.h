@@ -3,6 +3,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <ctime>
+#include <map>
 
 #include <OpenCVTool.h>
 #include <ImageGraphicsview.h>
@@ -29,7 +30,7 @@
 #include <QPointF>
 #include <QScrollBar>
 #include <QDebug>
-#include <map>
+
 using namespace std;
 using namespace cv;
 
@@ -92,11 +93,9 @@ private:
     OpenCVTool opencvtool;
 
     //图像
-    vector<Images> markedImg;
-    vector<Images> unmarkedImg;
-    //图片路径
-    vector<string> markedImgPath;
-    vector<string> unmarkedImgPath;
+    vector<Images> calculateImg;
+    int isContainMarkedImg(string markedPath);//集合中是否存在水印图
+    int isContainUnMarkedImg(string unmarkedPath);//集合中是否存在去水印图
     //水印位置
     int X, Y, WIDTH, HEIGHT;
     //当前的图片Mat
