@@ -1,16 +1,16 @@
-#ifndef IMAGES_H
-#define IMAGES_H
+#ifndef IMAGEPAIR_H
+#define IMAGEPAIR_H
 
 #include <opencv2/opencv.hpp>
 #include <map>
 using namespace cv;
 using namespace std;
 
-class Images
+class ImagePair
 {
 public:
-    Images();
-    Images(string oriPath, string currentPath, Mat oriM, Mat curM);
+    ImagePair();
+    ImagePair(string oriPath, string currentPath, Mat oriM, Mat curM);
 
     string markedImgPath;//原始图片路径
     string unmarkedImgPath;//修改图片保存路径
@@ -18,4 +18,4 @@ public:
     Mat unMarkedMat;//修改后图片
 };
 
-#endif // IMAGES_H
+#endif // IMAGEPAIR_H

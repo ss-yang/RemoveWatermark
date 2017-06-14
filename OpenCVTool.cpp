@@ -186,7 +186,7 @@ Mat OpenCVTool::mask2CurrentMat(Mat &mask, Mat &currentMat)
  * @param HEIGHT
  * 计算水印以及混合比
  */
-void OpenCVTool::getMaskAndOpacity(vector<Images> calculateImg, Mat &maskMat, Mat &opacityMat, int X, int Y, int WIDTH, int HEIGHT)
+void OpenCVTool::getMaskAndOpacity(vector<ImagePair> calculateImg, Mat &maskMat, Mat &opacityMat, int X, int Y, int WIDTH, int HEIGHT)
 {
     maskMat = Mat(HEIGHT, WIDTH, CV_32FC3);
     opacityMat = Mat(HEIGHT, WIDTH, CV_32FC3);
@@ -200,7 +200,7 @@ void OpenCVTool::getMaskAndOpacity(vector<Images> calculateImg, Mat &maskMat, Ma
     Ex = 0; Ey = 0; Exy = 0; Ex2 = 0;
 
     for(int i = 0; i < n; i++) {
-        Images img = calculateImg[i];
+        ImagePair img = calculateImg[i];
         Mat marked = img.markedMat.clone();
         Mat temp1(marked, rect);
         temp1.convertTo(temp1,CV_32FC3);

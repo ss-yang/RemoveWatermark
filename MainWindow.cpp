@@ -151,7 +151,7 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         }else if(ui->CurrentImageGraphicsView->scene() != NULL && ui->CurrentImageGraphicsView->isSaved){//当图片保存了，提示是否将其带入到计算
             int reply = QMessageBox::warning(this,tr("提示"),tr("是否将该图片带入到计算中？"),tr("是"),tr("否"),0,1);
             if(reply == 0) {//是，则将其存入到calculateImg中
-                Images img = Images(markedImageDirPath, unMarkedImageDirPath, markedMat.clone(), unmarkedMat.clone());
+                ImagePair img = ImagePair(markedImageDirPath, unMarkedImageDirPath, markedMat.clone(), unmarkedMat.clone());
                 calculateImg.push_back(img);
             }//否，执行下一步
         }
@@ -163,7 +163,7 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         string pa = (const char *)path.toLocal8Bit();//QString转string;
         int result = isContainMarkedImg(pa);//判断是否存在
         if(result != 0) {
-            Images img = calculateImg[result - 1];
+            ImagePair img = calculateImg[result - 1];
             calculateImg.erase(calculateImg.begin()+result-1);
             markedImageDirPath = img.markedImgPath;
             unMarkedImageDirPath = img.unmarkedImgPath;
@@ -439,7 +439,7 @@ inline void MainWindow::resetAction() {
  */
 int MainWindow::isContainMarkedImg(string markedPath)
 {
-    Images img;
+    ImagePair img;
     for(unsigned int i =0; i< calculateImg.size();i++) {
         img = calculateImg[i];
         if(img.markedImgPath == markedPath) {
@@ -457,7 +457,7 @@ int MainWindow::isContainMarkedImg(string markedPath)
  */
 int MainWindow::isContainUnMarkedImg(string unmarkedPath)
 {
-    Images img;
+    ImagePair img;
     for(unsigned int i =0; i< calculateImg.size();i++) {
         img = calculateImg[i];
         if(img.unmarkedImgPath == unmarkedPath) {

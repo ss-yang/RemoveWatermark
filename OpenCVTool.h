@@ -3,7 +3,7 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <Images.h>
+#include <ImagePair.h>
 
 #include <QPixmap>
 #include <QPoint>
@@ -31,7 +31,7 @@ public:
 
     Mat mask2CurrentMat(Mat& mask, Mat& currentMat);//将图层与原图合并
 
-    void getMaskAndOpacity(vector<Images> calculateImg, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//计算水印以及混合比
+    void getMaskAndOpacity(vector<ImagePair> calculateImg, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//计算水印以及混合比
 
     void getResultMat(Mat &markedMat, Mat &resultMat, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//模拟去除结果
 };

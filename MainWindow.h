@@ -8,7 +8,7 @@
 #include <ImageGraphicsview.h>
 #include <ColorLabel.h>
 #include <ThicknessSlider.h>
-#include <Images.h>
+#include <ImagePair.h>
 
 #include <QMainWindow>
 #include <QGraphicsPixmapItem>
@@ -94,7 +94,7 @@ private:
     OpenCVTool opencvtool;
 
     //图像
-    vector<Images> calculateImg;
+    vector<ImagePair> calculateImg;
     int isContainMarkedImg(string markedPath);//集合中是否存在水印图
     int isContainUnMarkedImg(string unmarkedPath);//集合中是否存在去水印图
     //水印位置

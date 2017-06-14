@@ -30,7 +30,7 @@ SOURCES +=\
     ImageGraphicsview.cpp \
     MainWindow.cpp \
     Main.cpp \
-    Images.cpp
+    ImagePair.cpp
 
 HEADERS  += \
     ColorLabel.h \
@@ -38,7 +38,7 @@ HEADERS  += \
     OpenCVTool.h \
     ImageGraphicsview.h \
     MainWindow.h \
-    Images.h
+    ImagePair.h
 
 FORMS    += \
     ThicknessSlider.ui \
