@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = TestQt
+TARGET = RemoveWatermark
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -44,21 +44,13 @@ FORMS    += \
     ThicknessSlider.ui \
     MainWindow.ui
 
-INCLUDEPATH += E:\opencv_QT\include\opencv\
+INCLUDEPATH += F:\opencv_QT\include\opencv\
 
-INCLUDEPATH += E:\opencv_QT\include\opencv2\
+INCLUDEPATH += F:\opencv_QT\include\opencv2\
 
-INCLUDEPATH += E:\opencv_QT\include\
+INCLUDEPATH += F:\opencv_QT\include\
 
-LIBS += -L E:\opencv_QT\lib\libopencv_*.a
-
-#INCLUDEPATH += F:\QtOpencv\opencv\include\opencv\
-
-#INCLUDEPATH += F:\QtOpencv\opencv\include\opencv2\
-
-#INCLUDEPATH += F:\QtOpencv\opencv\include
-
-#LIBS += -L F:\QtOpencv\opencv\lib\libopencv_*.a
+LIBS += -L F:\opencv_QT\lib\libopencv_*.a
 
 RESOURCES += \   
     Resources.qrc
