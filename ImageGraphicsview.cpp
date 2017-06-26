@@ -140,6 +140,11 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
             }
             case RectSelect:{
                 setCursor(Qt::CrossCursor);
+                if(isPressed) {
+                    selectMat = Scalar::all(0);//重置选择工具绘制图层
+                    opencvTool.drawDashLineRect(selectMat, startPoint.toPoint(), point.toPoint());//绘制虚线矩形表示当前所选择的区域
+                    updateSelcetItem();
+                }
                 break;
             }
             case FreeSelect:{
@@ -286,6 +291,8 @@ void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
     this->isPressed = false;//设置鼠标左键被按下
     //如果是矩形选择工具，则画矩形
     if(this->currentActionName == RectSelect && startPoint != endPoint) {
+        selectMat = Scalar::all(0);//重置选择工具绘制图层
+        updateSelcetItem();
         Mat tempMat = opencvTool.mask2CurrentMat(maskMat, currentMat);
         roiMat = opencvTool.selectRectRoi(tempMat, startPoint.toPoint(), endPoint.toPoint());
         roiPixmap = opencvTool.MatToPixmap(roiMat);

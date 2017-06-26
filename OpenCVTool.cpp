@@ -176,6 +176,83 @@ Mat OpenCVTool::mask2CurrentMat(Mat &mask, Mat &currentMat)
 }
 
 /**
+ * @brief OpenCVTool::drawDashLine
+ * @param img
+ * @param pt1
+ * @param pt2
+ * @return
+ * 绘制虚线矩形
+ */
+void OpenCVTool::drawDashLineRect(Mat &img, QPoint pt1, QPoint pt2)
+{
+    int linelength = 4;//实线长度
+    int dashlength = 4;//虚线长度
+    int thickness = 1;//线粗
+    Scalar lineColor = Scalar(0,0,0,255);//实线黑色
+    Scalar dashColor = Scalar(255,255,255,255);//虚线白色
+    bool isLine = true;//当前要画的线是否为实线
+    //获得矩形的起点与终点
+    Point startPoint = Point(pt1.x(), pt1.y());
+    Point endPoint = Point(pt2.x(), pt2.y());
+    int temp;
+    if(startPoint.x > endPoint.x) {
+        temp = startPoint.x;
+        startPoint.x = endPoint.x;
+        endPoint.x =temp;
+    }
+    if(startPoint.y > endPoint.y) {
+        temp = startPoint.y;
+        startPoint.y = endPoint.y;
+        endPoint.y =temp;
+    }
+    Point startPoint1,endPoint1,startPoint2,endPoint2;
+    int startX = startPoint.x; int endX = startX;
+    int startY = startPoint.y; int endY = startY;
+    //绘制横轴的两条虚线
+    while(endX < endPoint.x) {
+        //如果要画实线加实线长度否则加虚线长度
+        if(isLine) {endX += linelength;}else{endX += dashlength;}
+        //如果超出范围，则等于最大值
+        if(endX > endPoint.x) {endX = endPoint.x;}
+        startPoint1 = Point(startX, startPoint.y);
+        endPoint1   = Point(endX, startPoint.y);
+        startPoint2 = Point(startX, endPoint.y);
+        endPoint2   = Point(endX, endPoint.y);
+        startX = endX;
+        if(isLine) {
+            line(img, startPoint1, endPoint1, lineColor, thickness);//绘制上边的实线
+            line(img, startPoint2, endPoint2, lineColor, thickness);//绘制下边的实线
+            isLine = false;
+        }else{
+            line(img, startPoint1, endPoint1, dashColor, thickness);//绘制上边的虚线
+            line(img, startPoint2, endPoint2, dashColor, thickness);//绘制下边的虚线
+            isLine = true;
+        }
+    }
+    //绘制横轴的两条虚线
+    while(endY < endPoint.y) {
+        //如果要画实线加实线长度否则加虚线长度
+        if(isLine) {endY += linelength;}else{endY += dashlength;}
+        //如果超出范围，则等于最大值
+        if(endY > endPoint.y) {endY = endPoint.y;}
+        startPoint1 = Point(startPoint.x, startY);
+        endPoint1   = Point(startPoint.x, endY);
+        startPoint2 = Point(endPoint.x, startY);
+        endPoint2   = Point(endPoint.x, endY);
+        startY = endY;
+        if(isLine) {
+            line(img, startPoint1, endPoint1, lineColor, thickness);//绘制左边的实线
+            line(img, startPoint2, endPoint2, lineColor, thickness);//绘制右边的实线
+            isLine = false;
+        }else{
+            line(img, startPoint1, endPoint1, dashColor, thickness);//绘制左边的虚线
+            line(img, startPoint2, endPoint2, dashColor, thickness);//绘制右边的虚线
+            isLine = true;
+        }
+    }
+}
+
+/**
  * @brief OpenCVTool::getMaskAndOpacity
  * @param calculateImg
  * @param maskMat

@@ -31,6 +31,8 @@ public:
 
     Mat mask2CurrentMat(Mat& mask, Mat& currentMat);//将图层与原图合并
 
+    void drawDashLineRect(Mat &img, QPoint pt1, QPoint pt2);//绘制虚线矩形
+
     void getMaskAndOpacity(vector<ImagePair> calculateImg, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//计算水印以及混合比
 
     void getResultMat(Mat &markedMat, Mat &resultMat, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//模拟去除结果
