@@ -207,7 +207,6 @@ void OpenCVTool::drawDashLineRect(Mat &img, QPoint pt1, QPoint pt2)
     }
     Point startPoint1,endPoint1,startPoint2,endPoint2;
     int startX = startPoint.x; int endX = startX;
-    int startY = startPoint.y; int endY = startY;
     //绘制横轴的两条虚线
     while(endX < endPoint.x) {
         //如果要画实线加实线长度否则加虚线长度
@@ -229,6 +228,8 @@ void OpenCVTool::drawDashLineRect(Mat &img, QPoint pt1, QPoint pt2)
             isLine = true;
         }
     }
+    isLine = true;
+    int startY = startPoint.y; int endY = startY;
     //绘制横轴的两条虚线
     while(endY < endPoint.y) {
         //如果要画实线加实线长度否则加虚线长度
