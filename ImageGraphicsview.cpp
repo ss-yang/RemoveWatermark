@@ -107,7 +107,6 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
                     opencvTool.drawLine(maskMat, startPoint.toPoint(), point.toPoint(), pencilColor, thickness);
                     updateMaskItem();
                     startPoint = point;
-                    isSaved = false;
                 }
                 break;
             }
@@ -117,7 +116,6 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
                     opencvTool.drawLine(maskMat, startPoint.toPoint(), point.toPoint(), eraserColor, thickness);
                     updateMaskItem();
                     startPoint = point;
-                    isSaved = false;
                 }
                 break;
             }
@@ -235,12 +233,10 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
         if(this->currentActionName == Pencil) {//当为铅笔工具时，前景色画点
             opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
             updateMaskItem();
-            isSaved = false;
         }
         if(this->currentActionName == Eraser) {//当为橡皮工具时，背景色画点
             opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
             updateMaskItem();
-            isSaved = false;
         }
     }
     //当为自由选择工具时
@@ -565,6 +561,7 @@ inline void ImageGraphicsview::updatePixmapItem()
     pixmap = opencvTool.MatToPixmap(currentMat);
     pixmapItem->setPixmap(pixmap);
     pixmapItem->update();
+    this->setModified(true);
 }
 
 /**
@@ -576,6 +573,7 @@ inline void ImageGraphicsview::updateMaskItem()
     maskPixmap = opencvTool.MatToPixmap(maskMat);
     maskItem->setPixmap(maskPixmap);
     maskItem->update();
+    this->setModified(true);
 }
 
 /**
@@ -587,6 +585,7 @@ inline void ImageGraphicsview::updateSelcetItem()
     selectPixmap = opencvTool.MatToPixmap(selectMat);
     selectItem->setPixmap(selectPixmap);
     selectItem->update();
+    this->setModified(true);
 }
 
 /**
@@ -605,6 +604,8 @@ inline void ImageGraphicsview::initItem()
     this->scene()->addItem(selectItem);
     this->scene()->update();
     binaryMat = Mat(pixmapItem->pixmap().height(), pixmapItem->pixmap().width(), CV_8UC1, Scalar::all(0));//生成一个全黑二值图像
+    this->setModified(false); // 初始化这些item的时候，把状态置为未编辑。
+    this->setSaved(false);
 }
 
 /**
@@ -641,7 +642,6 @@ void ImageGraphicsview::roiToMaskMat()
     maskMat = tempMat;
     roiItem->setSelected(false);//设置为未选中
     this->scene()->removeItem(roiItem);
-    isSaved = false;
 }
 
 /**
@@ -681,7 +681,6 @@ void ImageGraphicsview::undo()
         redoStack.push(temp);
         maskMat = undoStack.pop();
         updateMaskItem();
-        isSaved = false;
     }
 }
 
@@ -699,7 +698,6 @@ void ImageGraphicsview::redo()
         undoStack.push(temp);
         maskMat = redoStack.pop();
         updateMaskItem();
-        isSaved = false;
     }
 }
 
@@ -712,8 +710,38 @@ Mat ImageGraphicsview::saveCurrentMat(string filename)
 {
     Mat img = opencvTool.mask2CurrentMat(maskMat, currentMat);
     imwrite(filename, img);
-    isSaved = true;
     return img;
+}
+
+/**
+ * @brief ImageGraphicsview::isModified
+ * @return
+ * 获取modified的状态
+ */
+bool ImageGraphicsview::isModified()
+{
+    return this->modified;
+}
+
+/**
+ * @brief ImageGraphicsview::setModified
+ * @param modified
+ * 更新modified的状态
+ * 当图片像素被更改时，应该更新为true，撤销到原始状态时应为false
+ */
+void ImageGraphicsview::setModified(bool modified)
+{
+    this->modified = modified;
+}
+
+bool ImageGraphicsview::isSaved()
+{
+    return this->saved;
+}
+
+void ImageGraphicsview::setSaved(bool saved)
+{
+    this->saved = saved;
 }
 
 /**
@@ -725,7 +753,6 @@ void ImageGraphicsview::reset()
     isZoomUp = true;
     isPressed = false;
     isRoiMoved = false;
-    isSaved = false;
     clearRedoStack();
     clearUndoStack();
     currentActionName = Default;

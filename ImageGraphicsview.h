@@ -36,7 +36,11 @@ public:
     ~ImageGraphicsview();
     void reset();//重置变量状态
     Mat saveCurrentMat(string filename);//保存当前图片到指定的路径
-    bool isSaved;//当前图片是否被修改（保存了则为true）
+    bool isModified();
+    void setModified(bool modified);
+
+    bool isSaved();
+    void setSaved(bool saved);
 
 signals:
     void mouseMovetriggerSignal(QString location);
@@ -86,6 +90,9 @@ private:
     double zoomUpRate;//放大倍率
     double zoomDownRate;//缩小倍率
     bool isPressed;//标记鼠标左键是否被按下
+
+    bool modified; // 图片是否被编辑过（判断是否保存的依据）
+    bool saved; // 图片是否已保存
 
     QCursor bigCursor;//放大镜鼠标样式
     QCursor smallCursor;//缩小镜鼠标样式

@@ -140,19 +140,21 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         QMessageBox::warning(this,"提示","打开图像失败！");
     }else {
         //当当前图片未保存时，提示保存
-        if(ui->CurrentImageGraphicsView->scene() != NULL && !ui->CurrentImageGraphicsView->isSaved) {//
+        if(ui->CurrentImageGraphicsView->scene() != NULL && ui->CurrentImageGraphicsView->isModified()) {//
             int reply = QMessageBox::warning(this,tr("提示"),tr("图片尚未保存，是否保存该图片？"),tr("保存"),tr("不保存"),tr("取消"),0,2);
             if(reply == 0) {//保存图片
                 on_Save_triggered();
+                ui->CurrentImageGraphicsView->setSaved(true);
                 return;
             }else if(reply == 2){//取消，直接返回，该次操作无效
                 return;
             }//不保存，忽略图片，执行下一步
-        }else if(ui->CurrentImageGraphicsView->scene() != NULL && ui->CurrentImageGraphicsView->isSaved){//当图片保存了，提示是否将其带入到计算
+        }else if(ui->CurrentImageGraphicsView->scene() != NULL && ui->CurrentImageGraphicsView->isSaved()){//当图片保存了，提示是否将其带入到计算
             int reply = QMessageBox::warning(this,tr("提示"),tr("是否将该图片带入到计算中？"),tr("是"),tr("否"),0,1);
             if(reply == 0) {//是，则将其存入到calculateImg中
                 ImagePair img = ImagePair(markedImageDirPath, unMarkedImageDirPath, markedMat.clone(), unmarkedMat.clone());
                 calculateImg.push_back(img);
+                qDebug()<< "calculateImg Size:" <<calculateImg.size();
             }//否，执行下一步
         }
         //获取到图片的文件名，并去除文件名中的格式
@@ -502,7 +504,7 @@ void MainWindow::on_Save_triggered()
     if(ui->CurrentImageGraphicsView->scene() ==NULL) {//没有加载图片时，不执行
         return;
     }
-    if(ui->CurrentImageGraphicsView->isSaved) {//已被保存未修改过，不执行
+    if(!ui->CurrentImageGraphicsView->isModified()) {//已被保存未修改过，不执行
         return;
     }
     if(unMarkedImageDirPath.length() == 0) {//当保存修改的图片路径为空时

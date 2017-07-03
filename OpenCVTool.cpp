@@ -275,7 +275,7 @@ void OpenCVTool::getMaskAndOpacity(vector<ImagePair> calculateImg, Mat &maskMat,
     Mat Ex2 = Mat(HEIGHT, WIDTH, CV_32FC3);
     Mat one = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(1));
     int n = calculateImg.size();
-    Ex = 0; Ey = 0; Exy = 0; Ex2 = 0;
+//    Ex = 0; Ey = 0; Exy = 0; Ex2 = 0;
 
     for(int i = 0; i < n; i++) {
         ImagePair img = calculateImg[i];

@@ -108,7 +108,7 @@ private:
     //当前图片的名字
     QString markedImageFileName;
     //当前图片列表目录
-    QString curLoadImageDirPath = "E:/";
+    QString curLoadImageDirPath = "D:/"; // 调试
     QString curSaveImageDirPath = "";
 
     QPixmap maskPixmap;//水印Pixmap

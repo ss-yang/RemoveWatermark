@@ -44,13 +44,13 @@ FORMS    += \
     ThicknessSlider.ui \
     MainWindow.ui
 
-INCLUDEPATH += F:\opencv_QT\include\opencv\
+INCLUDEPATH += F:\QtOpencv\opencv\include\opencv\
 
-INCLUDEPATH += F:\opencv_QT\include\opencv2\
+INCLUDEPATH += F:\QtOpencv\opencv\include\opencv2\
 
-INCLUDEPATH += F:\opencv_QT\include\
+INCLUDEPATH += F:\QtOpencv\opencv\include
 
-LIBS += -L F:\opencv_QT\lib\libopencv_*.a
+LIBS += -L F:\QtOpencv\opencv\lib\libopencv_*.a
 
 RESOURCES += \   
     Resources.qrc
