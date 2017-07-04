@@ -144,11 +144,11 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
             int reply = QMessageBox::warning(this,tr("提示"),tr("图片尚未保存，是否保存该图片？"),tr("保存"),tr("不保存"),tr("取消"),0,2);
             if(reply == 0) {//保存图片
                 on_Save_triggered();
-                return;
             }else if(reply == 2){//取消，直接返回，该次操作无效
                 return;
             }//不保存，忽略图片，执行下一步
-        }else if(ui->CurrentImageGraphicsView->scene() != NULL && ui->CurrentImageGraphicsView->isSaved()){//当图片保存了，提示是否将其带入到计算
+        }
+        if(ui->CurrentImageGraphicsView->scene() != NULL && ui->CurrentImageGraphicsView->isSaved()){//当图片保存了，提示是否将其带入到计算
             int reply = QMessageBox::warning(this,tr("提示"),tr("是否将该图片带入到计算中？"),tr("是"),tr("否"),0,1);
             if(reply == 0) {//是，则将其存入到calculateImg中
                 ImagePair img = ImagePair(markedImageDirPath, unMarkedImageDirPath, markedMat.clone(), unmarkedMat.clone());
@@ -549,15 +549,72 @@ void MainWindow::on_Redo_triggered()
 }
 
 /**
+ * @brief MainWindow::watermarkRegion
+ * @return
+ * 计算水印区域矩形的坐标和高宽
+ */
+int* MainWindow::watermarkRegion()
+{
+    Mat maskUnion = ui->CurrentImageGraphicsView->maskUnion;
+    int x1 = 999999, y1 = 999999, x2 = 0, y2 = 0;
+    int *result = new int[4];
+    int rows = maskUnion.rows;
+    int cols = maskUnion.cols;
+    for (int i = 0; i < rows; i++)
+    {
+        Vec4b *p = maskUnion.ptr<Vec4b>(i);
+        for (int j = 0; j < cols; j++)
+        {
+            Vec4b &pix = *p++;
+            uchar a = pix[3];
+            if(a == 255){
+                if(x1 > j) {x1 = j;}
+                if(y1 > i) {y1 = i;}
+                if(x2 < j) {x2 = j;}
+                if(y2 < i) {y2 = i;}
+            }
+        }
+    }
+    result[0] = x1; // 左上角点横坐标
+    result[1] = y1; // 左上角点纵坐标
+    result[2] = x2 - x1; // 宽度
+    result[3] = y2 - y1; // 高度
+    return result;
+}
+
+/**
+ * @brief MainWindow::updateWatermarkRegionLabel
+ * @param x
+ * @param y
+ * @param w
+ * @param h
+ * 更新水印区域的坐标和高宽
+ */
+void MainWindow::updateWatermarkRegionLabel(int x, int y, int w, int h)
+{
+    ui->XLineEdit->setText(QString::number(x));
+    ui->YLineEdit->setText(QString::number(y));
+    ui->WLineEdit->setText(QString::number(w));
+    ui->HLineEdit->setText(QString::number(h));
+}
+
+/**
  * @brief MainWindow::on_getMaskAction_triggered
  * 计算提取水印
  */
 void MainWindow::on_getMaskAction_triggered()
 {
-    X = ui->XLineEdit->text().toInt();
-    Y = ui->YLineEdit->text().toInt();
-    WIDTH = ui->WLineEdit->text().toInt();
-    HEIGHT = ui->HLineEdit->text().toInt();
+    int* region;
+    region = new int[4];
+    region = this->watermarkRegion();
+    X = region[0];
+    Y = region[1];
+    WIDTH = region[2];
+    HEIGHT = region[3];
+    delete region;
+
+    updateWatermarkRegionLabel(X, Y, WIDTH, HEIGHT);
+
     if(calculateImg.size() == 0) {
         QMessageBox::warning(this,"提示","图片数量不足！");
         return;

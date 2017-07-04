@@ -121,6 +121,9 @@ private:
     Mat resultMat;//模拟去除Mat
     QGraphicsScene *resultScene;
     QGraphicsPixmapItem *resultItem;//模拟去除Item
+
+    int* watermarkRegion();
+    void updateWatermarkRegionLabel(int x, int y, int w, int h);
 };
 
 #endif // MAINWINDOW_H

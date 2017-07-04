@@ -90,9 +90,6 @@ void ImageGraphicsview::makeMaskUnion()
 {
     Mat temp = this->maskUnion;
     bitwise_or(temp, this->maskMat, this->maskUnion);
-    qDebug() << "执行 makeMaskUnion：" ;
-    imwrite("d://union.png",this->maskUnion);
-    qDebug() << "写入 makeMaskUnion：" ;
 }
 
 /**
