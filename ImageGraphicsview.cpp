@@ -82,6 +82,20 @@ Rect ImageGraphicsview::minRect(vector<Point> movePoints)
 }
 
 /**
+ * @brief ImageGraphicsview::makeMaskUnion
+ * @param maskUnion
+ * 将传进来的maskMat，加到maskUnion上。（或运算）
+ */
+void ImageGraphicsview::makeMaskUnion()
+{
+    Mat temp = this->maskUnion;
+    bitwise_or(temp, this->maskMat, this->maskUnion);
+    qDebug() << "执行 makeMaskUnion：" ;
+    imwrite("d://union.png",this->maskUnion);
+    qDebug() << "写入 makeMaskUnion：" ;
+}
+
+/**
  * @brief ImageGraphicsview::mouseMoveEvent
  * @param event
  * 鼠标移动事件
@@ -561,7 +575,7 @@ inline void ImageGraphicsview::updatePixmapItem()
     pixmap = opencvTool.MatToPixmap(currentMat);
     pixmapItem->setPixmap(pixmap);
     pixmapItem->update();
-    this->setModified(true);
+    this->setModified(true); // 更新item后视为对图片做了修改
 }
 
 /**
@@ -606,6 +620,12 @@ inline void ImageGraphicsview::initItem()
     binaryMat = Mat(pixmapItem->pixmap().height(), pixmapItem->pixmap().width(), CV_8UC1, Scalar::all(0));//生成一个全黑二值图像
     this->setModified(false); // 初始化这些item的时候，把状态置为未编辑。
     this->setSaved(false);
+
+    // maskUnion 未初始化，先初始化，尺寸和当前打开的图片相同
+    if(this->maskUnion.cols <= 0 || this->maskUnion.rows <= 0){
+        this->maskUnion = Mat(pixmapItem->pixmap().height(), pixmapItem->pixmap().width(),
+                              CV_8UC4, Scalar::all(0)); // 跟maskMat一样宽高的mat，用来表示图像发生改变区域的并集（水印区域）
+    }
 }
 
 /**

@@ -42,6 +42,8 @@ public:
     bool isSaved();
     void setSaved(bool saved);
 
+    void makeMaskUnion();
+
 signals:
     void mouseMovetriggerSignal(QString location);
     void zoomUpPressed();
@@ -122,6 +124,8 @@ private:
     QPixmap maskPixmap;//图层Pixmap
     Mat maskMat;//图层Mat
     QGraphicsPixmapItem *maskItem;//图层Item
+
+    Mat maskUnion;//处理过的图片的maskMat的并集。
 
     Scalar pencilColor;//铅笔颜色（前景色）
     Scalar backColor;//背景色

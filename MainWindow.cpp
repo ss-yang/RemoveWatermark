@@ -144,7 +144,6 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
             int reply = QMessageBox::warning(this,tr("提示"),tr("图片尚未保存，是否保存该图片？"),tr("保存"),tr("不保存"),tr("取消"),0,2);
             if(reply == 0) {//保存图片
                 on_Save_triggered();
-                ui->CurrentImageGraphicsView->setSaved(true);
                 return;
             }else if(reply == 2){//取消，直接返回，该次操作无效
                 return;
@@ -513,6 +512,7 @@ void MainWindow::on_Save_triggered()
         if(!path.isEmpty()) {
             unMarkedImageDirPath = (const char *)path.toLocal8Bit();//QString转string
             unmarkedMat = ui->CurrentImageGraphicsView->saveCurrentMat(unMarkedImageDirPath);//获取到保存的Mat
+            ui->CurrentImageGraphicsView->makeMaskUnion(); // 保存图片后，将图片的修改区域叠加到maskUnion中
             //更新保存目录控件
             int first = path.lastIndexOf ("/"); //从后面查找"/"位置
             markedImageFileName = path.right(path.length()-first-1);//获取到新的文件名
@@ -525,6 +525,9 @@ void MainWindow::on_Save_triggered()
     }else{//文件被保存过时，直接按路径保存
         unmarkedMat = ui->CurrentImageGraphicsView->saveCurrentMat(unMarkedImageDirPath);//获取到保存的Mat
     }
+    // 保存后，修改图片状态
+    ui->CurrentImageGraphicsView->setSaved(true);
+    ui->CurrentImageGraphicsView->setModified(false);
 }
 
 /**
