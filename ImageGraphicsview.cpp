@@ -170,7 +170,6 @@ void ImageGraphicsview::mouseMoveEvent(QMouseEvent *event){
             case SelectMove:{
                 if(isInsideOfRoi(point) && roiItem->isSelected()) {
                     setCursor(Qt::SizeAllCursor);
-                    isRoiMoved = true;//所选区域被移动了
                     selectMoving(event, this->mapToScene(event->pos()));
                 }else {
                     setCursor(Qt::CrossCursor);
@@ -252,6 +251,7 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
     }
     //当为自由选择工具时
     if(this->currentActionName == FreeSelect) {
+        isRoiMoved = false;//每次开始选择时，roi区域重置为未移动状态
         opencvTool.drawLine(selectMat,point.toPoint(), point.toPoint(), Scalar(0,0,0,255), 2);
         opencvTool.drawLine(binaryMat,point.toPoint(), point.toPoint(), Scalar::all(255), 1);
         updateSelcetItem();
@@ -259,11 +259,27 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
         prePoint = point;
         movePoints.push_back(Point(oriStartPoint.x(), oriStartPoint.y()));
     }
-    //当为工具为selectMove时,判断鼠标点击的位置
+    //当为工具为selectMove时,判断鼠标点击的位置（每次freeSelect后默认会将当前工具变为seleceMove）
     if(this->currentActionName == SelectMove) {
-        if(!isInsideOfRoi(point) && roiItem->isSelected()){//判断鼠标是否在区域外，若在则将区域合成到maskMat中，然后删除roiItem
-            roiToMaskMat();//将选择的区域合成到图片中
+        //判断鼠标是否在区域外，并且是否被移动过，若在且被移动过则将区域合成到maskMat中，然后删除roiItem
+        //如果在区域外，但没有被移动过，则执行inpaint填充。
+        if(!isInsideOfRoi(point) && roiItem->isSelected()){
+            if(!isRoiMoved){
+                vector<vector<Point>> contours;
+                findContours(binaryMat, contours, CV_RETR_LIST, CV_CHAIN_APPROX_NONE);//获取二值图像上的轮廓信息
+                Mat alphaMat = Mat ::zeros(binaryMat.size(), CV_8UC1);
+                for(int i = 0; i < (int)contours.size(); i++) {
+                    drawContours(alphaMat, contours, i, Scalar(255), CV_FILLED);//轮廓内部填充
+                }
+                inpaint(currentMat,alphaMat,currentMat,3,INPAINT_TELEA);
+                updatePixmapItem();
+                this->scene()->removeItem(roiItem);
+                roiItem = NULL;
+            }else{
+                roiToMaskMat();//将选择的区域合成到图片中，并remove
+            }
             updateMaskItem();
+            currentActionName = FreeSelect;
         }
     }
 }
@@ -339,7 +355,6 @@ void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
         roiMat = opencvTool.selectFreeRoi(tempMat, binaryMat, tempRect);
         roiPixmap = opencvTool.MatToPixmap(roiMat);
         roiItem = new QGraphicsPixmapItem(roiPixmap);
-
         roiItem->setX(tempRect.x);roiItem->setY(tempRect.y);
         roiItem->setFlag(QGraphicsItem::ItemIsSelectable);//设置可选
         roiItem->setFlag(QGraphicsItem::ItemIsMovable);//设置可移动
@@ -546,6 +561,7 @@ void ImageGraphicsview::selectMoving(QMouseEvent *event, QPointF point)
     roiItem->setX(currentX);
     roiItem->setY(currentY);
     startPoint = pixmapItem->mapFromScene(point);
+    isRoiMoved = true; // 标记为被移动过
 }
 
 /**
