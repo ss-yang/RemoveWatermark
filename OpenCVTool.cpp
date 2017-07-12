@@ -269,10 +269,10 @@ void OpenCVTool::getMaskAndOpacity(vector<ImagePair> calculateImg, Mat &maskMat,
     maskMat = Mat(HEIGHT, WIDTH, CV_32FC3);
     opacityMat = Mat(HEIGHT, WIDTH, CV_32FC3);
     Rect rect = Rect(X, Y, WIDTH, HEIGHT);
-    Mat Ex = Mat(HEIGHT, WIDTH, CV_32FC3);
-    Mat Ey = Mat(HEIGHT, WIDTH, CV_32FC3);
-    Mat Exy = Mat(HEIGHT, WIDTH, CV_32FC3);
-    Mat Ex2 = Mat(HEIGHT, WIDTH, CV_32FC3);
+    Mat Ex = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(0));
+    Mat Ey = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(0));
+    Mat Exy = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(0));
+    Mat Ex2 = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(0));
     Mat one = Mat(HEIGHT, WIDTH, CV_32FC3, Scalar::all(1));
     int n = calculateImg.size();
 //    Ex = 0; Ey = 0; Exy = 0; Ex2 = 0;

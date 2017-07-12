@@ -618,7 +618,8 @@ inline void ImageGraphicsview::initItem()
     this->setModified(false); // 初始化这些item的时候，把状态置为未编辑。
     this->setSaved(false);
 
-    // maskUnion 未初始化，先初始化，尺寸和当前打开的图片相同
+    // 只在第一次初始化时执行以下操作，maskUnion用作累加水印区域
+    // maskUnion的生命周期为：从处理第一张图开始到最后一张图并提取水印结束
     if(this->maskUnion.cols <= 0 || this->maskUnion.rows <= 0){
         this->maskUnion = Mat(pixmapItem->pixmap().height(), pixmapItem->pixmap().width(),
                               CV_8UC4, Scalar::all(0)); // 跟maskMat一样宽高的mat，用来表示图像发生改变区域的并集（水印区域）
