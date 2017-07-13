@@ -632,7 +632,9 @@ void MainWindow::on_getMaskAction_triggered()
 void MainWindow::on_getResultAction_triggered()
 {
     Mat marked = markedMat.clone();
-    opencvtool.getResultMat(marked,resultMat, maskMat,opacityMat,X,Y,WIDTH,HEIGHT);
+    Mat mask = maskMat.clone();
+    Mat opacity = opacityMat.clone();
+    opencvtool.getResultMat(marked,resultMat, mask,opacity,X,Y,WIDTH,HEIGHT);
     resultPixmap = opencvtool.MatToPixmap(resultMat);
     resultScene = new QGraphicsScene;
     resultItem = new QGraphicsPixmapItem(resultPixmap);
