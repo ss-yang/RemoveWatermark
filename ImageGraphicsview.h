@@ -32,6 +32,7 @@ class ImageGraphicsview : public QGraphicsView
 public:
     enum ActionName{Pencil, Eraser, BigGlasses, SmallGlasses, OpenHand, ClosedHand, RectSelect, FreeSelect, SelectMove, Default, Forbidden};
     Mat maskUnion;//处理过的图片的maskMat的并集。
+    Rect watermark;//水印区域（“提取水印”执行的时候才能拿到水印区域）
 
     ImageGraphicsview(QWidget *parent);
     ~ImageGraphicsview();
@@ -44,7 +45,6 @@ public:
     void setSaved(bool saved);
 
     void makeMaskUnion();
-
 
 signals:
     void mouseMovetriggerSignal(QString location);
@@ -126,7 +126,6 @@ private:
     QPixmap maskPixmap;//图层Pixmap
     Mat maskMat;//图层Mat
     QGraphicsPixmapItem *maskItem;//图层Item
-
 
     Scalar pencilColor;//铅笔颜色（前景色）
     Scalar backColor;//背景色

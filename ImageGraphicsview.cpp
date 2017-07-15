@@ -271,15 +271,15 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
                 for(int i = 0; i < (int)contours.size(); i++) {
                     drawContours(alphaMat, contours, i, Scalar(255), CV_FILLED);//轮廓内部填充
                 }
-                inpaint(currentMat,alphaMat,currentMat,3,INPAINT_TELEA);
-                updatePixmapItem();
-                this->scene()->removeItem(roiItem);
-                roiItem = NULL;
-            }else{
-                roiToMaskMat();//将选择的区域合成到图片中，并remove
+                inpaint(currentMat,alphaMat,currentMat,3,INPAINT_TELEA);// 利用填充后的binaryMat作为mask来填充currentMat
+                Rect temp = Rect(roiItem->x(), roiItem->y(),roiItem->pixmap().width(),roiItem->pixmap().height());// 取currentMat的被改变区域
+                roiMat = Mat(currentMat,temp);//更新roiMat为被填充后的效果。
             }
+            roiToMaskMat();//将选择的区域合成到图片中，并remove
             updateMaskItem();
-            currentActionName = FreeSelect;
+            currentActionName = FreeSelect;//当前工具变为FreeSelect
+            binaryMat = Scalar::all(0);//重置二值图
+            movePoints.clear();//清空移动轨迹
         }
     }
 }

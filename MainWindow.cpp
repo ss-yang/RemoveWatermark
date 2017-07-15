@@ -600,7 +600,8 @@ void MainWindow::updateWatermarkRegionLabel(Rect region)
 void MainWindow::on_getMaskAction_triggered()
 {
     Rect region;
-    region = this->watermarkRegion();
+    ui->CurrentImageGraphicsView->watermark = this->watermarkRegion();
+    region = ui->CurrentImageGraphicsView->watermark;
     X = region.x;
     Y = region.y;
     WIDTH = region.width;
@@ -631,9 +632,11 @@ void MainWindow::on_getMaskAction_triggered()
  */
 void MainWindow::on_getResultAction_triggered()
 {
+    //模拟去除结果的时候，应该另开一块内存来操作，否则去除结果会影响原来的Mat,造成结果异常（全黑、或全白）
     Mat marked = markedMat.clone();
     Mat mask = maskMat.clone();
     Mat opacity = opacityMat.clone();
+
     opencvtool.getResultMat(marked,resultMat, mask,opacity,X,Y,WIDTH,HEIGHT);
     resultPixmap = opencvtool.MatToPixmap(resultMat);
     resultScene = new QGraphicsScene;
