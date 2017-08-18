@@ -605,9 +605,8 @@ void MainWindow::updateWatermarkRegionLabel(Rect region)
  */
 void MainWindow::on_getMaskAction_triggered()
 {
-    Rect region;
-    ui->CurrentImageGraphicsView->watermark = this->watermarkRegion();
-    region = ui->CurrentImageGraphicsView->watermark;
+    Rect region = this->watermarkRegion();
+    ui->CurrentImageGraphicsView->setWatermark(region);
     X = region.x;
     Y = region.y;
     WIDTH = region.width;

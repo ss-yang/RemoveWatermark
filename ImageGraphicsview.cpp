@@ -92,6 +92,16 @@ void ImageGraphicsview::makeMaskUnion()
     bitwise_or(temp, this->maskMat, this->maskUnion);
 }
 
+Rect ImageGraphicsview::getWatermark()
+{
+    return this->watermark;
+}
+
+void ImageGraphicsview::setWatermark(Rect watermark)
+{
+    this->watermark = watermark;
+}
+
 /**
  * @brief ImageGraphicsview::mouseMoveEvent
  * @param event
