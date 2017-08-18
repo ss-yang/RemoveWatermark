@@ -62,6 +62,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->WLineEdit->setText(QString::number(WIDTH));
     ui->HLineEdit->setText(QString::number(HEIGHT));
 
+    // 初始化两个GraphicsView的Scene
+    oriScene = new QGraphicsScene;
+    currentScene = new QGraphicsScene;
+
     //当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
     QObject::connect(ui->OriImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
     QObject::connect(ui->CurrentImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
@@ -97,9 +101,9 @@ MainWindow::~MainWindow()
     delete ui;
     delete markedImageModel;
     delete unMarkedImageModel;
-    delete oriScence;
+    delete oriScene;
     delete oriPixmapItem;
-    delete currentScence;
+    delete currentScene;
     delete currentPixmapItem;
     delete thicknessSlider;
     delete thicknessAction;
@@ -185,18 +189,20 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
         ui->ImageSizeLabel->setText(width.setNum(oriPixmap.width()) + " × " + height.setNum(oriPixmap.height()) + " 像素");
         resetAction();//重置工具栏选中状态
         //视图栏显示图片
-        oriScence = new QGraphicsScene;
         oriPixmapItem = new QGraphicsPixmapItem(oriPixmap);
-        oriScence->addItem(oriPixmapItem);
+        oriPixmapItem->setPixmap(oriPixmap);
+        oriScene->clear(); // 每次打开新图片前，为防止内存泄漏，先清空之前的scene | Removes and deletes all items from the scene, but otherwise leaves the state of the scene unchanged.
+        oriScene->addItem(oriPixmapItem);
         ui->OriImageGraphicsView->reset();//重置状态
-        ui->OriImageGraphicsView->setScene(oriScence);
+        ui->OriImageGraphicsView->setScene(oriScene);
         ui->OriImageGraphicsView->show();
         ui->OriImageGraphicsView->setPixmapItem(oriPixmapItem);
-        currentScence = new QGraphicsScene;
         currentPixmapItem = new QGraphicsPixmapItem(currentPixmap);
-        currentScence->addItem(currentPixmapItem);
+        currentPixmapItem->setPixmap(currentPixmap);
+        currentScene->clear();
+        currentScene->addItem(currentPixmapItem);
         ui->CurrentImageGraphicsView->reset();//重置状态
-        ui->CurrentImageGraphicsView->setScene(currentScence);
+        ui->CurrentImageGraphicsView->setScene(currentScene);
         ui->CurrentImageGraphicsView->show();
         ui->CurrentImageGraphicsView->setPixmapItem(currentPixmapItem);
     }

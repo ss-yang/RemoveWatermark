@@ -79,9 +79,9 @@ private:
     QFileSystemModel *unMarkedImageModel;
     QPixmap oriPixmap;
     QPixmap currentPixmap;
-    QGraphicsScene *oriScence;
+    QGraphicsScene *oriScene;
     QGraphicsPixmapItem *oriPixmapItem;
-    QGraphicsScene *currentScence;
+    QGraphicsScene *currentScene;
     QGraphicsPixmapItem *currentPixmapItem;
 
     QPalette palette;//调色板
