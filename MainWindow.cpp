@@ -408,7 +408,7 @@ void MainWindow::on_FreeSelect_triggered()
 {
     resetAction();
     ui->FreeSelect->setChecked(true);
-    ui->OriImageGraphicsView->setActionName(ImageGraphicsview::FreeSelect);
+    ui->OriImageGraphicsView->setActionName(ImageGraphicsview::Forbidden);
     ui->CurrentImageGraphicsView->setActionName(ImageGraphicsview::FreeSelect);
 }
 

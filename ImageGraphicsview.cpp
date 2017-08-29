@@ -215,52 +215,35 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
         this->currentActionName = Default;
         return;
     }
-    //如果是抓手工具，则在点击时鼠标变成抓紧的样式
-    if(this->currentActionName == OpenHand) {
-        this->currentActionName = ClosedHand;
-        emit actionNameChanged(currentActionName);
-        setCursor(Qt::ClosedHandCursor);
-    }
     //获得鼠标移动时，当前所指图片中的像素位置
     QPointF point = this->pixmapItem->mapFromScene(this->mapToScene(event->pos()));
+
     //检测鼠标是否在图片范围内
     if(point.x() >= 0 && point.x() <= this->pixmapItem->pixmap().width() && point.y() >= 0 && point.y() <= this->pixmapItem->pixmap().height()) {
         this->startPoint = point;
     }else {
         return;
     }
-    //当为放大镜工具时，点击放大
-    if(this->currentActionName == BigGlasses) {
+
+    switch (this->currentActionName) {
+    case OpenHand:
+        this->currentActionName = ClosedHand;
+        emit actionNameChanged(currentActionName);
+        setCursor(Qt::ClosedHandCursor);//如果是抓手工具，则在点击时鼠标变成抓紧的样式
+        break;
+    case BigGlasses:
         if(this->isZoomUp){
             this->centerOn(this->mapToScene(event->pos()));
             emit zoomUpPressed();//放大
         }
-    }
-    //当为缩小工具时，点击缩小
-    if(this->currentActionName == SmallGlasses) {
+        break;
+    case SmallGlasses:
         if(!this->isZoomUp) {
             this->centerOn(this->mapToScene(event->pos()));
             emit zoomDownPressed();//缩小
         }
-    }
-    //设置鼠标左键被按下
-    this->isPressed = true;
-    //当为铅笔或者橡皮工具时
-    if(this->currentActionName == Pencil || this->currentActionName == Eraser) {
-        Mat temp = maskMat.clone();
-        undoStack.push(temp);
-        clearRedoStack();//当铅笔工具或橡皮工具开心新的操作时，则清空恢复区
-        if(this->currentActionName == Pencil) {//当为铅笔工具时，前景色画点
-            opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
-            updateMaskItem();
-        }
-        if(this->currentActionName == Eraser) {//当为橡皮工具时，背景色画点
-            opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
-            updateMaskItem();
-        }
-    }
-    //当为自由选择工具时
-    if(this->currentActionName == FreeSelect) {
+        break;
+    case FreeSelect:
         isRoiMoved = false;//每次开始选择时，roi区域重置为未移动状态
         opencvTool.drawLine(selectMat,point.toPoint(), point.toPoint(), Scalar(0,0,0,255), 2);
         opencvTool.drawLine(binaryMat,point.toPoint(), point.toPoint(), Scalar::all(255), 1);
@@ -268,9 +251,9 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
         oriStartPoint = point.toPoint();
         prePoint = point;
         movePoints.push_back(Point(oriStartPoint.x(), oriStartPoint.y()));
-    }
-    //当为工具为selectMove时,判断鼠标点击的位置（每次freeSelect后默认会将当前工具变为seleceMove）
-    if(this->currentActionName == SelectMove) {
+        break;
+    case SelectMove:
+        //当为工具为selectMove时,判断鼠标点击的位置（每次freeSelect后默认会将当前工具变为seleceMove）
         //判断鼠标是否在区域外，并且是否被移动过，若在且被移动过则将区域合成到maskMat中，然后删除roiItem
         //如果在区域外，但没有被移动过，则执行inpaint填充。
         if(!isInsideOfRoi(point) && roiItem->isSelected()){
@@ -291,7 +274,24 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
             binaryMat = Scalar::all(0);//重置二值图
             movePoints.clear();//清空移动轨迹
         }
+        break;
+    case Pencil||Eraser:
+        Mat temp = maskMat.clone();
+        undoStack.push(temp);
+        clearRedoStack();//当铅笔工具或橡皮工具开心新的操作时，则清空恢复区
+        if(this->currentActionName == Pencil) {//当为铅笔工具时，前景色画点
+            opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), pencilColor, thickness);
+            updateMaskItem();
+        }
+        if(this->currentActionName == Eraser) {//当为橡皮工具时，背景色画点
+            opencvTool.drawLine(maskMat, point.toPoint(), point.toPoint(), eraserColor, thickness);
+            updateMaskItem();
+        }
+        break;
     }
+
+    //设置鼠标左键被按下
+    this->isPressed = true;
 }
 
 /**
@@ -355,7 +355,7 @@ void ImageGraphicsview::mouseReleaseEvent(QMouseEvent *event){
     }
     //如果是自由选择工具
     if(this->currentActionName == FreeSelect && startPoint != endPoint) {
-        opencvTool.drawLine(selectMat, endPoint.toPoint(), oriStartPoint, Scalar(0,0,0,255), 2);
+        opencvTool.drawLine(selectMat, endPoint.toPoint(), oriStartPoint, Scalar(0,0,0,255), 2); // 由终点向起点闭合选择路径
         opencvTool.drawLine(binaryMat,endPoint.toPoint(), oriStartPoint, Scalar::all(255), 1);
         movePoints.push_back(Point(endPoint.toPoint().x(), endPoint.toPoint().y()));
         this->scene()->removeItem(selectItem);
