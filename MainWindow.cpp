@@ -520,6 +520,9 @@ void MainWindow::on_Save_triggered()
         if(!path.isEmpty()) {
             unMarkedImageDirPath = (const char *)path.toLocal8Bit();//QString转string
             unmarkedMat = ui->CurrentImageGraphicsView->saveCurrentMat(unMarkedImageDirPath);//获取到保存的Mat
+            // 保存后，修改图片状态
+            ui->CurrentImageGraphicsView->setSaved(true);
+            ui->CurrentImageGraphicsView->setModified(false);
             ui->CurrentImageGraphicsView->makeMaskUnion(); // 保存图片后，将图片的修改区域叠加到maskUnion中
             //更新保存目录控件
             int first = path.lastIndexOf ("/"); //从后面查找"/"位置
@@ -533,9 +536,6 @@ void MainWindow::on_Save_triggered()
     }else{//文件被保存过时，直接按路径保存
         unmarkedMat = ui->CurrentImageGraphicsView->saveCurrentMat(unMarkedImageDirPath);//获取到保存的Mat
     }
-    // 保存后，修改图片状态
-    ui->CurrentImageGraphicsView->setSaved(true);
-    ui->CurrentImageGraphicsView->setModified(false);
 }
 
 /**
