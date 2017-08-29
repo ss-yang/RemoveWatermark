@@ -42,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent) :
     palette.setColor(QPalette::Background, QColor(255,255,255));//白色
     ui->BackColorLabel->setPalette(palette);
 
+    ui->getResultAction->setEnabled(false);
+
     /**
      * 初始化粗细设置按钮
      */
@@ -605,19 +607,18 @@ void MainWindow::updateWatermarkRegionLabel(Rect region)
  */
 void MainWindow::on_getMaskAction_triggered()
 {
-    Rect region = this->watermarkRegion();
-    ui->CurrentImageGraphicsView->setWatermark(region);
-    X = region.x;
-    Y = region.y;
-    WIDTH = region.width;
-    HEIGHT = region.height;
-
-    updateWatermarkRegionLabel(region); // 更新UI
-
     if(calculateImg.size() == 0) {
         QMessageBox::warning(this,"提示","图片数量不足！");
         return;
     }
+    Rect region = this->watermarkRegion(); // 获取水印区域
+    ui->CurrentImageGraphicsView->setWatermark(region); // 保存水印区域
+    X = region.x;
+    Y = region.y;
+    WIDTH = region.width;
+    HEIGHT = region.height;
+    updateWatermarkRegionLabel(region); // 更新UI
+
     if(WIDTH ==0 && HEIGHT ==0) {
         QMessageBox::warning(this,"提示","未指定水印区域！");
         return;
@@ -629,6 +630,7 @@ void MainWindow::on_getMaskAction_triggered()
     maskScene->addItem(maskItem);
     ui->MaskImageGraphicsView->setScene(maskScene);
     ui->MaskImageGraphicsView->show();
+    ui->getResultAction->setEnabled(true);//提取水印后，设置模拟去除按钮为可用
 }
 
 /**
