@@ -270,7 +270,7 @@ void ImageGraphicsview::mousePressEvent(QMouseEvent *event){
             }
             roiToMaskMat();//将选择的区域合成到图片中，并remove
             updateMaskItem();
-            currentActionName = FreeSelect;//当前工具变为FreeSelect
+            currentActionName = preAction;//当前工具变为上一个记忆状态
             binaryMat = Scalar::all(0);//重置二值图
             movePoints.clear();//清空移动轨迹
         }
