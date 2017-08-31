@@ -36,6 +36,8 @@ public:
     void getMaskAndOpacity(vector<ImagePair> calculateImg, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//计算水印以及混合比
 
     void getResultMat(Mat &markedMat, Mat &resultMat, Mat& maskMat, Mat& opacityMat, int X, int Y, int WIDTH, int HEIGHT);//模拟去除结果
+
+    void overlay(Mat &bottom, Mat top, Rect position);
 };
 
 #endif // OPENCVTOOL_H

@@ -330,3 +330,18 @@ void OpenCVTool::getResultMat(Mat &markedMat, Mat &resultMat, Mat &maskMat, Mat 
     maskMat.convertTo(maskMat, CV_8UC3);
     opacityMat.convertTo(opacityMat, CV_8UC3);
 }
+
+/**
+ * @brief OpenCVTool::overlay
+ * @param bottom
+ * @param top
+ * @param position
+ * 将top覆盖到bottom的position区域上
+ */
+void OpenCVTool::overlay(Mat &bottom, Mat top, Rect position)
+{
+    Mat roi, maskAdd;
+    cvtColor(top,maskAdd,CV_BGR2GRAY); //将要overlay的图像转为灰度图作为掩膜
+    roi = bottom(position);
+    top.copyTo(roi,maskAdd);
+}

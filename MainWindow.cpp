@@ -645,6 +645,10 @@ void MainWindow::on_getResultAction_triggered()
     Mat opacity = opacityMat.clone();
 
     opencvtool.getResultMat(marked,resultMat, mask,opacity,X,Y,WIDTH,HEIGHT);
+    opencvtool.overlay(unmarkedMat,resultMat,watermarkRegion()); // 将去水印结果叠加到原图上
+    currentPixmap = opencvtool.MatToPixmap(unmarkedMat);
+    currentPixmapItem->setPixmap(currentPixmap);
+    currentPixmapItem->update(); // 将叠加后的图更新到currentPixmapItem
     resultPixmap = opencvtool.MatToPixmap(resultMat);
     resultScene = new QGraphicsScene;
     resultItem = new QGraphicsPixmapItem(resultPixmap);
