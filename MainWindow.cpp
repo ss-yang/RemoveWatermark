@@ -665,6 +665,17 @@ void MainWindow::on_Settings_triggered()
     if(ok == 1){
         //将设置修改的参数保存
         // ......
+        QString appPath = QCoreApplication::applicationDirPath();
+        QFile cfg(appPath + "/config.cfg");
+        if(cfg.open(QIODevice::ReadWrite)){
+            QTextStream out(&cfg);
+            out << dlg.getPenSize() << "\n";
+            out << dlg.getUnmarkedSavePath() << "\n";
+            out << dlg.getOutputPath() << "\n";
+            cfg.close();
+        }else{
+            qDebug() << "open " << cfg.fileName() << " failed!";
+        }
     }
 
 }
