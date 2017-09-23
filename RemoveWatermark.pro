@@ -30,7 +30,8 @@ SOURCES +=\
     ImageGraphicsview.cpp \
     MainWindow.cpp \
     Main.cpp \
-    ImagePair.cpp
+    ImagePair.cpp \
+    Dialogsettings.cpp
 
 HEADERS  += \
     ColorLabel.h \
@@ -38,11 +39,13 @@ HEADERS  += \
     OpenCVTool.h \
     ImageGraphicsview.h \
     MainWindow.h \
-    ImagePair.h
+    ImagePair.h \
+    Dialogsettings.h
 
 FORMS    += \
     ThicknessSlider.ui \
-    MainWindow.ui
+    MainWindow.ui \
+    Dialogsettings.ui
 
 INCLUDEPATH += F:\QtOpencv\opencv\include\opencv\
 

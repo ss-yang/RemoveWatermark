@@ -9,6 +9,7 @@
 #include <ColorLabel.h>
 #include <ThicknessSlider.h>
 #include <ImagePair.h>
+#include <Dialogsettings.h>
 
 #include <QMainWindow>
 #include <QGraphicsPixmapItem>
@@ -73,6 +74,8 @@ private slots:
     void on_getMaskAction_triggered();
     void on_getResultAction_triggered();
 
+    void on_Settings_triggered();
+
 private:
     Ui::MainWindow *ui;
     QFileSystemModel *markedImageModel;
@@ -90,6 +93,7 @@ private:
 
     ThicknessSlider *thicknessSlider;//粗细设置控件
     QAction *thicknessAction;//粗细设置action
+    int defaultThickness;//默认的画笔粗细，默认为1，可以在设置界面修改
 
     OpenCVTool opencvtool;
 

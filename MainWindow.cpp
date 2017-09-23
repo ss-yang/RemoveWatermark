@@ -656,3 +656,15 @@ void MainWindow::on_getResultAction_triggered()
     ui->ResultImagegraphicsView->setScene(resultScene);
     ui->ResultImagegraphicsView->show();
 }
+
+void MainWindow::on_Settings_triggered()
+{
+    DialogSettings dlg;
+    dlg.setWindowIcon(QIcon(QPixmap(":/Icons/icon/config.png")));
+    int ok = dlg.exec();
+    if(ok == 1){
+        //将设置修改的参数保存
+        // ......
+    }
+
+}
