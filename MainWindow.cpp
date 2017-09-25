@@ -7,6 +7,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    loadConfig(); // 读取配置文件
+    curSaveImageDirPath = this->unmarkedSavePath;
+
     /**
      * 初始化图片列表
      */
@@ -29,8 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     unMarkedImageModel->setNameFilters(filter);//过滤非指定类型
     unMarkedImageModel->setNameFilterDisables(false);//隐藏被过滤的文件
     ui->SaveImageListView->setModel(unMarkedImageModel);
-    ui->SaveImageListView->setRootIndex(unMarkedImageModel->setRootPath(curSaveImageDirPath));
-    ui->SaveImagePathLineEdit->setText(curSaveImageDirPath);
+    ui->SaveImageListView->setRootIndex(unMarkedImageModel->setRootPath(this->unmarkedSavePath));
+    ui->SaveImagePathLineEdit->setText(this->unmarkedSavePath);
 
     /**
      * 初始化前景色和背景色
@@ -44,7 +47,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->getResultAction->setEnabled(false);//没有修补图片时，“模拟去除”按钮应为不可用状态
 
-    loadConfig(); // 读取配置文件
 
     /**
      * 初始化粗细设置按钮
@@ -180,7 +182,7 @@ void MainWindow::on_LoadImageListView_doubleClicked(const QModelIndex &index)
             }//不保存，忽略图片，执行下一步
         }
         if(ui->CurrentImageGraphicsView->scene() != NULL && ui->CurrentImageGraphicsView->isSaved()){//当图片保存了，提示是否将其带入到计算
-            int reply = QMessageBox::warning(this,tr("提示"),tr("是否将该图片带入到计算中？"),tr("是"),tr("否"),0,1);
+            int reply = QMessageBox::warning(this,tr("提示"),tr("是否将该图片带入到计算列表中？"),tr("是"),tr("否"),0,1);
             if(reply == 0) {//是，则将其存入到calculateImg中
                 ImagePair img = ImagePair(markedImageDirPath, unMarkedImageDirPath, markedMat.clone(), unmarkedMat.clone());
                 calculateImg.push_back(img);
