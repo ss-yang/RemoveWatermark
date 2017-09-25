@@ -52,8 +52,8 @@ public:
      * 程序启动时从配置文件读取并在loadConfig初始化
      */
     int penSize;// 等于thickness
-    QString unmarkedSavePath;
-    QString outputPath;
+    QString unmarkedSavePath; // 默认路径-人工修补好的图的保存路径
+    QString outputPath; // 默认路径-机器去水印输出路径
 
     void loadConfig();
 

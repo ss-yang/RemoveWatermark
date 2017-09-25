@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     palette.setColor(QPalette::Background, QColor(255,255,255));//白色
     ui->BackColorLabel->setPalette(palette);
 
-    ui->getResultAction->setEnabled(false);
+    ui->getResultAction->setEnabled(false);//没有修补图片时，“模拟去除”按钮应为不可用状态
 
     loadConfig(); // 读取配置文件
 
@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
      * 初始化粗细设置按钮
      */
     thicknessSlider = new ThicknessSlider(this);
-    thicknessSlider->setValue(this->penSize); // set从配置文件读到的值
+    thicknessSlider->setValue(this->penSize); // 将从配置文件读到的值同步到ui元素thicknessSlider上
     thicknessAction = ui->extraToolBar->addWidget(thicknessSlider);
 
     /**
@@ -688,11 +688,12 @@ void MainWindow::on_Settings_triggered()
     dlg = new DialogSettings;
     dlg->setWindowIcon(QIcon(QPixmap(":/Icons/icon/config.png")));
     if(penSize != NULL){
+        //启动设置对话框前，先将当前相关配置项的值传入对话框对象
         dlg->setPenSize(this->penSize);
         dlg->setUnmarkedSavePath(this->unmarkedSavePath);
         dlg->setOutputPath(this->outputPath);
     }
-    int ok = dlg->exec();
+    int ok = dlg->exec();//运行对话框，用户点击“确定”后，返回 1
     if(ok == 1){
         //将设置修改的参数保存
         QString appPath = QCoreApplication::applicationDirPath();
@@ -708,5 +709,4 @@ void MainWindow::on_Settings_triggered()
         }
     }
     delete dlg;
-
 }

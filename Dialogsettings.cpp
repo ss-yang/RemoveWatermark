@@ -38,7 +38,7 @@ QString DialogSettings::getOutputPath()
 /**
  * @brief DialogSettings::getPenSize
  * @return
- * slot: 设置penSize的值，同时设置控件的值
+ * 设置penSize的值，同时设置控件的值
  */
 void DialogSettings::setPenSize(int value)
 {
@@ -58,6 +58,12 @@ void DialogSettings::setOutputPath(QString path)
     ui->lineEdit_outputPath->setText(path);
 }
 
+/**
+ * @brief DialogSettings::setThisPenSize
+ * @param value
+ * slot：
+ * 在对话框修改spinBox的值时，会发送信号到这个槽，修改this->penSize
+ */
 void DialogSettings::setThisPenSize(int value)
 {
     this->penSize = value;
