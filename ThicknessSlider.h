@@ -15,6 +15,8 @@ public:
     explicit ThicknessSlider(QWidget *parent = 0);
     ~ThicknessSlider();
 
+    void setValue(int value);
+
 signals:
     void valueChanged(int value);
 

@@ -20,12 +20,16 @@ public:
     QString getUnmarkedSavePath();
     QString getOutputPath();
 
+    void setPenSize(int value);
+    void setUnmarkedSavePath(QString path);
+    void setOutputPath(QString path);
+
 signals:
     void penSizeChanged(int value);
     void pathChanged();
 
 private slots:
-    void setPenSize(int value);
+    void setThisPenSize(int value);
     void setPath();
 
     void on_btn_unmarkedSavePath_clicked();
@@ -46,7 +50,6 @@ private:
     QString unmarkedSavePath;//通过文件选择器取到的默认路径
     QString outputPath;//通过文件选择器取到的默认路径
 
-    void initValue(int penSize, QString unmarkedSavePath, QString outputPath);
     void initLayout();
 };
 

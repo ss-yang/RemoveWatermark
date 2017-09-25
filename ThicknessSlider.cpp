@@ -38,3 +38,9 @@ ThicknessSlider::~ThicknessSlider()
 {
     delete ui;
 }
+
+void ThicknessSlider::setValue(int value)
+{
+    ui->Slider->setValue(value);
+    ui->spinBox->setValue(value);
+}

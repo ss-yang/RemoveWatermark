@@ -44,10 +44,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->getResultAction->setEnabled(false);
 
+    loadConfig(); // 读取配置文件
+
     /**
      * 初始化粗细设置按钮
      */
     thicknessSlider = new ThicknessSlider(this);
+    thicknessSlider->setValue(this->penSize); // set从配置文件读到的值
     thicknessAction = ui->extraToolBar->addWidget(thicknessSlider);
 
     /**
@@ -67,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // 初始化两个GraphicsView的Scene
     oriScene = new QGraphicsScene;
     currentScene = new QGraphicsScene;
+
 
     //当加载图片后，在状态栏显示鼠标所指向的图片的像素位置
     QObject::connect(ui->OriImageGraphicsView,SIGNAL(mouseMovetriggerSignal(QString)),this,SLOT(updatePixelLocationLabel(QString)));
@@ -113,6 +117,27 @@ MainWindow::~MainWindow()
     delete resultItem;
     delete maskScene;
     delete resultScene;
+}
+
+
+/**
+ * @brief MainWindow::loadConfig
+ * 从硬盘读取配置文件
+ */
+void MainWindow::loadConfig()
+{
+    QFile cfg(QCoreApplication::applicationDirPath() + "/config.cfg");
+    if(cfg.open(QFile::ReadOnly)){
+        QTextStream in(&cfg);
+        in >> penSize;
+        in >> unmarkedSavePath;
+        in >> outputPath;
+
+        ui->CurrentImageGraphicsView->setThickness(penSize); // 将画笔大小的值传入GraphicsView的thickness变量
+    }else{
+        qDebug() << "open file " << cfg.fileName() << "failed!";
+        qDebug() << "load config failed!";
+    }
 }
 
 /**
@@ -659,23 +684,29 @@ void MainWindow::on_getResultAction_triggered()
 
 void MainWindow::on_Settings_triggered()
 {
-    DialogSettings dlg;
-    dlg.setWindowIcon(QIcon(QPixmap(":/Icons/icon/config.png")));
-    int ok = dlg.exec();
+    DialogSettings *dlg;
+    dlg = new DialogSettings;
+    dlg->setWindowIcon(QIcon(QPixmap(":/Icons/icon/config.png")));
+    if(penSize != NULL){
+        dlg->setPenSize(this->penSize);
+        dlg->setUnmarkedSavePath(this->unmarkedSavePath);
+        dlg->setOutputPath(this->outputPath);
+    }
+    int ok = dlg->exec();
     if(ok == 1){
         //将设置修改的参数保存
-        // ......
         QString appPath = QCoreApplication::applicationDirPath();
         QFile cfg(appPath + "/config.cfg");
         if(cfg.open(QIODevice::ReadWrite)){
             QTextStream out(&cfg);
-            out << dlg.getPenSize() << "\n";
-            out << dlg.getUnmarkedSavePath() << "\n";
-            out << dlg.getOutputPath() << "\n";
+            out << dlg->getPenSize() << "\n";
+            out << dlg->getUnmarkedSavePath() << "\n";
+            out << dlg->getOutputPath() << "\n";
             cfg.close();
         }else{
             qDebug() << "open " << cfg.fileName() << " failed!";
         }
     }
+    delete dlg;
 
 }

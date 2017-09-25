@@ -46,6 +46,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    /**
+     *  配置项
+     *
+     * 程序启动时从配置文件读取并在loadConfig初始化
+     */
+    int penSize;// 等于thickness
+    QString unmarkedSavePath;
+    QString outputPath;
+
+    void loadConfig();
+
 private slots:
     void on_Open_triggered();
     void on_LoadImageListView_doubleClicked(const QModelIndex &index);

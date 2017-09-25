@@ -47,6 +47,7 @@ public:
 
     Rect getWatermark();
     void setWatermark(Rect watermark);
+    void setThickness(int value);
 
 signals:
     void mouseMovetriggerSignal(QString location);

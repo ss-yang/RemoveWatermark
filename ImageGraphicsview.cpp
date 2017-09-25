@@ -22,7 +22,7 @@ ImageGraphicsview::ImageGraphicsview(QWidget *parent):QGraphicsView(parent)
     forbiddenCursor =QCursor(forbiddenPixmap);
 
     opencvTool = OpenCVTool();//初始化工具类
-    thickness = 1;//初始化画笔粗细
+//    thickness = 1;//初始化画笔粗细
     pencilColor = Scalar(0,0,0,255);//初始化铅笔颜色 黑色
     backColor = Scalar(255,255,255);//初始化背景色 白色
     eraserColor = Scalar(255,255,255,0);//初始化橡皮颜色 白色
@@ -100,6 +100,11 @@ Rect ImageGraphicsview::getWatermark()
 void ImageGraphicsview::setWatermark(Rect watermark)
 {
     this->watermark = watermark;
+}
+
+void ImageGraphicsview::setThickness(int value)
+{
+    this->thickness = value;
 }
 
 /**

@@ -2,27 +2,21 @@
 #include "ui_dialogsettings.h"
 
 #include <QFileDialog>
-#include <QDebug>
 
 DialogSettings::DialogSettings(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::DialogSettings)
 {
     ui->setupUi(this);
-    connect(ui->spinBox_pensize,SIGNAL(valueChanged(int)),this,SLOT(setPenSize(int)));//信号连接，改变penSize的值
+    connect(ui->spinBox_pensize,SIGNAL(valueChanged(int)),this,SLOT(setThisPenSize(int)));//信号连接，改变penSize的值
     connect(this,SIGNAL(pathChanged()),this,SLOT(setPath()));
 
     initLayout();
-    qDebug()<<"pensize: "<<penSize;
 }
 
 DialogSettings::~DialogSettings()
 {
     delete ui;
-    delete lineEditUnmarkedSavePath;
-    delete lineEditOutputPath;
-    delete btnUnmarkedSavePath;
-    delete btnOutputPath;
 }
 
 
@@ -44,9 +38,27 @@ QString DialogSettings::getOutputPath()
 /**
  * @brief DialogSettings::getPenSize
  * @return
- * slot: 设置penSize的值
+ * slot: 设置penSize的值，同时设置控件的值
  */
 void DialogSettings::setPenSize(int value)
+{
+    this->penSize = value;
+    ui->spinBox_pensize->setValue(value);
+}
+
+void DialogSettings::setUnmarkedSavePath(QString path)
+{
+    this->unmarkedSavePath = path;
+    ui->lineEdit_unmarkedSavePath->setText(path);
+}
+
+void DialogSettings::setOutputPath(QString path)
+{
+    this->outputPath = path;
+    ui->lineEdit_outputPath->setText(path);
+}
+
+void DialogSettings::setThisPenSize(int value)
 {
     this->penSize = value;
 }
@@ -79,24 +91,7 @@ void DialogSettings::on_btn_outputPath_clicked()
     emit pathChanged();
 }
 
-/**
- * @brief DialogSettings::initValue
- * @param penSize
- * @param unmarkedSavePath
- * @param outputPath
- * 创建DialogSettings窗口时向其传值
- */
-void DialogSettings::initValue(int penSize, QString unmarkedSavePath, QString outputPath)
-{
-    this->penSize = penSize;
-    this->unmarkedSavePath = unmarkedSavePath;
-    this->outputPath = outputPath;
-}
-
 void DialogSettings::initLayout(){
-    sbPenSize = new QSpinBox;
-    lineEditUnmarkedSavePath = new QLineEdit;
-    lineEditOutputPath = new QLineEdit;
-    btnUnmarkedSavePath = new QPushButton;
-    btnOutputPath = new QPushButton;
+    //提示
+    ui->lb_hint->setText("提示:当前设置重启程序后生效。");
 }
