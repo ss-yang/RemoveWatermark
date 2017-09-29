@@ -676,7 +676,7 @@ void MainWindow::on_getResultAction_triggered()
     currentPixmap = opencvtool.MatToPixmap(unmarkedMat);
     currentPixmapItem->setPixmap(currentPixmap);
     currentPixmapItem->update(); // 将叠加后的图更新到currentPixmapItem
-    imwrite(this->outputPath, unmarkedMat);//将去水印结果保存到硬盘
+    imwrite((const char *)this->outputPath.toLocal8Bit(), unmarkedMat);//将去水印结果保存到硬盘
     resultPixmap = opencvtool.MatToPixmap(resultMat);
     resultScene = new QGraphicsScene;
     resultItem = new QGraphicsPixmapItem(resultPixmap);
